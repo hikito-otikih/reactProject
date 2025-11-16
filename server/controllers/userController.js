@@ -17,10 +17,10 @@ export const registerUser = async (req, res) => {
         }
         const user = await User.create({ username, email, password });
         const token = generateToken(user._id);
-        res.json({ "success": true, "data": { "user": user, "token": token } });
+        res.json({ "success": true, "user": user, "token": token });
 
     } catch (error) {
-        return res.json({"success": false, "message": "Error registering user" });
+        return res.json({"success": false, "message": error.message});
     }
 };
 
@@ -32,7 +32,7 @@ export const loginUser = async (req, res) => {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
                 const token = generateToken(user._id);
-                return res.json({ "success": true, "data": { "user": user, "token": token } });
+                return res.json({ "success": true, "user": user, "token": token });
             }
         } 
         return res.json({ "success": false, "message": "Invalid email or password" });
@@ -44,8 +44,8 @@ export const loginUser = async (req, res) => {
 export const getUser = async (req, res) => {
     try {
         const user = req.user;
-        return res.json({ "success": true, "data": user });
+        return res.json({ "success": true, "user": user });
     } catch (error) {
-        return res.json({ "success": false, "message": "Error fetching user data" });
+        return res.json({ "success": false, "message": error.message });
     }
 };

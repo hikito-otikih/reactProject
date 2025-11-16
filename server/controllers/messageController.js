@@ -19,7 +19,7 @@ export const textMessageController = async (req, res) => {
         const reply = {...choices[0].message, timestamp: Date.now()};
         chat.messages.push(reply);
         await chat.save();
-        res.json({ "success": true, "data": reply });
+        res.json({ "success": true, "reply": reply });
     } catch (error) {
         return res.json({ "success": false, "message": error.message, prompt: req.body.prompt });
     }

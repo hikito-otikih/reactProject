@@ -27,9 +27,15 @@ export const getChats  = async (req, res) => {
 
 export const deleteChat  = async (req, res) => {
     try {
-        const userID = req.user._id;
+        //const userID = req.user._id;
+        const userID = req.user._id
         const {chatID} = req.body
-        await Chat.deleteOne({ _id: chatID, userID });
+
+
+        const result = await Chat.deleteOne({ _id: chatID, userID });
+        if (result.deletedCount === 0) {
+            return res.json({ "success": false, "message": "Chat not found or unauthorized" });
+        }
         res.json({ "success": true, "message": "Chat deleted successfully" });
     } catch (error) {
         return res.json({ "success": false, "message": "Error fetching chats" });

@@ -2,9 +2,10 @@ import React, { useEffect } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { assets } from '../assets/assets';
 import Message from './message';
+import toast from 'react-hot-toast';
 
 const ChatBox = () => {
-  const {selectedChat, theme} = useAppContext();
+  const {selectedChat, theme, axios, user, token, fetchUserChats} = useAppContext();
   const [message, setMessage] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   
@@ -15,7 +16,29 @@ const ChatBox = () => {
   // const [isPublished, setIsPublished] = React.useState(false);
 
   const onsubmit = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      if (!user) return;
+      setLoading(true);
+      const promptcopy = prompt;
+      setPrompt('');
+      setMessage(prev => [...prev, {role: 'user', content: promptcopy, timestamp: new Date()}]);
+      const {data} = await axios.post('/api/message/text', { chatID : selectedChat._id, prompt }
+        , { headers: { Authorization: token} });
+      if (data.success) {
+        setMessage(prev => [...prev, data.reply]);
+        fetchUserChats();
+        setPrompt(promptcopy);
+      }
+      else {
+        toast.error(data.message || "Failed to send message");
+      }
+    } catch (error) {
+      toast.error("Failed to send message");
+    } finally {
+      setLoading(false);
+      setPrompt('');
+    }
   }
 
   useEffect(() => {
@@ -58,7 +81,7 @@ const ChatBox = () => {
           )} */}
 
       {/*prompt input div */}
-      <form onsubmit={onsubmit} className='flex items-center gap-2 p-3 border border-gray-300 dark:border-white/15 rounded-md'>
+      <form onSubmit={onsubmit} className='flex items-center gap-2 p-3 border border-gray-300 dark:border-white/15 rounded-md'>
         <select className='text-sm p-l3 pr-2 outline-none' value={mode} onChange={(e) => setMode(e.target.value)}>
           <option className='dark:bg-purple-900' value="text">Text</option>
           {/* <option className='dark:bg-purple-900' value="image">Image</option> */}
