@@ -5,7 +5,7 @@ import Message from './Message';
 import toast from 'react-hot-toast';
 
 const ChatBox = () => {
-  const {selectedChat, theme, axios, user, token, fetchUserChats} = useAppContext();
+  const {selectedChat, theme, axios, user, token} = useAppContext();
   const [message, setMessage] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   
@@ -22,12 +22,18 @@ const ChatBox = () => {
       setLoading(true);
       const promptcopy = prompt;
       setPrompt('');
-      setMessage(prev => [...prev, {role: 'user', content: promptcopy, timestamp: new Date()}]);
+      const newUserMsg = { role: 'user', content: promptcopy, timestamp: new Date() };
+      setMessage(prev => [...prev, newUserMsg]);
       const {data} = await axios.post('/api/message/text', { chatID : selectedChat._id, prompt }
         , { headers: { Authorization: token} });
       if (data.success) {
         setMessage(prev => [...prev, data.reply]);
-        fetchUserChats();
+
+        if (selectedChat && selectedChat.messages) {
+            selectedChat.messages.push(newUserMsg); 
+            selectedChat.messages.push(data.reply); 
+        }
+
         setPrompt(promptcopy);
       }
       else {
