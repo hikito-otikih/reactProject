@@ -76,7 +76,7 @@ if __name__ == "__main__":
     print("=" * 80)
     
     tests = [
-        "A day strip starting from Saigon Notre-Dame Cathedral Basilica then visit Dalat, visit 2 restaurants and a cafe",
+        "A day strip go to  Saigon Notre-Dame Cathedral Basilica then visit Dalat, visit 2 restaurants and a cafe",
     ]
     
     for i, test in enumerate(tests, 1):

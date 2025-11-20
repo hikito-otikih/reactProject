@@ -271,6 +271,9 @@ def construct_path(candidate_graph, extracted_info):
     anchor_locations.sort(key=lambda x: x.get('order', 999))
     start_location = anchor_locations[0]
     
+    # Track visited locations to avoid duplicates (except for must-visit destinations)
+    visited_names = {start_location['name'].lower()}
+    
     path = [{
         'order': 0,
         'name': start_location['name'],
@@ -316,6 +319,9 @@ def construct_path(candidate_graph, extracted_info):
                 visit_duration = 30
                 current_time += timedelta(minutes=visit_duration)
                 
+                # Add destination to visited set (must-visit destinations are always added)
+                visited_names.add(dest['name'].lower())
+                
                 path.append({
                     'order': order,
                     'name': dest['name'],
@@ -341,9 +347,16 @@ def construct_path(candidate_graph, extracted_info):
             if not candidates:
                 continue
             
-            # Score all candidates and filter by operating hours
+            # Filter out already-visited locations
+            available_candidates = [c for c in candidates if c['name'].lower() not in visited_names]
+            
+            if not available_candidates:
+                # All candidates already visited; skip this category
+                continue
+            
+            # Score all available candidates and filter by operating hours
             scored_candidates = []
-            for candidate in candidates:
+            for candidate in available_candidates:
                 # Check if open
                 if not is_open_at_time(candidate.get('operating_hours'), current_time):
                     continue
@@ -356,10 +369,10 @@ def construct_path(candidate_graph, extracted_info):
                     })
             
             if not scored_candidates:
-                # If none are open, take best rated regardless
+                # If none are open, take best rated regardless (from available)
                 scored_candidates = [
                     {'candidate': c, 'score': calculate_score(c, current_lat, current_lon)}
-                    for c in candidates if calculate_score(c, current_lat, current_lon) > 0
+                    for c in available_candidates if calculate_score(c, current_lat, current_lon) > 0
                 ]
             
             if scored_candidates:
@@ -377,6 +390,9 @@ def construct_path(candidate_graph, extracted_info):
                 # Visit duration based on category
                 visit_duration = get_visit_duration(value)
                 current_time += timedelta(minutes=visit_duration)
+                
+                # Add selected location to visited set
+                visited_names.add(selected['name'].lower())
                 
                 path.append({
                     'order': order,
