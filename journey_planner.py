@@ -75,8 +75,7 @@ if __name__ == "__main__":
     print("JOURNEY PLANNER - TESTS")
     print("=" * 80)
     
-    tests = [
-        "A day strip go to  Saigon Notre-Dame Cathedral Basilica then visit Dalat, visit 2 restaurants and a cafe",
+    tests = ["I want a one day trip, start at Ben thanh market. I want to go through Suoi Tien park and Dong Nai, ideally starting time is 8AM",
     ]
     
     for i, test in enumerate(tests, 1):

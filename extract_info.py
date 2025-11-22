@@ -5,12 +5,150 @@ Extracts journey planning information from natural language using Gemini API.
 
 import json
 import requests
+import math
+import random
 from datetime import datetime, timedelta
 
 # ============================================================================
 # API KEY
 # ============================================================================
-GEMINI_KEY = 'AIzaSyD-EFl-4leMJZdYItikL2s2N7Ebg3rKhRQ'
+GEMINI_KEY = 'AIzaSyBO-G4hBq8SapvldyO36UWWVI5yj23FfbE'
+GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+def geocode_location(location_name):
+    """Convert location name to coordinates using Geoapify"""
+    if not location_name:
+        return None
+    try:
+        response = requests.get(
+            'https://api.geoapify.com/v1/geocode/search',
+            params={'text': location_name, 'apiKey': GEOAPIFY_API_KEY},
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('features'):
+                coords = data['features'][0].get('geometry', {}).get('coordinates', [])
+                if len(coords) >= 2:
+                    return {'lat': coords[1], 'lon': coords[0]}
+        return None
+    except Exception:
+        return None
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculate distance between two coordinates in kilometers"""
+    R = 6371  # Earth's radius in kilometers
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * \
+        math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    return R * c
+
+def _default_start_hcmus():
+    """Return default starting-location dict for HCMUS."""
+    return {'name': 'HCMUS', 'order': 0}
+
+def optimize_journey_sequence(extracted_info):
+    """
+    Analyze journey sequence and insert intermediate categories if consecutive 
+    destinations are too far apart.
+    """
+    sequence = extracted_info.get('journey_sequence', [])
+    if not sequence or len(sequence) < 2:
+        return extracted_info
+
+    new_sequence = []
+    must_go_categories = extracted_info.get('must_go_categories', [])
+    
+    # Cache for geocoding to avoid redundant calls
+    location_cache = {}
+
+    for i in range(len(sequence)):
+        current_item = sequence[i]
+        new_sequence.append(current_item)
+        
+        # Check if we have a next item
+        if i < len(sequence) - 1:
+            next_item = sequence[i+1]
+            
+            # Only check distance between two fixed destinations.
+            # If there is a category between them (e.g. Dest A -> Category -> Dest B),
+            # they won't be consecutive in this list, so we won't insert anything.
+            # This respects the user's specified intermediate stops.
+            if current_item.get('type') == 'destination' and next_item.get('type') == 'destination':
+                loc1_name = current_item.get('value')
+                loc2_name = next_item.get('value')
+                
+                # Get coordinates
+                if loc1_name not in location_cache:
+                    location_cache[loc1_name] = geocode_location(loc1_name)
+                if loc2_name not in location_cache:
+                    location_cache[loc2_name] = geocode_location(loc2_name)
+                
+                coords1 = location_cache[loc1_name]
+                coords2 = location_cache[loc2_name]
+                
+                if coords1 and coords2:
+                    dist = haversine_distance(coords1['lat'], coords1['lon'], coords2['lat'], coords2['lon'])
+                    
+                    # Logic to insert categories based on distance
+                    inserted_categories = []
+                    if dist > 10:
+                        # Long distance: Insert a major attraction and a food stop
+                        # Randomly select to provide variety
+                        attractions = ['museum', 'park', 'landmark', 'shopping_mall', 'market', 'temple']
+                        food_spots = ['restaurant', 'food_court', 'cafe']
+                        
+                        inserted_categories = [
+                            random.choice(attractions),
+                            random.choice(food_spots)
+                        ]
+                    elif dist > 5:
+                        # Medium distance: Insert a quick break
+                        quick_stops = ['cafe', 'street_food', 'souvenir_shop', 'park', 'bakery']
+                        inserted_categories = [random.choice(quick_stops)]
+                    
+                    for cat in inserted_categories:
+                        # Create new category item
+                        new_item = {
+                            'type': 'category',
+                            'value': cat,
+                            'order': 0, # Will re-index later
+                            'is_auto_inserted': True
+                        }
+                        new_sequence.append(new_item)
+                        
+                        # Update must_go_categories list
+                        must_go_categories.append({
+                            'category': cat,
+                            'order': 0,
+                            'count': 1,
+                            'is_auto_inserted': True
+                        })
+
+    # Re-index orders
+    for idx, item in enumerate(new_sequence):
+        item['order'] = idx
+        
+        # Sync order back to must_go_destinations/categories if needed
+        if item['type'] == 'destination':
+            for d in extracted_info['must_go_destinations']:
+                if d.get('name') == item['value']:
+                    d['order'] = idx
+        elif item['type'] == 'category':
+            # This is trickier since there can be multiple of same category
+            # We'll just ensure the main list has them
+            pass
+
+    extracted_info['journey_sequence'] = new_sequence
+    extracted_info['must_go_categories'] = must_go_categories
+    
+    return extracted_info
 
 def extract_info(text):
     """
@@ -33,10 +171,13 @@ def extract_info(text):
         default_date = datetime.now().strftime('%Y-%m-%d')
         default_time = (datetime.now() + timedelta(hours=2)).strftime('%H:%M')
         
+        # Default start
+        start = _default_start_hcmus()
+        
         return {
-            'must_go_destinations': [],
+            'must_go_destinations': [start],
             'must_go_categories': [],
-            'journey_sequence': [],
+            'journey_sequence': [{'type': 'destination', 'value': start['name'], 'order': 0}],
             'number_of_destinations': 4,
             'journey_date': default_date,
             'start_time': default_time
@@ -118,6 +259,11 @@ Rules: First destination (order:0) is starting location, if not written , set Un
                     if not extracted_info.get('must_go_destinations'):
                         extracted_info['must_go_destinations'] = []
                     
+                    # Ensure start location
+                    has_start = any(d.get('order') == 0 for d in extracted_info.get('must_go_destinations', []) if isinstance(d, dict))
+                    if not has_start:
+                        extracted_info['must_go_destinations'].insert(0, _default_start_hcmus())
+
                     if not extracted_info.get('must_go_categories'):
                         extracted_info['must_go_categories'] = []
                     
@@ -149,6 +295,19 @@ Rules: First destination (order:0) is starting location, if not written , set Un
                                 })
                         sequence.sort(key=lambda x: x.get('order', 999))
                         extracted_info['journey_sequence'] = sequence
+                    else:
+                        # Ensure start in sequence
+                        has_start_seq = any(item.get('order') == 0 for item in extracted_info.get('journey_sequence', []) if isinstance(item, dict))
+                        if not has_start_seq:
+                            start = _default_start_hcmus()
+                            # Shift orders
+                            for item in extracted_info['journey_sequence']:
+                                if isinstance(item, dict) and isinstance(item.get('order'), int):
+                                    item['order'] += 1
+                            extracted_info['journey_sequence'].insert(0, {'type': 'destination', 'value': start['name'], 'order': 0})
+                    
+                    # Optimize sequence
+                    extracted_info = optimize_journey_sequence(extracted_info)
                     
                     return extracted_info
                 else:
@@ -170,11 +329,12 @@ Rules: First destination (order:0) is starting location, if not written , set Un
     # Fallback: return default structure
     default_date = datetime.now().strftime('%Y-%m-%d')
     default_time = (datetime.now() + timedelta(hours=2)).strftime('%H:%M')
+    start = _default_start_hcmus()
     
     return {
-        'must_go_destinations': [],
+        'must_go_destinations': [start],
         'must_go_categories': [],
-        'journey_sequence': [],
+        'journey_sequence': [{'type': 'destination', 'value': start['name'], 'order': 0}],
         'number_of_destinations': 4,
         'journey_date': default_date,
         'start_time': default_time
