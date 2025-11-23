@@ -74,7 +74,7 @@ if __name__ == "__main__":
     print("JOURNEY PLANNER - TESTS")
     print("=" * 80)
     
-    tests = ["journey go to airport then cafe then hcmus",
+    tests = ["journey go to Dong Nai  to hcmus",
     ]
     
     for i, test in enumerate(tests, 1):
