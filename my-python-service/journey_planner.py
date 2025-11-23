@@ -7,11 +7,14 @@ import random
 from extract_info import extract_info
 from candidate_graph import build_candidate_graph
 from path_constructor import construct_path
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # ============================================================================
 # API KEYS
 # ============================================================================
-GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
+GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 # ============================================================================
 # CONSTANTS
 # ============================================================================
