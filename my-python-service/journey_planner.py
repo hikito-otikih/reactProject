@@ -74,11 +74,10 @@ def path(text):
 
 
 if __name__ == "__main__":
-    print("=" * 80)
     print("JOURNEY PLANNER - TESTS")
     print("=" * 80)
     
-    tests = ["I want a one day trip, start at Ben thanh market. I want to go through Suoi Tien park and Dong Nai, ideally starting time is 8AM",
+    tests = ["journey go to airport then cafe then hcmus",
     ]
     
     for i, test in enumerate(tests, 1):
