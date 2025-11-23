@@ -25,3 +25,38 @@
 .loader div:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+/* index.css */
+
+/* Reset default marker style để dùng tailwind thoải mái */
+.custom-marker-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Tùy chỉnh Popup của Leaflet */
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.95) !important; /* Nền trắng mờ */
+  backdrop-filter: blur(8px);
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  padding: 0 !important; /* Xóa padding mặc định */
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 12px !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Xóa nút đóng popup mặc định nếu muốn, hoặc style lại */
+.leaflet-popup-close-button {
+  color: #9ca3af !important;
+  top: 8px !important;
+  right: 8px !important;
+}

@@ -9,7 +9,7 @@ const chatSchema = new mongoose.Schema({
             role : { type: String, required: true },
             content : { type: String, required: true },
             timestamp :  { type: Number, required: true },
-
+            originJson : { type: mongoose.Schema.Types.Mixed } // Lưu trữ dữ liệu gốc từ Gemini API
         }
     ]
 }, { timestamps: true });

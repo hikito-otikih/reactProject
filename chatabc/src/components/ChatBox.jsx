@@ -1,99 +1,138 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { assets } from '../assets/assets';
 import Message from './Message';
 import toast from 'react-hot-toast';
 
-const ChatBox = () => {
-  const {selectedChat, theme, axios, user, token, fetchUserChats} = useAppContext();
-  const [message, setMessage] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  
-  const containerRef = React.useRef(null);
+const ChatBox = ({ onShowMap }) => {
+  const {selectedChat, theme, axios, user, token} = useAppContext();
+  const [message, setMessage] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const containerRef = useRef(null);
+  const [prompt, setPrompt] = useState('');
 
-  const [prompt, setPrompt] = React.useState('');
-  const [mode, setMode] = React.useState('text');
-  // const [isPublished, setIsPublished] = React.useState(false);
+  // --- 1. XỬ LÝ AUTO SCROLL (Thêm mới) ---
+  // Chạy mỗi khi 'message' hoặc 'loading' thay đổi
+  useEffect(() => {
+    if (containerRef.current) {
+      // Scroll xuống đáy container
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [message, loading]);
+
+  const handleDisplayMap = (msg) => {
+    try {
+        if (msg.originJson) {
+            onShowMap(msg.originJson);
+            return;
+        }
+    } catch (error) {
+        toast.error("Không thể đọc dữ liệu lịch trình");
+    }
+  };
 
   const onsubmit = async (e) => {
     try {
       e.preventDefault();
+      if (!prompt.trim()) return; // Chặn gửi tin nhắn rỗng
       if (!user) return;
+      
       setLoading(true);
       const promptcopy = prompt;
       setPrompt('');
-      setMessage(prev => [...prev, {role: 'user', content: promptcopy, timestamp: new Date()}]);
-      const {data} = await axios.post('/api/message/text', { chatID : selectedChat._id, prompt }
-        , { headers: { Authorization: token} });
+      
+      const newUserMsg = { role: 'user', content: promptcopy, timestamp: new Date() };
+      setMessage(prev => [...prev, newUserMsg]);
+      
+      const {data} = await axios.post('/api/message/text', { chatID : selectedChat._id, prompt: promptcopy }, { headers: { Authorization: token} });
+      
       if (data.success) {
-        setMessage(prev => [...prev, data.reply]);
-        fetchUserChats();
-        setPrompt(promptcopy);
-      }
-      else {
-        toast.error(data.message || "Failed to send message");
+        let replyMsg = data.reply;
+        try {
+            if(replyMsg.content.startsWith('{')) {
+                const json = JSON.parse(replyMsg.content);
+                if(json.path) {
+                    replyMsg.originJson = json;
+                }
+            }
+        } catch(e) {}
+
+        setMessage(prev => [...prev, replyMsg]);
+        
+        if (selectedChat && selectedChat.messages) {
+            selectedChat.messages.push(newUserMsg); 
+            selectedChat.messages.push(replyMsg); 
+        }
+      } else {
+        toast.error(data.message || "Failed");
       }
     } catch (error) {
-      toast.error("Failed to send message");
+      console.error(error);
+      toast.error("Failed to send");
     } finally {
       setLoading(false);
-      setPrompt('');
     }
   }
 
   useEffect(() => {
     if (selectedChat) {
-      setMessage(selectedChat.messages);
+        const processedMsgs = selectedChat.messages.map(m => {
+            try {
+                if (m.role === 'assistant' && typeof m.content === 'string' && m.content.startsWith('{"path"')) {
+                    return { ...m, originJson: JSON.parse(m.content) };
+                }
+            } catch (e) {}
+            return m;
+        });
+        setMessage(processedMsgs);
     }
   }, [selectedChat]);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({ top: containerRef.current.scrollHeight, behavior: 'smooth' });
-    }
-  }, [message]);
-
   return (
-    
-    <div className='h-full flex flex-col justify-between p-5 md:p-10 xl:px-30 max-md:pt-14 2xl:pr-40'>      {/* chat div */}
-      <div ref={containerRef} className='flex-1 mb-5 overflow-y-scroll'>
-        {message.length === 0 && (
-          <div className='h-full flex flex-col items-center justify-center gap-2 text-primary'>
-            <img src={theme === 'dark' ? assets.logo_full : assets.logo_full_dark} alt='' className='w-full max-w-56 sm:max-w-68' />
-            <p className='mt-5 text-4xl sm:text-6xl text-center text-gray-400 dark:text-white'>Ask me anything.</p>
-          </div>
-        )}
-        {message.map((msg, index) => <Message key={index} message={msg} />)}
-        {/*Three dots loading animation */}
-        {
-          loading && <div className='loader flex items-center gap-1.5'>
-            <div className='w-1.5 h-1.5 bg-gray-500 dark:bg-white rounded-full animate-bounce'></div>
-            <div className='w-1.5 h-1.5 bg-gray-500 dark:bg-white rounded-full animate-bounce'></div>
-            <div className='w-1.5 h-1.5 bg-gray-500 dark:bg-white rounded-full animate-bounce'></div>
-          </div>
-        }
-      </div>
-          {/* {mode == 'image' && (
-            <label className='inline-flex items-center gap-2 mb-3 text-sm mx-auto'>
-              <p className='text-xs'>Publish to Community</p>
-              <input type="checkbox" checked={isPublished} onChange={() => setIsPublished(!isPublished)} />
-            </label>
-          )} */}
+    <div className='h-full flex flex-col justify-between p-4 pt-14 bg-white dark:bg-[#1a1a1a]'>
+      
+      {/* Container tin nhắn */}
+      <div ref={containerRef} className='flex-1 mb-5 overflow-y-scroll no-scrollbar scroll-smooth'>
+         <div className="flex flex-col gap-4">
+            {message.map((msg, index) => (
+                <Message 
+                    key={index} 
+                    message={msg} 
+                    onDisplay={() => handleDisplayMap(msg)} 
+                />
+            ))}
 
-      {/*prompt input div */}
-      <form onSubmit={onsubmit} className='flex items-center gap-2 p-3 border border-gray-300 dark:border-white/15 rounded-md'>
-        <select className='text-sm p-l3 pr-2 outline-none' value={mode} onChange={(e) => setMode(e.target.value)}>
-          <option className='dark:bg-purple-900' value="text">Text</option>
-          {/* <option className='dark:bg-purple-900' value="image">Image</option> */}
-        </select>
-        <input onChange={(e)=>setPrompt(e.target.value)}
-          value={prompt}
-          type='text'
-          placeholder='Type your prompt here...'
-          className='flex-1 w-full text-sm outline-none' required />
-          <button disabled={loading}>
-            <img src={loading ? assets.stop_icon : assets.send_icon} alt="" className='w-8 cursor-pointer'/>
-          </button>
+            {/* --- 2. HIỂU ỨNG LOADING (Thêm mới) --- */}
+            {loading && (
+              <div className="flex items-start gap-2.5">
+                 {/* Avatar AI (giả sử dùng assets.gemini_icon hoặc logo của bạn) */}
+                 <img src={assets.gemini_icon} className="w-8 h-8 rounded-full p-1 border border-gray-200" alt="AI" />
+                 
+                 {/* Bong bóng loading */}
+                 <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-[#2d2d2d]">
+                    <div className="flex space-x-2 justify-center items-center">
+                        <div className='h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]'></div>
+                        <div className='h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]'></div>
+                        <div className='h-2 w-2 bg-gray-400 rounded-full animate-bounce'></div>
+                    </div>
+                 </div>
+              </div>
+            )}
+         </div>
+      </div>
+      
+      {/* Input Form */}
+      <form onSubmit={onsubmit} className='flex items-center gap-2 p-2 px-4 bg-gray-100 dark:bg-[#2d2d2d] rounded-3xl shadow-sm border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-all'>
+         <input 
+            onChange={(e)=>setPrompt(e.target.value)} 
+            value={prompt} 
+            type='text' 
+            placeholder='Type a message...' 
+            className='flex-1 bg-transparent outline-none dark:text-white' 
+         />
+         <button disabled={loading || !prompt.trim()} className={`p-2 rounded-full text-white transition-all ${loading || !prompt.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>
+             <img src={assets.send_icon} className='w-4 h-4 invert' alt="send" />
+         </button>
       </form>
     </div>
   )
