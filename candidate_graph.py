@@ -10,7 +10,7 @@ from serpapi import GoogleSearch
 # ============================================================================
 # API KEYS
 # ============================================================================
-SERPAPI_KEY = 'ed59ce3a8847be0b542c889c1d8722609f71b3ea311ae8ef2a78533574c0359a'
+SERPAPI_KEY = '55bc8bbbabb6b9dc955dd2a3a9e93f1e5a14d37a822d507ff104d5e60a595d0b'
 GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
 
 
