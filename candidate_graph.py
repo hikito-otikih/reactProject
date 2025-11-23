@@ -10,7 +10,7 @@ from serpapi import GoogleSearch
 # ============================================================================
 # API KEYS
 # ============================================================================
-SERPAPI_KEY = '00a31c33d0bc5e4d27ac6619405b39762c71b00cf04a523fb394c5024d349a20'
+SERPAPI_KEY = 'ed59ce3a8847be0b542c889c1d8722609f71b3ea311ae8ef2a78533574c0359a'
 GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
 
 
@@ -25,7 +25,7 @@ def geocode_location(location_name):
     try:
         response = requests.get(
             'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name, 'apiKey': GEOAPIFY_API_KEY},
+            params={'text': location_name + ", VN", 'apiKey': GEOAPIFY_API_KEY},
             timeout=6
         )
         if response.status_code == 200:
@@ -58,31 +58,60 @@ def search_candidates_near_location(category, location_name, lat, lon, limit=10)
         params = {
             "api_key": SERPAPI_KEY,
             "engine": "google_maps",
+             "google_domain": "google.com",
             "q": f"{category} near {location_name}",
-            "ll": f"@{lat},{lon},15z",
+            "ll": f"@{10.763056931422451},{106.68255749755662},14z",
             "type": "search",
             "hl": "en"
         }
         
         search = GoogleSearch(params)
         results = search.get_dict()
-        local_results = results.get("local_results", [])
-        
         candidates = []
-        for res in local_results[:limit]:
-            gps = res.get('gps_coordinates', {})
+        if 'place_results' in results:
+            place_results = results["place_results"]
+            gps = place_results.get('gps_coordinates', {})
             candidates.append({
-                'name': res.get('title'),
+                'name': place_results['title'],
                 'category': category,
-                'rating': res.get('rating'),
-                'reviews': res.get('reviews'),
-                'address': res.get('address'),
-                'lat': gps.get('latitude'),
-                'lon': gps.get('longitude'),
-                'operating_hours': res.get('operating_hours'),
+                'rating': place_results['rating'],
+                'reviews': place_results['reviews'],
+                'address': place_results['address'],
+                'lat': place_results['gps_coordinates']['latitude'],
+                'lon': place_results['gps_coordinates']['longitude'],
+                'operating_hours': {
+                                "sunday":
+                                "0 AM–24 PM",
+                                "monday":
+                                "0 AM–24 PM",
+                                "tuesday":
+                                "0 AM–24 PM",
+                                "wednesday":
+                                "0 AM–24 PM",
+                                "thursday":
+                                "0 AM–24 PM",
+                                "friday":
+                                "0 AM–24 PM",
+                                "saturday":
+                                "0 AM–24 PM"
+                                    },
                 'anchor_location': location_name
             })
-        
+        else:
+            local_results = results.get("local_results", [])
+            for res in local_results[:limit]:
+                gps = res.get('gps_coordinates', {})
+                candidates.append({
+                    'name': res.get('title'),
+                    'category': category,
+                    'rating': res.get('rating'),
+                    'reviews': res.get('reviews'),
+                    'address': res.get('address'),
+                    'lat': gps.get('latitude'),
+                    'lon': gps.get('longitude'),
+                    'operating_hours': res.get('operating_hours'),
+                    'anchor_location': location_name
+                })
         return candidates
         
     except Exception as e:
@@ -192,9 +221,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "I want to start from Landmark 81 then visit 2 spas and have lunch at a restaurant then go to Ben Thanh Market",
-        "Start at HCMUS, visit 3 museums, have a cafe break, then go shopping",
-        "Begin from District 1, check out a bar, grab some street food, and visit a park"
+        "go to airport"
     ]
     
     for i, test_text in enumerate(test_cases, 1):

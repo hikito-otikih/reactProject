@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 # ============================================================================
 # API KEY
 # ============================================================================
-GEMINI_KEY = 'AIzaSyBO-G4hBq8SapvldyO36UWWVI5yj23FfbE'
+GEMINI_KEY = 'AIzaSyDFwAisKVm4mT6ExO_IcSpaH30Y4r9IUak'
 GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
 
 # ============================================================================
@@ -26,7 +26,7 @@ def geocode_location(location_name):
     try:
         response = requests.get(
             'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name, 'apiKey': GEOAPIFY_API_KEY},
+            params={'text': location_name , 'apiKey': GEOAPIFY_API_KEY},
             timeout=5
         )
         if response.status_code == 200:
@@ -54,6 +54,7 @@ def _default_start_hcmus():
     return {'name': 'HCMUS', 'order': 0}
 
 def optimize_journey_sequence(extracted_info):
+    # return extracted_info 
     """
     Analyze journey sequence and insert intermediate categories if consecutive 
     destinations are too far apart.
@@ -190,9 +191,13 @@ def extract_info(text):
         
         # Prepare the prompt for Gemini (minimized whitespace to reduce tokens)
         prompt = f"""Extract journey info from: "{text}"
-Return ONLY valid JSON (no markdown):
-{{"must_go_destinations":[{{"name":"starting point","order":0}}],"must_go_categories":[{{"category":"restaurant","order":1,"count":1}}],"journey_sequence":[{{"type":"destination","value":"starting point","order":0}},{{"type":"category","value":"restaurant","order":1}}],"number_of_destinations":4,"journey_date":"2025-11-20","start_time":"09:00"}}
-Rules: First destination (order:0) is starting location, if not written , set University of Science to be default of starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified."""
+        Return ONLY valid JSON (no markdown):
+        {
+            {
+                "must_go_categories":[{"category":"restaurant","order":1,"count":1}],
+                "must_go_destinations":[{"name":"starting point","order":0}],
+                "journey_sequence":[{"type":"destination","value":"starting point","order":0},{"type":"category","value":"airport","order":1}],"number_of_destinations":4,"journey_date":"2025-11-20","start_time":"09:00"}}
+            Rules: First destination (order:0) is starting location, if not written , set HCMUS to be default of starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified."""
 
         # Call Gemini API
         url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
@@ -346,16 +351,12 @@ Rules: First destination (order:0) is starting location, if not written , set Un
 # ============================================================================
 
 if __name__ == "__main__":
-    print("=" * 80)
     print("EXTRACT INFO MODULE - TESTING")
     print("=" * 80)
     
     # Test cases
     test_cases = [
-        "I want to start from HCMUS then have a cafe and then restaurant, visit a park and then go to ben thanh market before going back to HCMUS",
-        "Start at Saigon Railway Station tomorrow at 7am, visit 3 museums, have lunch at a local restaurant, then go shopping",
-        "Begin from District 1 on Monday at 9:30, check out 2 bars, grab some street food, and end at a spa",
-        "From Times Square next Friday at 14:00 visit Statue of Liberty then Central Park then have dinner at a fine dining restaurant"
+        "go to landmark 81"
     ]
     
     for i, test_text in enumerate(test_cases, 1):
