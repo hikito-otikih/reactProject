@@ -102,20 +102,16 @@ def optimize_journey_sequence(extracted_info):
                     
                     # Logic to insert categories based on distance
                     inserted_categories = []
-                    if dist > 10:
-                        # Long distance: Insert a major attraction and a food stop
-                        # Randomly select to provide variety
-                        attractions = ['museum', 'park', 'landmark', 'shopping_mall', 'market', 'temple']
-                        food_spots = ['restaurant', 'food_court', 'cafe']
-                        
-                        inserted_categories = [
-                            random.choice(attractions),
-                            random.choice(food_spots)
-                        ]
-                    elif dist > 5:
-                        # Medium distance: Insert a quick break
-                        quick_stops = ['cafe', 'street_food', 'souvenir_shop', 'park', 'bakery']
-                        inserted_categories = [random.choice(quick_stops)]
+                    if dist > 15:
+                        # Very far: Insert Attraction AND Food
+                        attractions = ['tourist_attraction', 'museum', 'landmark', 'park']
+                        food_spots = ['restaurant', 'cafe']
+                        inserted_categories = [random.choice(attractions), random.choice(food_spots)]
+                    elif dist > 3:
+                        # Moderate distance: Insert at least one stop to break the limit
+                        # This ensures we get closer to 4-5 destinations
+                        options = ['cafe', 'park', 'shopping_mall', 'restaurant']
+                        inserted_categories = [random.choice(options)]
                     
                     for cat in inserted_categories:
                         # Create new category item
