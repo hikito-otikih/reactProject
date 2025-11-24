@@ -78,12 +78,19 @@ if __name__ == "__main__":
     print("=" * 80)
     
     tests = [
-        "go to ba na hill and the suoi tien "
+         "journey to Da Lat"
     ]
     
     for i, test in enumerate(tests, 1):
         print(f"\n{'='*80}\nTest {i}/{len(tests)}\n{'='*80}")
         result = path(test)
+
+        # Write result to output.js
+        with open('output.js', 'w', encoding='utf-8') as f:
+            f.write("const output = ")
+            json.dump(result, f, indent=2, ensure_ascii=False)
+            f.write(";\nexport default output;")
+        print("\n✓ Result written to output.js")
         
         # Print detailed trip information
         print("\n" + "=" * 80)
@@ -121,5 +128,6 @@ if __name__ == "__main__":
                 print(f"      Distance: {stop['distance_to_next_km']:.2f} km")
         
         print("\n" + "=" * 80)
+
     
     print(f"\n{'='*80}\n✅ ALL TESTS COMPLETED\n{'='*80}")

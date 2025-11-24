@@ -23,13 +23,43 @@ GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 # ============================================================================
 
 def geocode_location(location_name):
-    """Convert location name to coordinates using Geoapify"""
+    """Convert location name to coordinates using OpenStreetMap Nominatim API with Geoapify fallback"""
     if not location_name:
         return None
+        
+    # 1. Try OpenStreetMap Nominatim first
+    try:
+        # Nominatim requires a User-Agent header
+        headers = {
+            'User-Agent': 'JourneyPlannerApp/1.0'
+        }
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': location_name + ", Viet Nam", 
+                'format': 'json', 
+                'limit': 1
+            },
+            headers=headers,
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data:
+                # Nominatim returns lat/lon as strings, convert to float
+                return {'lat': float(data[0]['lat']), 'lon': float(data[0]['lon'])}
+    except Exception as e:
+        print(f"OSM Geocoding error: {e}")
+        
+    # 2. Fallback to Geoapify if OSM fails or returns no results
     try:
         response = requests.get(
             'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name + ", Viet Nam", 'apiKey': GEOAPIFY_API_KEY},
+            params={
+                'text': location_name, 
+                'apiKey': GEOAPIFY_API_KEY,
+                'filter': 'countrycode:vn'
+            },
             timeout=5
         )
         if response.status_code == 200:
@@ -39,7 +69,8 @@ def geocode_location(location_name):
                 if len(coords) >= 2:
                     return {'lat': coords[1], 'lon': coords[0]}
         return None
-    except Exception:
+    except Exception as e:
+        print(f"Geoapify Geocoding error: {e}")
         return None
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -102,16 +133,20 @@ def optimize_journey_sequence(extracted_info):
                     
                     # Logic to insert categories based on distance
                     inserted_categories = []
-                    if dist > 15:
-                        # Very far: Insert Attraction AND Food
-                        attractions = ['tourist_attraction', 'museum', 'landmark', 'park']
-                        food_spots = ['restaurant', 'cafe']
-                        inserted_categories = [random.choice(attractions), random.choice(food_spots)]
-                    elif dist > 3:
-                        # Moderate distance: Insert at least one stop to break the limit
-                        # This ensures we get closer to 4-5 destinations
-                        options = ['cafe', 'park', 'shopping_mall', 'restaurant']
-                        inserted_categories = [random.choice(options)]
+                    if dist > 10:
+                        # Long distance: Insert a major attraction and a food stop
+                        # Randomly select to provide variety
+                        attractions = ['museum', 'park', 'landmark', 'shopping_mall', 'market', 'temple']
+                        food_spots = ['restaurant', 'food_court', 'cafe']
+                        
+                        inserted_categories = [
+                            random.choice(attractions),
+                            random.choice(food_spots)
+                        ]
+                    elif dist > 5:
+                        # Medium distance: Insert a quick break
+                        quick_stops = ['cafe', 'street_food', 'souvenir_shop', 'park', 'bakery']
+                        inserted_categories = [random.choice(quick_stops)]
                     
                     for cat in inserted_categories:
                         # Create new category item
@@ -355,7 +390,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "go to ba na hill",
+        "journey to Da Lat",
     ]
     
     for i, test_text in enumerate(test_cases, 1):
