@@ -229,7 +229,7 @@ def extract_info(text):
             }
         }
         
-        response = requests.post(url, headers=headers, json=data, timeout=15)
+        response = requests.post(url, headers=headers, json=data, timeout=40)
         
         if response.status_code == 200:
             result = response.json()
@@ -359,7 +359,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "go to landmark 81"
+        "I want to visit two restaurants and four parks  then go to landmark 81, airport, and museum, ending at vincom landmark",
     ]
     
     for i, test_text in enumerate(test_cases, 1):
