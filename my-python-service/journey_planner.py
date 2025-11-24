@@ -78,7 +78,7 @@ if __name__ == "__main__":
     print("=" * 80)
     
     tests = [
-            "go to museum airport go to eat and visit park and three museums"
+        "go to ba na hill and the suoi tien "
     ]
     
     for i, test in enumerate(tests, 1):
