@@ -25,7 +25,7 @@ def geocode_location(location_name):
     try:
         response = requests.get(
             'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name + ", VN", 'apiKey': GEOAPIFY_API_KEY},
+            params={'text': location_name + ", Viet Nam", 'apiKey': GEOAPIFY_API_KEY},
             timeout=6
         )
         if response.status_code == 200:
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "go to airport"
+        "go to ba na hill to suoi tien park "
     ]
     
     for i, test_text in enumerate(test_cases, 1):
