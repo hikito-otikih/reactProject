@@ -94,6 +94,6 @@ def save_to_db(locations, db_file='places.db'):
 
 if __name__ == "__main__":
     # Fetch and save places
-    locations = fetch_places("HCMUS", radius=5000, limit=1)
+    locations = fetch_places("HCMUS", radius=5000, limit=10)
     df = save_to_db(locations)
     print(df.head())
