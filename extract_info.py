@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 # ============================================================================
 # API KEY
 # ============================================================================
-GEMINI_KEY = ''
+GEMINI_KEY = 'AIzaSyAuZjU6TJbEsC1ILHAsAGyG7gPFb5XGqCA'
 GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
 
 # ============================================================================
@@ -227,8 +227,10 @@ def extract_info(text):
             {
                 "must_go_categories":[{"category":"restaurant","order":1,"count":1}],
                 "must_go_destinations":[{"name":"starting point","order":0}],
-                "journey_sequence":[{"type":"destination","value":"starting point","order":0},{"type":"category","value":"airport","order":1}],"number_of_destinations":4,"journey_date":"2025-11-20","start_time":"09:00"}}
-            Rules: First destination (order:0) is starting location, if user do not specify their starting location set HCMUS to be starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified."""
+                "journey_sequence":[{"type":"destination","value":"starting point","order":0},{"type":"category","value":"airport","order":1}],"number_of_destinations":4,"journey_date":"2025-11-20","start_time":"09:00"}
+            }
+            Rules: First destination (order:0) is starting location, if user do not specify their starting location set HCMUS to be starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified.
+        """
 
         # Call Gemini API
         url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
