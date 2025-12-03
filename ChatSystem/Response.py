@@ -48,7 +48,7 @@ class Ask_Category(Response) :
 #         "You might like {location}. It's worth a visit!"
 #         "{location} is a must when you're in the area!"
 #     ]
-#     def __init__(self,history,location,whom='bot') : 
+#     def __init__(self,history,location,whom='bot') : E
 #         if history and history[history.__len__()-1][0]['role'] != 'user':
 #             raise ValueError("Last history entry must be 'user'")
 #         response = random.choice(self.list_of_responses).format(location=location)

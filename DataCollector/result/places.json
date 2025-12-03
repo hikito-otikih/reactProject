@@ -1,0 +1,757 @@
+{
+    "locations": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Khách sạn Nikko Saigon",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.68296034782712,
+                "lat": 10.76427495,
+                "formatted": "Khách sạn Nikko Saigon, 235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Khách sạn Nikko Saigon",
+                "address_line2": "235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel",
+                    "building",
+                    "building.accommodation"
+                ],
+                "details": [
+                    "details",
+                    "details.accommodation",
+                    "details.contact"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Khách sạn Nikko Saigon",
+                        "phone": "+84 8 39257777",
+                        "stars": 5,
+                        "osm_id": 289968621,
+                        "tourism": "hotel",
+                        "website": "https://www.hotelnikkosaigon.com.vn/",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "addr:street": "Nguyễn Văn Cừ",
+                        "addr:housenumber": 235
+                    }
+                },
+                "website": "https://www.hotelnikkosaigon.com.vn/",
+                "contact": {
+                    "phone": "+84 8 39257777"
+                },
+                "accommodation": {
+                    "stars": 5
+                },
+                "distance": 203,
+                "place_id": "517698519fb5ab5a4059665bd20b4f872540f00102f901ed914811000000009203194b68c3a163682073e1baa16e204e696b6b6f20536169676f6e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6829603478271,
+                    10.764274949482296
+                ]
+            },
+            "id": 0
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung tâm Văn hóa Quận 4",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vĩnh Hội",
+                "postcode": "71010",
+                "street": "Ben Van Don Street",
+                "lon": 106.69629882523662,
+                "lat": 10.759895499999999,
+                "formatted": "District 4 Cultural Centre, Ben Van Don Street, 71010, Vietnam",
+                "address_line1": "District 4 Cultural Centre",
+                "address_line2": "Ben Van Don Street, 71010, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung tâm Văn hóa Quận 4",
+                        "osm_id": 682689476,
+                        "amenity": "community_centre",
+                        "name:en": "District 4 Cultural Centre",
+                        "name:id": "Pusat Kebudayaan Distrik 4",
+                        "name:ru": "Центр культуры Района 4",
+                        "name:zh": "第四郡文化中心",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "District 4 Cultural Centre",
+                    "id": "Pusat Kebudayaan Distrik 4",
+                    "ru": "Центр культуры Района 4",
+                    "zh": "第四郡文化中心"
+                },
+                "distance": 1590,
+                "place_id": "519ba8f22890ac5a40593c4edd0511852540f00102f901c403b1280000000092031d5472756e672074c3a26d2056c4836e2068c3b361205175e1baad6e2034"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69629882523661,
+                    10.759895499482006
+                ]
+            },
+            "id": 1
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà Hàng Út Cà Mau",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "70000",
+                "district": "Khu phố 1",
+                "street": "Nguyen Thi Minh Khai",
+                "housenumber": "512",
+                "lon": 106.6808856,
+                "lat": 10.7618187,
+                "formatted": "UT CA MAU RESTAURANT, 512, Nguyen Thi Minh Khai, Khu phố 1, 70000, Vietnam",
+                "address_line1": "UT CA MAU RESTAURANT",
+                "address_line2": "512, Nguyen Thi Minh Khai, Khu phố 1, 70000, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant",
+                    "catering.restaurant.vietnamese",
+                    "internet_access"
+                ],
+                "details": [
+                    "details",
+                    "details.catering",
+                    "details.contact",
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà Hàng Út Cà Mau",
+                        "email": "utcamau512@gmail.com",
+                        "phone": "0909795512",
+                        "osm_id": 4676482492,
+                        "amenity": "restaurant",
+                        "cuisine": "vietnamese",
+                        "name:en": "UT CA MAU RESTAURANT",
+                        "website": "https://www.utcamau.com/",
+                        "operator": "Huỳnh Hoàng Thâm & Cao Xuân Khánh",
+                        "osm_type": "n",
+                        "addr:street": "Đường Nguyễn Thị Minh Khai",
+                        "addr:postcode": 70000,
+                        "opening_hours": "Mo-Su 10:00-23:00",
+                        "internet_access": "wlan",
+                        "addr:housenumber": 512
+                    }
+                },
+                "website": "https://www.utcamau.com/",
+                "opening_hours": "Mo-Su 10:00-23:00",
+                "operator": "Huỳnh Hoàng Thâm & Cao Xuân Khánh",
+                "name_international": {
+                    "en": "UT CA MAU RESTAURANT"
+                },
+                "contact": {
+                    "phone": "0909795512",
+                    "email": "utcamau512@gmail.com"
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "catering": {
+                    "cuisine": "vietnamese"
+                },
+                "distance": 123,
+                "place_id": "514e1432a193ab5a40599783bf190d862540f00103f901bc75bd16010000009203164e68c3a02048c3a06e6720c39a742043c3a0204d6175"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68088559999998,
+                    10.761818699482133
+                ]
+            },
+            "id": 2
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "GS25",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "city": "Ho Chi Minh City",
+                "postcode": "70000",
+                "street": "Đường Nguyễn Văn Cừ",
+                "lon": 106.682758,
+                "lat": 10.7620632,
+                "formatted": "GS25, Đường Nguyễn Văn Cừ, Ho Chi Minh City, 70000, Vietnam",
+                "address_line1": "GS25",
+                "address_line2": "Đường Nguyễn Văn Cừ, Ho Chi Minh City, 70000, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.convenience"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "GS25",
+                        "shop": "convenience",
+                        "brand": "GS 25",
+                        "osm_id": 6791076695,
+                        "osm_type": "n",
+                        "addr:city": "Ho Chi Minh City",
+                        "addr:street": "Đường Nguyễn Văn Cừ",
+                        "addr:district": 5,
+                        "addr:postcode": 70000,
+                        "addr:province": "Thành phố Hồ Chí Minh",
+                        "opening_hours": "24/7",
+                        "addr:subdistrict": 4,
+                        "not:brand:wikidata": "Q624041"
+                    }
+                },
+                "opening_hours": "24/7",
+                "brand": "GS 25",
+                "commercial": {
+                    "type": "convenience"
+                },
+                "distance": 130,
+                "place_id": "5146459c4eb2ab5a40599985ce252d862540f00103f901579bc7940100000092030447533235"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.682758,
+                    10.762063199482144
+                ]
+            },
+            "id": 3
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Lotte Cinema",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.6823682,
+                "lat": 10.7643849,
+                "formatted": "Lotte Cinema, 235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Lotte Cinema",
+                "address_line2": "235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.cinema"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4771427931,
+                        "amenity": "cinema",
+                        "name:en": "Lotte Cinema",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Lotte Cinema"
+                },
+                "distance": 212,
+                "place_id": "5124b5abebabab5a405962aa21755d872540f00103f9015b36661c01000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68236819999998,
+                    10.764384899482312
+                ]
+            },
+            "id": 4
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà thờ Đức Bà Sài Gòn",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "city": "Ho Chi Minh City",
+                "postcode": "71006",
+                "district": "Khu phố 3",
+                "suburb": "Saigon",
+                "street": "Paris Commune Square",
+                "housenumber": "1",
+                "lon": 106.69901186265822,
+                "lat": 10.77974385,
+                "formatted": "Saigon Notre Dame Cathedral, 1, Paris Commune Square, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "address_line1": "Saigon Notre Dame Cathedral",
+                "address_line2": "1, Paris Commune Square, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "categories": [
+                    "building",
+                    "building.historic",
+                    "building.place_of_worship",
+                    "building.tourism",
+                    "heritage",
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.christianity",
+                    "tourism",
+                    "tourism.attraction",
+                    "tourism.sights",
+                    "tourism.sights.place_of_worship",
+                    "tourism.sights.place_of_worship.church"
+                ],
+                "details": [
+                    "details",
+                    "details.heritage",
+                    "details.place_of_worship",
+                    "details.wiki_and_media"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà thờ Đức Bà Sài Gòn",
+                        "osm_id": 801950766,
+                        "amenity": "place_of_worship",
+                        "name:ar": "كاتدرائية نوتردام",
+                        "name:de": "Kathedrale Notre Dame von Saigon",
+                        "name:en": "Saigon Notre Dame Cathedral",
+                        "name:es": "Basílica de Notre-Dame de Saigón",
+                        "name:fr": "Cathédrale de l'Immaculée-Conception",
+                        "name:id": "Basilika Notre-Dame Saigon",
+                        "name:ja": "サイゴン大聖堂",
+                        "name:km": "ព្រះវិហារស្ត្រី",
+                        "name:ko": "노틀담성당",
+                        "name:ms": "Katedral Notre Dame",
+                        "name:ru": "Собор Сайгонской Богоматери",
+                        "name:tl": "Katedral ng Notre Dame",
+                        "name:uk": "Собор сайгонським Богоматері",
+                        "name:vi": "Nhà thờ Đức Bà Sài Gòn",
+                        "name:zh": "圣母教堂",
+                        "tourism": "attraction",
+                        "basilica": "minor",
+                        "building": "church",
+                        "heritage": "yes",
+                        "historic": "heritage",
+                        "name:cjm": "bh m~K =b_g+R",
+                        "osm_type": "w",
+                        "religion": "christian",
+                        "wikidata": "Q428129",
+                        "addr:city": "Ho Chi Minh City",
+                        "wikipedia": "vi:Nhà thờ chính tòa Đức Bà Sài Gòn",
+                        "addr:street": "Công Xã Paris",
+                        "denomination": "roman_catholic",
+                        "name:zh-Hant": "聖母教堂",
+                        "addr:district": "Quận 1",
+                        "name:cjm-Latn": "Baha Muk Baigaor",
+                        "official_name": "Vương cung thánh đường Chính tòa Đức Mẹ Vô nhiễm Nguyên tội",
+                        "addr:housenumber": 1,
+                        "addr:subdistrict": "Bến Nghé",
+                        "official_name:en": "Cathedral Basilica of Our Lady of The Immaculate Conception",
+                        "official_name:ru": "Базилика Непорочного Зачатия Пресвятой Девы Марии",
+                        "official_name:zh": "圣母无原罪圣殿主教座堂",
+                        "wikimedia_commons": "Category:Notre-Dame Cathedral Basilica of Saigon",
+                        "official_name:vi-Hani": "王宮聖堂正座德媄無染原罪"
+                    }
+                },
+                "name_other": {
+                    "official_name": "Vương cung thánh đường Chính tòa Đức Mẹ Vô nhiễm Nguyên tội"
+                },
+                "name_international": {
+                    "ar": "كاتدرائية نوتردام",
+                    "de": "Kathedrale Notre Dame von Saigon",
+                    "en": "Saigon Notre Dame Cathedral",
+                    "es": "Basílica de Notre-Dame de Saigón",
+                    "fr": "Cathédrale de l'Immaculée-Conception",
+                    "id": "Basilika Notre-Dame Saigon",
+                    "ja": "サイゴン大聖堂",
+                    "km": "ព្រះវិហារស្ត្រី",
+                    "ko": "노틀담성당",
+                    "ms": "Katedral Notre Dame",
+                    "ru": "Собор Сайгонской Богоматери",
+                    "tl": "Katedral ng Notre Dame",
+                    "uk": "Собор сайгонським Богоматері",
+                    "vi": "Nhà thờ Đức Bà Sài Gòn",
+                    "zh": "圣母教堂"
+                },
+                "wiki_and_media": {
+                    "wikidata": "Q428129",
+                    "wikipedia": "vi:Nhà thờ chính tòa Đức Bà Sài Gòn",
+                    "wikimedia_commons": "Category:Notre-Dame Cathedral Basilica of Saigon"
+                },
+                "historic": {
+                    "type": "heritage"
+                },
+                "building": {
+                    "type": "church"
+                },
+                "place_of_worship": {
+                    "religion": "christian",
+                    "denomination": "roman_catholic"
+                },
+                "distance": 2665,
+                "place_id": "518568409cbcac5a40597c93f9953a8f2540f00102f9012ecccc2f0000000092031f4e68c3a0207468e1bb9d20c490e1bba9632042c3a02053c3a0692047c3b26e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69901186265822,
+                    10.779743849483332
+                ]
+            },
+            "id": 5
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Công viên Âu Lạc",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "lon": 106.68089955305784,
+                "lat": 10.76489355,
+                "formatted": "Công viên Âu Lạc, Phường Chợ Quán, Vietnam",
+                "address_line1": "Công viên Âu Lạc",
+                "address_line2": "Phường Chợ Quán, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Công viên Âu Lạc",
+                        "osm_id": 756879229,
+                        "leisure": "park",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 227,
+                "place_id": "51a40fb8db93ab5a405962e59720a0872540f00102f9017d0f1d2d0000000092031543c3b46e67207669c3aa6e20c38275204ce1baa163"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68089955305783,
+                    10.764893549482341
+                ]
+            },
+            "id": 6
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72406",
+                "street": "Lý Thái Tổ",
+                "lon": 106.6791755820013,
+                "lat": 10.76536685,
+                "formatted": "Lý Thái Tổ, 72406, Vietnam",
+                "address_line1": "Lý Thái Tổ",
+                "address_line2": "72406, Vietnam",
+                "categories": [
+                    "natural",
+                    "natural.water",
+                    "tourism.attraction.fountain"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1323103960,
+                        "amenity": "fountain",
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 409,
+                "place_id": "51ff3bdc9c77ab5a40594ef0e729de872540f00102f901d8f6dc4e00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67917558200132,
+                    10.765366849482373
+                ]
+            },
+            "id": 7
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà thờ Chợ Quán",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "lon": 106.68152215017614,
+                "lat": 10.7573127,
+                "formatted": "Nhà thờ Chợ Quán, Phường Chợ Quán, Vietnam",
+                "address_line1": "Nhà thờ Chợ Quán",
+                "address_line2": "Phường Chợ Quán, Vietnam",
+                "categories": [
+                    "religion"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà thờ Chợ Quán",
+                        "osm_id": 1212006795,
+                        "landuse": "religious",
+                        "osm_type": "w",
+                        "denomination": "roman_catholic"
+                    }
+                },
+                "place_of_worship": {
+                    "denomination": "roman_catholic"
+                },
+                "distance": 540,
+                "place_id": "5164a0140f9eab5a40596a3d7a7dbe832540f00102f9018bc13d48000000009203164e68c3a0207468e1bb9d204368e1bba3205175c3a16e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68152215017614,
+                    10.757312699481833
+                ]
+            },
+            "id": 8
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Thế Giới Nhớt",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Phú Thọ",
+                "postcode": "72000",
+                "street": "Đường Số 281",
+                "housenumber": "11",
+                "lon": 106.65599,
+                "lat": 10.774649,
+                "formatted": "Thế Giới Nhớt, 11, Đường Số 281, 72000, Vietnam",
+                "address_line1": "Thế Giới Nhớt",
+                "address_line2": "11, Đường Số 281, 72000, Vietnam",
+                "categories": [
+                    "internet_access",
+                    "rental",
+                    "rental.car"
+                ],
+                "details": [
+                    "details",
+                    "details.contact",
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Thế Giới Nhớt",
+                        "email": "thegioinhot@gmail.com",
+                        "phone": "0901800068",
+                        "osm_id": 4380968190,
+                        "amenity": "car_rental",
+                        "name:vi": "Thế Giới Nhớt",
+                        "website": "https://www.thegioinhot.vn/",
+                        "operator": "Công Ty NK OIL",
+                        "osm_type": "n",
+                        "addr:street": "Dường Số 281",
+                        "opening_hours": "Mo-Sa 08:00-06:00",
+                        "internet_access": "wlan",
+                        "addr:housenumber": 11
+                    }
+                },
+                "website": "https://www.thegioinhot.vn/",
+                "opening_hours": "Mo-Sa 08:00-06:00",
+                "operator": "Công Ty NK OIL",
+                "name_international": {
+                    "vi": "Thế Giới Nhớt"
+                },
+                "contact": {
+                    "phone": "0901800068",
+                    "email": "thegioinhot@gmail.com"
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "distance": 3112,
+                "place_id": "5131207bbdfba95a40592c512dcb9e8c2540f00103f901fe442005010000009203165468c3aacc81204769c6a1cc8169204e68c6a1cc8174"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.65598999999999,
+                    10.774648999482984
+                ]
+            },
+            "id": 9
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Techcombank",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Đường Nguyễn Văn Cừ",
+                "lon": 106.682182,
+                "lat": 10.7636219,
+                "formatted": "Techcombank, Đường Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Techcombank",
+                "address_line2": "Đường Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.atm"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Techcombank",
+                        "brand": "Techcombank",
+                        "osm_id": 2507700125,
+                        "amenity": "atm",
+                        "operator": "Techcombank",
+                        "osm_type": "n",
+                        "opening_hours": "24/7",
+                        "brand:wikidata": "Q10541776",
+                        "operator:wikidata": "Q10541776"
+                    }
+                },
+                "opening_hours": "24/7",
+                "brand": "Techcombank",
+                "brand_details": {
+                    "wikidata": "Q10541776"
+                },
+                "operator": "Techcombank",
+                "operator_details": {
+                    "wikidata": "Q10541776"
+                },
+                "distance": 127,
+                "place_id": "51dffab0dea8ab5a405948921973f9862540f00103f9019d7778950000000092030b54656368636f6d62616e6b"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.682182,
+                    10.76362189948226
+                ]
+            },
+            "id": 10
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Chợ Đũi",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Lý Thái Tổ",
+                "lon": 106.6801963,
+                "lat": 10.7661251,
+                "formatted": "Chợ Đũi, Lý Thái Tổ, 72406, Vietnam",
+                "address_line1": "Chợ Đũi",
+                "address_line2": "Lý Thái Tổ, 72406, Vietnam",
+                "categories": [
+                    "commercial.marketplace",
+                    "tourism",
+                    "tourism.sights"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Chợ Đũi",
+                        "osm_id": 7508897551,
+                        "amenity": "marketplace",
+                        "alt_name": "Chợ Phú Thạnh",
+                        "historic": "yes",
+                        "osm_type": "n"
+                    }
+                },
+                "name_other": {
+                    "alt_name": "Chợ Phú Thạnh"
+                },
+                "distance": 425,
+                "place_id": "510dd70f5688ab5a4059eed78d8c41882540f00103f9010faf90bf0100000092030b4368e1bba320c490c5a969"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68019629999999,
+                    10.76612509948242
+                ]
+            },
+            "id": 11
+        }
+    ]
+}
