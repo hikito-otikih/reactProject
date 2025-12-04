@@ -1,6 +1,11 @@
 """
 Extract Info Module
 Extracts journey planning information from natural language using Gemini API.
+
+DEPRECATED: This module uses static dictionary-based optimization.
+For maximum accuracy, use orchestrator.py with Two-Pass workflow instead.
+
+Keeping this module for backward compatibility only.
 """
 
 import json
@@ -19,9 +24,17 @@ from prompt_config import (
     VAGUE_CATEGORY_KEYWORDS
 )
 
+# Import the new orchestrator for comparison
+from orchestrator import extract_info_with_orchestrator
+
 load_dotenv()
 GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_KEY')
 GEMINI_KEY = os.getenv('GEMINI_KEY')
+
+# ============================================================================
+# LEGACY FUNCTIONS (Token-Optimized, Lower Accuracy)
+# Use orchestrator.py for production
+# ============================================================================
 
 
 def detect_domain(user_input):
@@ -332,49 +345,84 @@ def extract_info(text, conversation_history=None, previous_state=None):
 
 # Example usage and testing
 if __name__ == "__main__":
-    print("=== Travel Chatbot Extractor Testing ===\n")
+    print("="*70)
+    print("NOTICE: This is the LEGACY token-optimized version.")
+    print("For MAXIMUM ACCURACY, use: python orchestrator.py")
+    print("="*70)
+    print("\nChoose mode:")
+    print("1. Legacy (faster, token-optimized, lower accuracy)")
+    print("2. Orchestrator (slower, ACCURACY FIRST)")
     
-    # Test Case 1: Vague/Ambiguous request
-    print("Test 1: Ambiguous request (should trigger clarification)")
-    result1 = extract_info("What is there to do around here?")
-    print(json.dumps(result1, indent=2))
-    print("\n" + "="*50 + "\n")
+    mode = input("\nSelect mode (1/2, default=2): ").strip() or "2"
     
-    # Test Case 2: Another vague request
-    print("Test 2: Vague location and category")
-    result2 = extract_info("Show me things to do nearby")
-    print(json.dumps(result2, indent=2))
-    print("\n" + "="*50 + "\n")
+    if mode == "2":
+        print("\n🎯 Using Two-Pass Orchestrator (ACCURACY FIRST)\n")
+        print("="*70 + "\n")
+        
+        # Run orchestrator tests
+        test_cases = [
+            "What is there to do around here?",
+            "Book a hotel in Paris for 3 nights",
+            "Find museums near me",
+            "Plan a 3-day trip to Rome with museums and restaurants"
+        ]
+        
+        for i, test_input in enumerate(test_cases, 1):
+            print(f"Test {i}: {test_input}")
+            result = extract_info_with_orchestrator(test_input)
+            print(json.dumps(result, indent=2))
+            print("\n" + "="*70 + "\n")
+        
+        # Interactive mode with orchestrator
+        print("Interactive Mode - ORCHESTRATOR (type 'quit' to exit):")
+        conversation = []
+        while True:
+            user_input = input("\nYou: ").strip()
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                break
+            
+            result = extract_info_with_orchestrator(user_input, conversation_history=conversation)
+            print("\nExtracted:")
+            print(json.dumps(result, indent=2))
+            
+            # Update conversation history
+            conversation.append({"role": "user", "message": user_input})
+            clarify_q = result.get('clarify_question')
+            if clarify_q:
+                conversation.append({"role": "bot", "message": clarify_q})
     
-    # Test Case 3: Specific request (should NOT trigger clarification)
-    print("Test 3: Specific request (no clarification needed)")
-    result3 = extract_info("Find museums near me")
-    print(json.dumps(result3, indent=2))
-    print("\n" + "="*50 + "\n")
-    
-    # Test Case 4: Hotel booking
-    print("Test 4: Simple hotel booking")
-    result4 = extract_info("Book a hotel in Paris for 3 nights")
-    print(json.dumps(result4, indent=2))
-    print("\n" + "="*50 + "\n")
-    
-    # Test Case 5: Modification with context
-    print("Test 5: Modification request")
-    history = [
-        {"role": "user", "message": "Book a hotel in Paris"},
-        {"role": "bot", "message": "I found a 4-star hotel for $200/night"}
-    ]
-    result5 = extract_info("No, I want something cheaper", conversation_history=history)
-    print(json.dumps(result5, indent=2))
-    print("\n" + "="*50 + "\n")
-    
-    # Interactive mode
-    print("Interactive Mode (type 'quit' to exit):")
-    conversation = []
-    while True:
-        user_input = input("\nYou: ").strip()
-        if user_input.lower() in ['quit', 'exit', 'q']:
-            break
+    else:
+        print("\n⚠️  Using Legacy Mode (Token-Optimized)\n")
+        print("="*70 + "\n")
+        
+        # Legacy tests
+        print("Test 1: Ambiguous request (should trigger clarification)")
+        result1 = extract_info("What is there to do around here?")
+        print(json.dumps(result1, indent=2))
+        print("\n" + "="*50 + "\n")
+        
+        print("Test 2: Vague location and category")
+        result2 = extract_info("Show me things to do nearby")
+        print(json.dumps(result2, indent=2))
+        print("\n" + "="*50 + "\n")
+        
+        print("Test 3: Specific request (no clarification needed)")
+        result3 = extract_info("Find museums near me")
+        print(json.dumps(result3, indent=2))
+        print("\n" + "="*50 + "\n")
+        
+        print("Test 4: Simple hotel booking")
+        result4 = extract_info("Book a hotel in Paris for 3 nights")
+        print(json.dumps(result4, indent=2))
+        print("\n" + "="*50 + "\n")
+        
+        # Interactive mode legacy
+        print("Interactive Mode - LEGACY (type 'quit' to exit):")
+        conversation = []
+        while True:
+            user_input = input("\nYou: ").strip()
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                break
         
         result = extract_info(user_input, conversation_history=conversation)
         print("\nExtracted:")
