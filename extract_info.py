@@ -8,12 +8,17 @@ import requests
 import math
 import random
 from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_KEY')
+GEMINI_KEY = os.getenv('GEMINI_KEY')
 # ============================================================================
 # API KEY
 # ============================================================================
-GEMINI_KEY = 'AIzaSyAuZjU6TJbEsC1ILHAsAGyG7gPFb5XGqCA'
-GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
+# GEMINI_KEY = 'AIzaSyAuZjU6TJbEsC1ILHAsAGyG7gPFb5XGqCA'
+# GEOAPIFY_API_KEY = '3600fc44d95e4e578b698c35f3edbb7d'
 
 # ============================================================================
 # HELPER FUNCTIONS

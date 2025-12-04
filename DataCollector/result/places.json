@@ -66,6 +66,467 @@
         {
             "type": "Feature",
             "properties": {
+                "name": "Khách sạn Equatorial",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72760",
+                "street": "Đường Hùng Vương",
+                "lon": 106.67916861127847,
+                "lat": 10.7634176,
+                "formatted": "Khách sạn Equatorial, Đường Hùng Vương, 72760, Vietnam",
+                "address_line1": "Khách sạn Equatorial",
+                "address_line2": "Đường Hùng Vương, 72760, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Khách sạn Equatorial",
+                        "osm_id": 140703174,
+                        "tourism": "hotel",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 240,
+                "place_id": "514a7a9f7f77ab5a405922efedabde862540f00102f901c6f56208000000009203174b68c3a163682073e1baa16e2045717561746f7269616c"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67916861127847,
+                    10.763417599482242
+                ]
+            },
+            "id": 1
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72406",
+                "street": "Ngã sáu Cộng Hòa",
+                "lon": 106.682015,
+                "lat": 10.7652456,
+                "formatted": "Ngã sáu Cộng Hòa, 72406, Vietnam",
+                "address_line1": "Ngã sáu Cộng Hòa",
+                "address_line2": "72406, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315687991,
+                        "tourism": "hotel",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 296,
+                "place_id": "516a183e22a6ab5a40598d5e6e45ce872540f00103f90137c0717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.682015,
+                    10.765245599482364
+                ]
+            },
+            "id": 2
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà khách Phương Nam",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyen Trai Street",
+                "lon": 106.68534507159302,
+                "lat": 10.76161845,
+                "formatted": "Nhà khách Phương Nam, Nguyen Trai Street, 72760, Vietnam",
+                "address_line1": "Nhà khách Phương Nam",
+                "address_line2": "Nguyen Trai Street, 72760, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel",
+                    "building",
+                    "building.accommodation"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà khách Phương Nam",
+                        "osm_id": 302293102,
+                        "tourism": "hotel",
+                        "building": "yes",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 360,
+                "place_id": "51e03d93b1dcab5a4059a91c79daf2852540f00102f9016ea00412000000009203184e68c3a0206b68c3a16368205068c6b0c6a16e67204e616d"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68534507159302,
+                    10.76161844948213
+                ]
+            },
+            "id": 3
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "NATURAL HOUSE hostel",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72760",
+                "street": "Đường Hùng Vương",
+                "housenumber": "39",
+                "lon": 106.678264,
+                "lat": 10.7633355,
+                "formatted": "NATURAL HOUSE hostel, 39, Đường Hùng Vương, 72760, Vietnam",
+                "address_line1": "NATURAL HOUSE hostel",
+                "address_line2": "39, Đường Hùng Vương, 72760, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hostel",
+                    "internet_access"
+                ],
+                "details": [
+                    "details.contact",
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "NATURAL HOUSE hostel",
+                        "level": 1,
+                        "phone": "0084911411241",
+                        "osm_id": 10158711218,
+                        "tourism": "hostel",
+                        "osm_type": "n",
+                        "addr:street": "Đường Hùng Vương",
+                        "internet_access": "wlan",
+                        "addr:housenumber": 39
+                    }
+                },
+                "contact": {
+                    "phone": "0084911411241"
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "distance": 384,
+                "place_id": "51778368ad68ab5a4059d44d1ce9d3862540f00103f901b2a1815d020000009203144e41545552414c20484f55534520686f7374656c"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.678264,
+                    10.763335499482231
+                ]
+            },
+            "id": 4
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Khách Sạn Little Saigon",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "city": "Ho Chi Minh City",
+                "postcode": "70000",
+                "street": "hẻm 214",
+                "housenumber": "C51B1",
+                "lon": 106.685082,
+                "lat": 10.7644128,
+                "formatted": "Khách Sạn Little Saigon, C51B1, hẻm 214, Ho Chi Minh City, 70000, Vietnam",
+                "address_line1": "Khách Sạn Little Saigon",
+                "address_line2": "C51B1, hẻm 214, Ho Chi Minh City, 70000, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.guest_house",
+                    "internet_access"
+                ],
+                "details": [
+                    "details",
+                    "details.accommodation",
+                    "details.contact",
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Khách Sạn Little Saigon",
+                        "email": "littlesaigonhomestay@gmail.com",
+                        "phone": "+84787976673",
+                        "rooms": 2,
+                        "osm_id": 6341492585,
+                        "tourism": "guest_house",
+                        "website": "http://littlesaigonhomestay.com",
+                        "operator": "Markus & Eleanor",
+                        "osm_type": "n",
+                        "addr:city": "Ho Chi Minh City",
+                        "addr:street": "Hẻm 212 B",
+                        "addr:district": 1,
+                        "addr:postcode": 70000,
+                        "opening_hours": "24/7",
+                        "internet_access": "wlan",
+                        "addr:housenumber": "C51B1",
+                        "addr:subdistrict": "Nguyễn Cư Trinh"
+                    }
+                },
+                "website": "http://littlesaigonhomestay.com",
+                "opening_hours": "24/7",
+                "operator": "Markus & Eleanor",
+                "contact": {
+                    "phone": "+84787976673",
+                    "email": "littlesaigonhomestay@gmail.com"
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "accommodation": {
+                    "rooms": 2
+                },
+                "distance": 422,
+                "place_id": "5101452c62d8ab5a405936d74c1d61872540f00103f901697ffb790100000092031a4b68c3a163682053e1baa16e204c6974746c6520536169676f6e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68508199999998,
+                    10.764412799482312
+                ]
+            },
+            "id": 5
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Khách Sạn Comfortable Nguyễn Trãi",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "street": "Hẻm 214B Nguyễn Trãi",
+                "lon": 106.6857375,
+                "lat": 10.7631948,
+                "formatted": "Khách Sạn Comfortable Nguyễn Trãi, Hẻm 214B Nguyễn Trãi, 70200, Vietnam",
+                "address_line1": "Khách Sạn Comfortable Nguyễn Trãi",
+                "address_line2": "Hẻm 214B Nguyễn Trãi, 70200, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel",
+                    "internet_access"
+                ],
+                "details": [
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Khách Sạn Comfortable Nguyễn Trãi",
+                        "osm_id": 5658332722,
+                        "tourism": "hotel",
+                        "osm_type": "n",
+                        "internet_access": "wlan"
+                    }
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "distance": 447,
+                "place_id": "5103098a1fe3ab5a4059c4810078c1862540f00103f901324e4351010000009203274b68c3a163682053e1baa16e20436f6d666f727461626c65204e677579e1bb856e205472c3a369"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6857375,
+                    10.763194799482228
+                ]
+            },
+            "id": 6
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà khách Phương Nam",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyen Trai Street",
+                "housenumber": "258",
+                "lon": 106.68618002038265,
+                "lat": 10.762654399999999,
+                "formatted": "Nhà khách Phương Nam, 258, Nguyen Trai Street, 72760, Vietnam",
+                "address_line1": "Nhà khách Phương Nam",
+                "address_line2": "258, Nguyen Trai Street, 72760, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.hotel",
+                    "building",
+                    "building.accommodation"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà khách Phương Nam",
+                        "osm_id": 302293114,
+                        "tourism": "hotel",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "addr:street": "Nguyễn Trãi",
+                        "addr:housenumber": 258
+                    }
+                },
+                "distance": 457,
+                "place_id": "5192ad9a5feaab5a405964da2fa37a862540f00102f9017aa00412000000009203184e68c3a0206b68c3a16368205068c6b0c6a16e67204e616d"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68618002038264,
+                    10.762654399482194
+                ]
+            },
+            "id": 7
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Four of a Kind Appartement",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "street": "Hẻm 214 Nguyễn Trãi",
+                "lon": 106.6860547,
+                "lat": 10.7634448,
+                "formatted": "Four of a Kind Appartement, Hẻm 214 Nguyễn Trãi, 70200, Vietnam",
+                "address_line1": "Four of a Kind Appartement",
+                "address_line2": "Hẻm 214 Nguyễn Trãi, 70200, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.apartment"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 10942091505,
+                        "name:en": "Four of a Kind Appartement",
+                        "tourism": "apartment",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Four of a Kind Appartement"
+                },
+                "distance": 486,
+                "place_id": "5117f1f851e8ab5a4059b3279c3ce2862540f00103f901f110338c02000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68605469999999,
+                    10.763444799482249
+                ]
+            },
+            "id": 8
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Hẻm 549 Nguyễn Ðình Chiểu",
+                "lon": 106.6817852,
+                "lat": 10.767008,
+                "formatted": "Hẻm 549 Nguyễn Ðình Chiểu, 72406, Vietnam",
+                "address_line1": "Hẻm 549 Nguyễn Ðình Chiểu",
+                "address_line2": "72406, Vietnam",
+                "categories": [
+                    "accommodation",
+                    "accommodation.guest_house",
+                    "internet_access"
+                ],
+                "details": [
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 5529906123,
+                        "tourism": "guest_house",
+                        "osm_type": "n",
+                        "internet_access": "wlan"
+                    }
+                },
+                "facilities": {
+                    "internet_access": true
+                },
+                "distance": 489,
+                "place_id": "516539645ea2ab5a40596318c345b5882540f00103f901cbab9b4901000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6817852,
+                    10.767007999482479
+                ]
+            },
+            "id": 9
+        },
+        {
+            "type": "Feature",
+            "properties": {
                 "name": "Trung tâm Văn hóa Quận 4",
                 "country": "Vietnam",
                 "country_code": "vn",
@@ -116,7 +577,456 @@
                     10.759895499482006
                 ]
             },
-            "id": 1
+            "id": 10
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà thiếu nhi Quận 4",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vĩnh Hội",
+                "postcode": "72800",
+                "street": "Hoang Dieu Street",
+                "lon": 106.69790215121918,
+                "lat": 10.7586567,
+                "formatted": "District 4 Children House, Hoang Dieu Street, 72800, Vietnam",
+                "address_line1": "District 4 Children House",
+                "address_line2": "Hoang Dieu Street, 72800, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà thiếu nhi Quận 4",
+                        "osm_id": 682412576,
+                        "amenity": "community_centre",
+                        "name:en": "District 4 Children House",
+                        "name:id": "Rumah Anak-anak Distrik 4",
+                        "name:ru": "Детский дом Района 4",
+                        "name:zh": "第四郡儿童房",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "District 4 Children House",
+                    "id": "Rumah Anak-anak Distrik 4",
+                    "ru": "Детский дом Района 4",
+                    "zh": "第四郡儿童房"
+                },
+                "distance": 1788,
+                "place_id": "51d7d2c86daaac5a40591455a2a66e842540f00102f90120caac28000000009203194e68c3a020746869e1babf75206e6869205175e1baad6e2034"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69790215121917,
+                    10.758656699481925
+                ]
+            },
+            "id": 11
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung Tâm Văn Hóa Quận 5",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường An Đông",
+                "city": "Ho Chi Minh City",
+                "postcode": "73000",
+                "street": "Tran Hung Dao Street",
+                "housenumber": "105",
+                "lon": 106.6683676,
+                "lat": 10.7521215,
+                "formatted": "Trung Tâm Văn Hóa Quận 5, 105, Tran Hung Dao Street, Ho Chi Minh City, 73000, Vietnam",
+                "address_line1": "Trung Tâm Văn Hóa Quận 5",
+                "address_line2": "105, Tran Hung Dao Street, Ho Chi Minh City, 73000, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung Tâm Văn Hóa Quận 5",
+                        "osm_id": 4332552887,
+                        "amenity": "community_centre",
+                        "osm_type": "n",
+                        "addr:city": "Ho Chi Minh City",
+                        "addr:street": "Đường Trần Hưng Ðạo",
+                        "addr:district": 5,
+                        "addr:housenumber": 105
+                    }
+                },
+                "distance": 1861,
+                "place_id": "512eede588c6aa5a405970c8b51116812540f00103f901b7823d020100000092031d5472756e672054c3a26d2056c4836e2048c3b361205175e1baad6e2035"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.66836759999998,
+                    10.75212149948149
+                ]
+            },
+            "id": 12
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Cung Văn Hóa Lao Động",
+                "old_name": "Cercle Sportif Saïgonnais",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "71053",
+                "district": "Khu phố 1",
+                "street": "Nguyen Thi Minh Khai",
+                "lon": 106.69295488134875,
+                "lat": 10.7763399,
+                "formatted": "Labour Cultural Palace, Nguyen Thi Minh Khai, Khu phố 1, 71053, Vietnam",
+                "address_line1": "Labour Cultural Palace",
+                "address_line2": "Nguyen Thi Minh Khai, Khu phố 1, 71053, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Cung Văn Hóa Lao Động",
+                        "osm_id": 469844102,
+                        "amenity": "community_centre",
+                        "name:en": "Labour Cultural Palace",
+                        "name:id": "Istana Kebudayaan Pekerja",
+                        "old_name": "Cercle Sportif Saïgonnais",
+                        "osm_type": "w"
+                    }
+                },
+                "name_other": {
+                    "old_name": "Cercle Sportif Saïgonnais"
+                },
+                "name_international": {
+                    "en": "Labour Cultural Palace",
+                    "id": "Istana Kebudayaan Pekerja"
+                },
+                "distance": 1863,
+                "place_id": "51c53f6e5f59ac5a40593eb85d6c7c8d2540f00102f9018640011c0000000092031a43756e672056c4836e2048c3b361204c616f20c490e1bb996e67"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69295488134874,
+                    10.776339899483101
+                ]
+            },
+            "id": 13
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "CirCO Coworking Space",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Khánh Hội",
+                "postcode": "72806",
+                "street": "Hoang Dieu Street",
+                "housenumber": "384",
+                "lon": 106.6988698,
+                "lat": 10.7604063,
+                "formatted": "CirCO Coworking Space, 384, Hoang Dieu Street, 72806, Vietnam",
+                "address_line1": "CirCO Coworking Space",
+                "address_line2": "384, Hoang Dieu Street, 72806, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [
+                    "details",
+                    "details.contact"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "email": "info@circo.co",
+                        "osm_id": 4801382021,
+                        "amenity": "community_centre",
+                        "name:en": "CirCO Coworking Space",
+                        "website": "https://www.circo.co",
+                        "osm_type": "n",
+                        "addr:street": "Hoàng Diệu",
+                        "addr:housenumber": 384
+                    }
+                },
+                "website": "https://www.circo.co",
+                "name_international": {
+                    "en": "CirCO Coworking Space"
+                },
+                "contact": {
+                    "email": "info@circo.co"
+                },
+                "distance": 1894,
+                "place_id": "515fca6548baac5a40593fe577f953852540f00103f90185462f1e01000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6988698,
+                    10.76040629948204
+                ]
+            },
+            "id": 14
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung tâm Học tập Cộng đồng",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "71006",
+                "suburb": "Saigon",
+                "street": "Nam Kỳ Khởi Nghĩa",
+                "lon": 106.69735569933115,
+                "lat": 10.77765855,
+                "formatted": "Trung tâm Học tập Cộng đồng, Nam Kỳ Khởi Nghĩa, Saigon, 71006, Vietnam",
+                "address_line1": "Trung tâm Học tập Cộng đồng",
+                "address_line2": "Nam Kỳ Khởi Nghĩa, Saigon, 71006, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center",
+                    "building",
+                    "building.public_and_civil"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 802069400,
+                        "amenity": "community_centre",
+                        "name:en": "Trung tâm Học tập Cộng đồng",
+                        "building": "yes",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "Trung tâm Học tập Cộng đồng"
+                },
+                "distance": 2382,
+                "place_id": "519e93cc79a1ac5a405964f8ea42298e2540f00102f901989bce2f00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69735569933115,
+                    10.7776585494832
+                ]
+            },
+            "id": 15
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà thiếu nhi thành phố Hồ Chí Minh",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Xuân Hòa",
+                "postcode": "70001",
+                "street": "Hẻm 178D Đường Võ Thị Sáu",
+                "lon": 106.68894159543758,
+                "lat": 10.78402175,
+                "formatted": "Children's House of Ho Chi Minh City, Hẻm 178D Đường Võ Thị Sáu, 70001, Vietnam",
+                "address_line1": "Children's House of Ho Chi Minh City",
+                "address_line2": "Hẻm 178D Đường Võ Thị Sáu, 70001, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà thiếu nhi thành phố Hồ Chí Minh",
+                        "osm_id": 32735058,
+                        "amenity": "community_centre",
+                        "name:en": "Children's House of Ho Chi Minh City",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "Children's House of Ho Chi Minh City"
+                },
+                "distance": 2412,
+                "place_id": "518a507d9e17ac5a405908c57a4c6b912540f00102f901527ff3010000000092032c4e68c3a020746869e1babf75206e6869207468c3a06e68207068e1bb912048e1bb93204368c3ad204d696e68"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68894159543757,
+                    10.784021749483614
+                ]
+            },
+            "id": 16
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Nhiêu Lộc",
+                "postcode": "70150",
+                "street": "Hẻm 540 Cách Mạng Tháng 8",
+                "lon": 106.6669314,
+                "lat": 10.7860598,
+                "formatted": "Hẻm 540 Cách Mạng Tháng 8, 70150, Vietnam",
+                "address_line1": "Hẻm 540 Cách Mạng Tháng 8",
+                "address_line2": "70150, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4920435370,
+                        "amenity": "community_centre",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 3058,
+                "place_id": "513aeb0901afaa5a405954f7166e76922540f00103f901aae2472501000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.66693139999998,
+                    10.786059799483759
+                ]
+            },
+            "id": 17
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà Thiếu Nhi Quận 7",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Tân Hưng",
+                "postcode": "72911",
+                "street": "Le Van Luong",
+                "lon": 106.7047487,
+                "lat": 10.7462411,
+                "formatted": "Nhà Thiếu Nhi Quận 7, Le Van Luong, 72911, Vietnam",
+                "address_line1": "Nhà Thiếu Nhi Quận 7",
+                "address_line2": "Le Van Luong, 72911, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà Thiếu Nhi Quận 7",
+                        "osm_id": 2689392219,
+                        "amenity": "community_centre",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 3103,
+                "place_id": "5181994a9a1aad5a4059a8673a50137e2540f00103f9015bde4ca0000000009203194e68c3a020546869e1babf75204e6869205175e1baad6e2037"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.7047487,
+                    10.74624109948111
+                ]
+            },
+            "id": 18
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung Tâm Văn Hóa Quận 1",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "city": "Ho Chi Minh City",
+                "postcode": "71006",
+                "district": "Khu phố 2",
+                "suburb": "Saigon",
+                "street": "Hẻm 19 Nguyễn Thị Minh Khai",
+                "lon": 106.7009083,
+                "lat": 10.7841367,
+                "formatted": "Trung Tâm Văn Hóa Quận 1, Hẻm 19 Nguyễn Thị Minh Khai, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "address_line1": "Trung Tâm Văn Hóa Quận 1",
+                "address_line2": "Hẻm 19 Nguyễn Thị Minh Khai, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "categories": [
+                    "activity",
+                    "activity.community_center"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung Tâm Văn Hóa Quận 1",
+                        "osm_id": 9585983485,
+                        "amenity": "community_centre",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 3178,
+                "place_id": "51ac7f7caedbac5a405948c08f5d7a912540f00103f901fd7f5e3b0200000092031d5472756e672054c3a26d2056c4836e2048c3b361205175e1baad6e2031"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.70090829999998,
+                    10.784136699483625
+                ]
+            },
+            "id": 19
         },
         {
             "type": "Feature",
@@ -195,7 +1105,464 @@
                     10.761818699482133
                 ]
             },
-            "id": 2
+            "id": 20
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Pizza Hut",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "city": "Ho Chi Minh City",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.6824701,
+                "lat": 10.7641929,
+                "formatted": "Pizza Hut, 235, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "address_line1": "Pizza Hut",
+                "address_line2": "235, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant",
+                    "catering.restaurant.pizza"
+                ],
+                "details": [
+                    "details",
+                    "details.catering",
+                    "details.facilities"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "ele": 4,
+                        "name": "Pizza Hut",
+                        "brand": "Pizza Hut",
+                        "branch": "Nowzone",
+                        "osm_id": 4089385463,
+                        "amenity": "restaurant",
+                        "cuisine": "pizza",
+                        "osm_type": "n",
+                        "takeaway": "yes",
+                        "addr:city": "Ho Chi Minh City",
+                        "addr:street": "Nguyễn Văn Cừ",
+                        "addr:district": "Quận 1",
+                        "addr:housenumber": 235,
+                        "not:brand:wikidata": "Q191615"
+                    }
+                },
+                "brand": "Pizza Hut",
+                "branch": "Nowzone",
+                "ele": 4,
+                "facilities": {
+                    "takeaway": true
+                },
+                "catering": {
+                    "cuisine": "pizza"
+                },
+                "distance": 197,
+                "place_id": "51ddff1197adab5a40594539ae4a44872540f00103f901f711bff30000000092030950697a7a6120487574"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6824701,
+                    10.76419289948229
+                ]
+            },
+            "id": 21
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "The Coffee Bean & Tea Leaf",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "city": "Ho Chi Minh City",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.6823171,
+                "lat": 10.7642634,
+                "formatted": "The Coffee Bean & Tea Leaf, 235, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "address_line1": "The Coffee Bean & Tea Leaf",
+                "address_line2": "235, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.cafe",
+                    "catering.cafe.coffee",
+                    "catering.cafe.coffee_shop",
+                    "internet_access",
+                    "internet_access.for_customers",
+                    "wheelchair",
+                    "wheelchair.yes"
+                ],
+                "details": [
+                    "details",
+                    "details.catering",
+                    "details.facilities",
+                    "details.payment"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "The Coffee Bean & Tea Leaf",
+                        "osm_id": 5617113061,
+                        "amenity": "cafe",
+                        "cuisine": "coffee_shop",
+                        "website": "https://coffeebean.com.vn",
+                        "osm_type": "n",
+                        "addr:city": "TP HCM",
+                        "check_date": "2022-10-02",
+                        "wheelchair": "yes",
+                        "addr:street": "Nguyễn Văn Cừ",
+                        "payment:visa": "yes",
+                        "addr:district": "Quận 1",
+                        "opening_hours": "06:30-23:00",
+                        "internet_access": "wlan",
+                        "addr:housenumber": 235,
+                        "not:brand:wikidata": "Q1141384",
+                        "payment:mastercard": "yes",
+                        "internet_access:fee": "customers",
+                        "internet_access:ssid": "The Coffee Bean Nowzone"
+                    }
+                },
+                "website": "https://coffeebean.com.vn",
+                "opening_hours": "06:30-23:00",
+                "facilities": {
+                    "internet_access": true,
+                    "internet_access_details": {
+                        "ssid": "The Coffee Bean Nowzone"
+                    },
+                    "wheelchair": true
+                },
+                "payment_options": {
+                    "visa": true,
+                    "mastercard": true
+                },
+                "catering": {
+                    "cuisine": "coffee_shop"
+                },
+                "distance": 198,
+                "place_id": "511a805715abab5a4059d09c44884d872540f00103f901e557ce4e0100000092031a54686520436f66666565204265616e202620546561204c656166"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6823171,
+                    10.764263399482303
+                ]
+            },
+            "id": 22
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "ViEn",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6804356,
+                "lat": 10.7639372,
+                "formatted": "ViEn, Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "ViEn",
+                "address_line2": "Tran Phu Avenue, 72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.cafe"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315687795,
+                        "amenity": "cafe",
+                        "name:en": "ViEn",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "ViEn"
+                },
+                "distance": 203,
+                "place_id": "512f42c2418cab5a4059ccf2cfc622872540f00103f90173bf717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6804356,
+                    10.763937199482278
+                ]
+            },
+            "id": 23
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Mr. Bistek",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6806499,
+                "lat": 10.7642055,
+                "formatted": "Mr. Bistek, Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Mr. Bistek",
+                "address_line2": "Tran Phu Avenue, 72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315686593,
+                        "amenity": "restaurant",
+                        "name:en": "Mr. Bistek",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Mr. Bistek"
+                },
+                "distance": 213,
+                "place_id": "51a42199c48fab5a4059486677f145872540f00103f901c1ba717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68064989999999,
+                    10.764205499482287
+                ]
+            },
+            "id": 24
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6810149,
+                "lat": 10.7644593,
+                "formatted": "Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Tran Phu Avenue",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.cafe"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315686502,
+                        "amenity": "cafe",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 220,
+                "place_id": "51ade584bf95ab5a40599bcc943567872540f00103f90166ba717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6810149,
+                    10.764459299482317
+                ]
+            },
+            "id": 25
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Hẻm 5A Trần Phú",
+                "lon": 106.681182,
+                "lat": 10.7646323,
+                "formatted": "Hẻm 5A Trần Phú, 72760, Vietnam",
+                "address_line1": "Hẻm 5A Trần Phú",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315686006,
+                        "amenity": "restaurant",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 233,
+                "place_id": "51ed27637c98ab5a4059d67b7fe27d872540f00103f90176b8717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68118199999999,
+                    10.764632299482326
+                ]
+            },
+            "id": 26
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Hẻm 6 Trần Phú",
+                "lon": 106.6798801,
+                "lat": 10.7637338,
+                "formatted": "Hẻm 6 Trần Phú, 72760, Vietnam",
+                "address_line1": "Hẻm 6 Trần Phú",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315686592,
+                        "amenity": "restaurant",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 236,
+                "place_id": "51e1acd22783ab5a40599440d71d08872540f00103f901c0ba717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6798801,
+                    10.76373379948226
+                ]
+            },
+            "id": 27
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6829849,
+                "lat": 10.7608321,
+                "formatted": "An Dương Vương, 72760, Vietnam",
+                "address_line1": "An Dương Vương",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315672442,
+                        "amenity": "restaurant",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 240,
+                "place_id": "515a4a4c06b6ab5a4059830bf2c88b852540f00103f9017a83717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68298489999998,
+                    10.760832099482064
+                ]
+            },
+            "id": 28
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6812865,
+                "lat": 10.7647423,
+                "formatted": "Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Tran Phu Avenue",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "catering",
+                    "catering.restaurant"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315687013,
+                        "amenity": "restaurant",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 243,
+                "place_id": "51342db1329aab5a4059f4497c4d8c872540f00103f90165bc717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6812865,
+                    10.764742299482329
+                ]
+            },
+            "id": 29
         },
         {
             "type": "Feature",
@@ -255,7 +1622,439 @@
                     10.762063199482144
                 ]
             },
-            "id": 3
+            "id": 30
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung Tâm Mua Sắm Nowzone",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.68246025703363,
+                "lat": 10.764340449999999,
+                "formatted": "Trung Tâm Mua Sắm Nowzone, 235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Trung Tâm Mua Sắm Nowzone",
+                "address_line2": "235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "building",
+                    "building.commercial",
+                    "commercial",
+                    "commercial.shopping_mall"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung Tâm Mua Sắm Nowzone",
+                        "shop": "mall",
+                        "osm_id": 289968620,
+                        "building": "yes",
+                        "osm_type": "w",
+                        "addr:street": "Nguyễn Văn Cừ",
+                        "addr:housenumber": 235
+                    }
+                },
+                "commercial": {
+                    "type": "mall"
+                },
+                "distance": 172,
+                "place_id": "51de31c96dadab5a4059aa12a3a157872540f00102f901ec9148110000000092031c5472756e672054c3a26d204d75612053e1baaf6d204e6f777a6f6e65"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68246025703363,
+                    10.764340449482308
+                ]
+            },
+            "id": 31
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "PNJ",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "lon": 106.6827131,
+                "lat": 10.7639531,
+                "formatted": "PNJ, Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "PNJ",
+                "address_line2": "Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.jewelry"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "PNJ",
+                        "shop": "jewelry",
+                        "brand": "PNJ",
+                        "osm_id": 5608881088,
+                        "website": "https://www.pnj.com.vn/",
+                        "alt_name": "PNJ Nowzone",
+                        "osm_type": "n",
+                        "brand:wikidata": "Q61129183"
+                    }
+                },
+                "website": "https://www.pnj.com.vn/",
+                "brand": "PNJ",
+                "brand_details": {
+                    "wikidata": "Q61129183"
+                },
+                "name_other": {
+                    "alt_name": "PNJ Nowzone"
+                },
+                "commercial": {
+                    "type": "jewelry"
+                },
+                "distance": 188,
+                "place_id": "5140434992b1ab5a405990e853dc24872540f00103f901c0bb504e01000000920303504e4a"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6827131,
+                    10.76395309948228
+                ]
+            },
+            "id": 32
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6801052,
+                "lat": 10.7636424,
+                "formatted": "Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Tran Phu Avenue",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.vehicle"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "motorcycle",
+                        "osm_id": 6315688890,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "motorcycle"
+                },
+                "distance": 210,
+                "place_id": "51baf5f5d786ab5a4059013bf722fc862540f00103f901bac3717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68010519999999,
+                    10.763642399482253
+                ]
+            },
+            "id": 33
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung Tâm Mua Sắm Nowzone - Nguyễn Văn Cừ",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "235",
+                "lon": 106.6824266,
+                "lat": 10.764339,
+                "formatted": "Trung Tâm Mua Sắm Nowzone - Nguyễn Văn Cừ, 235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Trung Tâm Mua Sắm Nowzone - Nguyễn Văn Cừ",
+                "address_line2": "235, Nguyễn Văn Cừ, 72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.shopping_mall"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung Tâm Mua Sắm Nowzone - Nguyễn Văn Cừ",
+                        "shop": "mall",
+                        "osm_id": 9585835375,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "mall"
+                },
+                "distance": 210,
+                "place_id": "51e93a9ee0acab5a4059f1aafb7057872540f00103f9016f3d5c3b020000009203315472756e672054c3a26d204d75612053e1baaf6d204e6f777a6f6e65202d204e677579e1bb856e2056c4836e2043e1bbab"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6824266,
+                    10.764338999482307
+                ]
+            },
+            "id": 34
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Trung tâm sách và thiết bị Miền Nam",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Trần Bình Trọng",
+                "lon": 106.6799221,
+                "lat": 10.7617714,
+                "formatted": "Trung tâm sách và thiết bị Miền Nam, Trần Bình Trọng, 72760, Vietnam",
+                "address_line1": "Trung tâm sách và thiết bị Miền Nam",
+                "address_line2": "Trần Bình Trọng, 72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.books"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Trung tâm sách và thiết bị Miền Nam",
+                        "shop": "books",
+                        "osm_id": 9593975506,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "books"
+                },
+                "distance": 214,
+                "place_id": "51f8d4fbd783ab5a4059999b9fe606862540f00103f901d272d83b0200000092032c5472756e672074c3a26d2073c3a163682076c3a020746869e1babf742062e1bb8b204d69e1bb816e204e616d"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6799221,
+                    10.76177139948213
+                ]
+            },
+            "id": 35
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6798803,
+                "lat": 10.7633072,
+                "formatted": "Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Tran Phu Avenue",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.clothing",
+                    "commercial.clothing.clothes"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "clothes",
+                        "osm_id": 6315686501,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "clothes"
+                },
+                "distance": 214,
+                "place_id": "51746ca92883ab5a4059b1278533d0862540f00103f90165ba717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67988029999998,
+                    10.76330719948223
+                ]
+            },
+            "id": 36
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6817136,
+                "lat": 10.7605864,
+                "formatted": "An Dương Vương, 72760, Vietnam",
+                "address_line1": "An Dương Vương",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "copyshop",
+                        "osm_id": 6315672822,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "copyshop"
+                },
+                "distance": 221,
+                "place_id": "51414f1432a1ab5a4059981d9f946b852540f00103f901f684717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68171359999998,
+                    10.760586399482051
+                ]
+            },
+            "id": 37
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "FamilyMart",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6815332,
+                "lat": 10.7605434,
+                "formatted": "FamilyMart, An Dương Vương, 72760, Vietnam",
+                "address_line1": "FamilyMart",
+                "address_line2": "An Dương Vương, 72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.supermarket"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "supermarket",
+                        "osm_id": 6315672440,
+                        "name:en": "FamilyMart",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "FamilyMart"
+                },
+                "commercial": {
+                    "type": "supermarket"
+                },
+                "distance": 226,
+                "place_id": "51d9486d3d9eab5a40599fedc7f165852540f00103f9017883717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6815332,
+                    10.760543399482058
+                ]
+            },
+            "id": 38
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6814551,
+                "lat": 10.7605012,
+                "formatted": "An Dương Vương, 72760, Vietnam",
+                "address_line1": "An Dương Vương",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "commercial.vehicle"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "car",
+                        "osm_id": 6315672439,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "car"
+                },
+                "distance": 232,
+                "place_id": "51500cdaf59cab5a405938b0c86960852540f00103f9017783717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6814551,
+                    10.76050119948205
+                ]
+            },
+            "id": 39
         },
         {
             "type": "Feature",
@@ -304,7 +2103,435 @@
                     10.764384899482312
                 ]
             },
-            "id": 4
+            "id": 40
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Hẻm 120 Đường Trần Bình Trọng",
+                "lon": 106.6824395,
+                "lat": 10.7576136,
+                "formatted": "Hẻm 120 Đường Trần Bình Trọng, 72760, Vietnam",
+                "address_line1": "Hẻm 120 Đường Trần Bình Trọng",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.museum"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 5170645222,
+                        "tourism": "museum",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 556,
+                "place_id": "51e97fb916adab5a40590f8f01eee5832540f00103f901e6c8313401000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6824395,
+                    10.757613599481855
+                ]
+            },
+            "id": 41
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Cinestar Cinema Quốc Thanh",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "street": "Nguyen Trai Street",
+                "housenumber": "271",
+                "lon": 106.68750023907155,
+                "lat": 10.76378365,
+                "formatted": "Cinestar, 271, Nguyen Trai Street, 70200, Vietnam",
+                "address_line1": "Cinestar",
+                "address_line2": "271, Nguyen Trai Street, 70200, Vietnam",
+                "categories": [
+                    "building",
+                    "building.entertainment",
+                    "entertainment",
+                    "entertainment.cinema"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Cinestar Cinema Quốc Thanh",
+                        "osm_id": 465285624,
+                        "amenity": "cinema",
+                        "name:en": "Cinestar",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "addr:street": "Đường Nguyễn Trãi",
+                        "addr:housenumber": 271
+                    }
+                },
+                "name_international": {
+                    "en": "Cinestar"
+                },
+                "distance": 625,
+                "place_id": "517cb3000100ac5a4059e07d87a60e872540f00102f901f8b1bb1b0000000092031c43696e65737461722043696e656d61205175e1bb9163205468616e68"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68750023907154,
+                    10.763783649482264
+                ]
+            },
+            "id": 42
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Cao Thang",
+                "lon": 106.6828742,
+                "lat": 10.7693242,
+                "formatted": "Cao Thang, 72406, Vietnam",
+                "address_line1": "Cao Thang",
+                "address_line2": "72406, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.cinema"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1123004808,
+                        "amenity": "cinema",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 757,
+                "place_id": "510e12fd35b4ab5a40593f9989dce4892540f00103f90188b1ef4200000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68287419999999,
+                    10.769324199482638
+                ]
+            },
+            "id": 43
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Di tích Khu tạm giam Bệnh viện Chợ Quán",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Hẻm 756 Võ Văn Kiệt",
+                "lon": 106.67922798084594,
+                "lat": 10.75326325,
+                "formatted": "Di tích Khu tạm giam Bệnh viện Chợ Quán, Hẻm 756 Võ Văn Kiệt, 72760, Vietnam",
+                "address_line1": "Di tích Khu tạm giam Bệnh viện Chợ Quán",
+                "address_line2": "Hẻm 756 Võ Văn Kiệt, 72760, Vietnam",
+                "categories": [
+                    "building",
+                    "building.tourism",
+                    "entertainment",
+                    "entertainment.museum"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Di tích Khu tạm giam Bệnh viện Chợ Quán",
+                        "osm_id": 1044649220,
+                        "tourism": "museum",
+                        "building": "yes",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1044,
+                "place_id": "51ba10a37878ab5a4059a29a7bb8ab812540f00102f9010415443e0000000092033144692074c3ad6368204b68752074e1baa16d206769616d2042e1bb876e68207669e1bb876e204368e1bba3205175c3a16e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67922798084592,
+                    10.753263249481567
+                ]
+            },
+            "id": 44
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Secret Weapon Bunker Museum - Tet Offensive",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Vo Van Tan Street",
+                "lon": 106.6860762,
+                "lat": 10.7720281,
+                "formatted": "Secret Weapon Bunker Museum - Tet Offensive, Vo Van Tan Street, 72406, Vietnam",
+                "address_line1": "Secret Weapon Bunker Museum - Tet Offensive",
+                "address_line2": "Vo Van Tan Street, 72406, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.museum"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 11025899805,
+                        "name:en": "Secret Weapon Bunker Museum - Tet Offensive",
+                        "tourism": "museum",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Secret Weapon Bunker Museum - Tet Offensive"
+                },
+                "distance": 1149,
+                "place_id": "51176426ace8ab5a405950be5d44478b2540f00103f9011de1319102000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68607619999999,
+                    10.77202809948281
+                ]
+            },
+            "id": 45
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà hát Cải lương Trần Hữu Trang",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "70200",
+                "district": "Khu phố 3",
+                "street": "Tran Hung Dao Street",
+                "lon": 106.6922922649499,
+                "lat": 10.76508815,
+                "formatted": "Nhà hát Cải lương Trần Hữu Trang, Tran Hung Dao Street, Khu phố 3, 70200, Vietnam",
+                "address_line1": "Nhà hát Cải lương Trần Hữu Trang",
+                "address_line2": "Tran Hung Dao Street, Khu phố 3, 70200, Vietnam",
+                "categories": [
+                    "building",
+                    "building.entertainment",
+                    "entertainment",
+                    "entertainment.culture",
+                    "entertainment.culture.theatre"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà hát Cải lương Trần Hữu Trang",
+                        "osm_id": 807577729,
+                        "amenity": "theatre",
+                        "building": "yes",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1180,
+                "place_id": "51f24e37844eac5a4059f02a49a2b9872540f00102f90181a822300000000092032a4e68c3a02068c3a1742043e1baa369206cc6b0c6a16e67205472e1baa76e2048e1bbaf75205472616e67"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69229226494988,
+                    10.765088149482352
+                ]
+            },
+            "id": 46
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Rạp Phim Đống Đa",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường An Đông",
+                "postcode": "72760",
+                "street": "Tran Hung Dao Boulevard",
+                "lon": 106.6742043,
+                "lat": 10.7536969,
+                "formatted": "Rạp Phim Đống Đa, Tran Hung Dao Boulevard, 72760, Vietnam",
+                "address_line1": "Rạp Phim Đống Đa",
+                "address_line2": "Tran Hung Dao Boulevard, 72760, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.cinema"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Rạp Phim Đống Đa",
+                        "osm_id": 3160548763,
+                        "amenity": "cinema",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 1280,
+                "place_id": "51a5d4ca2926ab5a40597cbd5c8fe4812540f00103f9019b2562bc0000000092031652e1baa170205068696d20c490e1bb916e6720c49061"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6742043,
+                    10.753696899481604
+                ]
+            },
+            "id": 47
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà hát Hòa Bình",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Hòa Hưng",
+                "postcode": "72406",
+                "street": "Đường 3 Tháng 2",
+                "lon": 106.673828226329,
+                "lat": 10.77232415,
+                "formatted": "Nhà hát Hòa Bình, Đường 3 Tháng 2, 72406, Vietnam",
+                "address_line1": "Nhà hát Hòa Bình",
+                "address_line2": "Đường 3 Tháng 2, 72406, Vietnam",
+                "categories": [
+                    "building",
+                    "building.entertainment",
+                    "entertainment",
+                    "entertainment.culture",
+                    "entertainment.culture.theatre"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà hát Hòa Bình",
+                        "osm_id": 152994269,
+                        "amenity": "theatre",
+                        "building": "yes",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1339,
+                "place_id": "5118cd6c0020ab5a40592fe127126e8b2540f00102f901dd811e09000000009203144e68c3a02068c3a1742048c3b2612042c3ac6e68"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67382822632896,
+                    10.77232414948284
+                ]
+            },
+            "id": 48
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Rạp Hát Hoà Bình",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72406",
+                "street": "3 Thang 2",
+                "housenumber": "240",
+                "lon": 106.6739668,
+                "lat": 10.772194,
+                "formatted": "Rạp Hát Hoà Bình, 240, 3 Thang 2, 72406, Vietnam",
+                "address_line1": "Rạp Hát Hoà Bình",
+                "address_line2": "240, 3 Thang 2, 72406, Vietnam",
+                "categories": [
+                    "entertainment",
+                    "entertainment.culture",
+                    "entertainment.culture.theatre"
+                ],
+                "details": [
+                    "details.contact",
+                    "details.payment"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Rạp Hát Hoà Bình",
+                        "email": "trongdung@gmail.com",
+                        "osm_id": 2690659722,
+                        "amenity": "theatre",
+                        "osm_type": "n",
+                        "addr:street": "3 Tháng 2",
+                        "payment:cash": "yes",
+                        "addr:housenumber": 240,
+                        "addr:subdistrict": 12
+                    }
+                },
+                "contact": {
+                    "email": "trongdung@gmail.com"
+                },
+                "payment_options": {
+                    "cash": true
+                },
+                "distance": 1358,
+                "place_id": "51bf25a54522ab5a40596ee40b035d8b2540f00103f9018a3560a00000000092031552e1baa1702048c3a17420486fc3a02042c3ac6e68"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6739668,
+                    10.77219399948282
+                ]
+            },
+            "id": 49
         },
         {
             "type": "Feature",
@@ -439,7 +2666,149 @@
                     10.779743849483332
                 ]
             },
-            "id": 5
+            "id": 50
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Bưu điện Trung tâm Sài Gòn",
+                "old_name": "Saigon Post Office",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "city": "Ho Chi Minh City",
+                "postcode": "71006",
+                "district": "Khu phố 3",
+                "suburb": "Saigon",
+                "street": "Paris Commune Square",
+                "housenumber": "2",
+                "lon": 106.6999920762309,
+                "lat": 10.77995565,
+                "formatted": "Saigon Central Post Office, 2, Paris Commune Square, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "address_line1": "Saigon Central Post Office",
+                "address_line2": "2, Paris Commune Square, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "categories": [
+                    "building",
+                    "building.commercial",
+                    "building.facility",
+                    "building.historic",
+                    "building.tourism",
+                    "heritage",
+                    "service",
+                    "service.post",
+                    "service.post.office",
+                    "tourism",
+                    "tourism.attraction",
+                    "tourism.sights"
+                ],
+                "details": [
+                    "details",
+                    "details.building",
+                    "details.heritage",
+                    "details.historic",
+                    "details.wiki_and_media"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "atm": "yes",
+                        "name": "Bưu điện Trung tâm Sài Gòn",
+                        "height": 13.5,
+                        "osm_id": 39514793,
+                        "amenity": "post_office",
+                        "name:ar": "مكتب البريد المركزي سايجون",
+                        "name:be": "Цэнтральнае паштовае аддзяленне Сайгон",
+                        "name:de": "Saigon Zentrales Postamt",
+                        "name:en": "Saigon Central Post Office",
+                        "name:es": "Oficina de Correos Central de Saigón",
+                        "name:fr": "Poste centrale de Saïgon",
+                        "name:id": "Kantor Pos Pusat Saigon",
+                        "name:ja": "サイゴン中央郵便局",
+                        "name:ko": "중앙우체국",
+                        "name:ms": "Pejabat Pos Pusat Saigon",
+                        "name:nl": "Centrale Postkantoor",
+                        "name:ru": "Центральное почтовое отделение Сайгона",
+                        "name:uk": "Центральне поштове відділення Сайгона",
+                        "name:vi": "Bưu điện Trung tâm Sài Gòn",
+                        "name:zh": "西贡中心邮政局",
+                        "tourism": "attraction",
+                        "building": "yes",
+                        "heritage": "yes",
+                        "historic": "heritage",
+                        "int_name": "Saigon Central Post Office",
+                        "old_name": "Saigon Post Office",
+                        "operator": "Vietnam Post",
+                        "osm_type": "w",
+                        "wikidata": "Q2227270",
+                        "addr:city": "Ho Chi Minh City",
+                        "wikipedia": "en:Saigon Central Post Office",
+                        "start_date": 1891,
+                        "addr:street": "125 Công xã Paris, Bến Nghé, Quận 1, Hồ Chí Minh",
+                        "name:vi-Hani": "郵電中心柴棍",
+                        "name:zh-Hant": "西貢中心郵政局",
+                        "addr:district": "Quận 1",
+                        "official_name": "Bưu điện Trung tâm Thành phố Hồ Chí Minh",
+                        "opening_hours": "Mo-Su 07:00-22:00",
+                        "building:colour": "#e1cb8c",
+                        "addr:housenumber": 2,
+                        "official_name:en": "Ho Chi Minh City Central Post Office",
+                        "operator:wikidata": "Q112150791",
+                        "wikimedia_commons": "Category:Saigon Central Post Office"
+                    }
+                },
+                "opening_hours": "Mo-Su 07:00-22:00",
+                "operator": "Vietnam Post",
+                "operator_details": {
+                    "wikidata": "Q112150791"
+                },
+                "name_other": {
+                    "old_name": "Saigon Post Office",
+                    "official_name": "Bưu điện Trung tâm Thành phố Hồ Chí Minh"
+                },
+                "name_international": {
+                    "ar": "مكتب البريد المركزي سايجون",
+                    "be": "Цэнтральнае паштовае аддзяленне Сайгон",
+                    "de": "Saigon Zentrales Postamt",
+                    "en": "Saigon Central Post Office",
+                    "es": "Oficina de Correos Central de Saigón",
+                    "fr": "Poste centrale de Saïgon",
+                    "id": "Kantor Pos Pusat Saigon",
+                    "ja": "サイゴン中央郵便局",
+                    "ko": "중앙우체국",
+                    "ms": "Pejabat Pos Pusat Saigon",
+                    "nl": "Centrale Postkantoor",
+                    "ru": "Центральное почтовое отделение Сайгона",
+                    "uk": "Центральне поштове відділення Сайгона",
+                    "vi": "Bưu điện Trung tâm Sài Gòn",
+                    "zh": "西贡中心邮政局"
+                },
+                "wiki_and_media": {
+                    "wikidata": "Q2227270",
+                    "wikipedia": "en:Saigon Central Post Office",
+                    "wikimedia_commons": "Category:Saigon Central Post Office"
+                },
+                "historic": {
+                    "type": "heritage",
+                    "start_date": 1891
+                },
+                "building": {
+                    "color": "#e1cb8c",
+                    "start_date": 1891,
+                    "height": 13.5
+                },
+                "distance": 2755,
+                "place_id": "51bcb790abccac5a40590bb9cd58568f2540f00102f901a9f25a020000000092032142c6b07520c49169e1bb876e205472756e672074c3a26d2053c3a0692047c3b26e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6999920762309,
+                    10.779955649483346
+                ]
+            },
+            "id": 51
         },
         {
             "type": "Feature",
@@ -480,7 +2849,417 @@
                     10.764893549482341
                 ]
             },
-            "id": 6
+            "id": 52
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà khách Chính phủ",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Hẻm 637 Nguyễn Ðình Chiểu",
+                "lon": 106.67947095942031,
+                "lat": 10.7651514,
+                "formatted": "Government Guesthouse, Hẻm 637 Nguyễn Ðình Chiểu, 72406, Vietnam",
+                "address_line1": "Government Guesthouse",
+                "address_line2": "Hẻm 637 Nguyễn Ðình Chiểu, 72406, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park",
+                    "leisure.park.garden"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà khách Chính phủ",
+                        "osm_id": 39513493,
+                        "leisure": "garden",
+                        "name:en": "Government Guesthouse",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "Government Guesthouse"
+                },
+                "distance": 293,
+                "place_id": "51b052c3737cab5a4059de879aecc1872540f00102f90195ed5a02000000009203184e68c3a0206b68c3a16368204368c3ad6e68207068e1bba7"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67947095942031,
+                    10.76515139948236
+                ]
+            },
+            "id": 53
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Ngã sáu Cộng Hòa",
+                "lon": 106.68163656398272,
+                "lat": 10.76542115,
+                "formatted": "Ngã sáu Cộng Hòa, 72406, Vietnam",
+                "address_line1": "Ngã sáu Cộng Hòa",
+                "address_line2": "72406, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park",
+                    "leisure.park.garden"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1189707226,
+                        "barrier": "hedge",
+                        "leisure": "garden",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 303,
+                "place_id": "511284f7ee9fab5a40591463e947e5872540f00102f901da7de94600000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68163656398272,
+                    10.765421149482371
+                ]
+            },
+            "id": 54
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "lon": 106.68540729269034,
+                "lat": 10.762364550000001,
+                "formatted": "Phường Cầu Ông Lãnh, Vietnam",
+                "address_line1": "Phường Cầu Ông Lãnh",
+                "address_line2": "Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 302293119,
+                        "leisure": "park",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 351,
+                "place_id": "51e0a28cb6ddab5a4059ba4f6fa554862540f00102f9017fa0041200000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68540729269034,
+                    10.762364549482175
+                ]
+            },
+            "id": 55
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "lon": 106.6816679998606,
+                "lat": 10.75642755,
+                "formatted": "Phường Chợ Quán, Vietnam",
+                "address_line1": "Phường Chợ Quán",
+                "address_line2": "Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1212006793,
+                        "leisure": "park",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 675,
+                "place_id": "516188d172a0ab5a4059a5a2c5784a832540f00102f90189c13d4800000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68166799986058,
+                    10.75642754948178
+                ]
+            },
+            "id": 56
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "lon": 106.68172874480476,
+                "lat": 10.75621435,
+                "formatted": "Phường Chợ Quán, Vietnam",
+                "address_line1": "Phường Chợ Quán",
+                "address_line2": "Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1212006794,
+                        "leisure": "park",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 699,
+                "place_id": "517eeb9971a1ab5a40598694f7862e832540f00102f9018ac13d4800000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68172874480476,
+                    10.756214349481763
+                ]
+            },
+            "id": 57
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Bãi Cỏ - Trần Nhân Tôn",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "lon": 106.67506713378408,
+                "lat": 10.76201965,
+                "formatted": "Bãi Cỏ - Trần Nhân Tôn, Phường Vườn Lài, Vietnam",
+                "address_line1": "Bãi Cỏ - Trần Nhân Tôn",
+                "address_line2": "Phường Vườn Lài, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Bãi Cỏ - Trần Nhân Tôn",
+                        "osm_id": 617580819,
+                        "leisure": "park",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 718,
+                "place_id": "51408dc74c34ab5a4059d2de827027862540f00102f9011389cf240000000092031d42c3a3692043e1bb8f202d205472e1baa76e204e68c3a26e2054c3b46e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67506713378407,
+                    10.762019649482145
+                ]
+            },
+            "id": 58
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Công viên Hòa Bình",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường An Đông",
+                "lon": 106.67347310220327,
+                "lat": 10.760452699999998,
+                "formatted": "Công viên Hòa Bình, Phường An Đông, Vietnam",
+                "address_line1": "Công viên Hòa Bình",
+                "address_line2": "Phường An Đông, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [
+                    "details.wiki_and_media"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Công viên Hòa Bình",
+                        "osm_id": 164922736,
+                        "leisure": "park",
+                        "osm_type": "w",
+                        "wikipedia": "vi:Công viên Hòa Bình"
+                    }
+                },
+                "wiki_and_media": {
+                    "wikipedia": "vi:Công viên Hòa Bình"
+                },
+                "distance": 820,
+                "place_id": "51b82ced2e1aab5a40594fdc640e5a852540f00102f9017085d4090000000092031643c3b46e67207669c3aa6e2048c3b2612042c3ac6e68"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67347310220327,
+                    10.760452699482043
+                ]
+            },
+            "id": 59
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "70200",
+                "district": "Khu phố 3",
+                "street": "Hẻm 102 Cống Quỳnh",
+                "lon": 106.6907365,
+                "lat": 10.7648056,
+                "formatted": "Hẻm 102 Cống Quỳnh, Khu phố 3, 70200, Vietnam",
+                "address_line1": "Hẻm 102 Cống Quỳnh",
+                "address_line2": "Khu phố 3, 70200, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.picnic",
+                    "leisure.picnic.picnic_site"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4620440191,
+                        "tourism": "picnic_site",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 1019,
+                "place_id": "51d269dd0635ac5a405908267b9994872540f00103f9017f52661301000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69073649999999,
+                    10.76480559948233
+                ]
+            },
+            "id": 60
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Công viên 23 tháng 9",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "city": "Ho Chi Minh City",
+                "lon": 106.6923424951953,
+                "lat": 10.7688557,
+                "formatted": "September 23 Park, Ho Chi Minh City, Phường Bến Thành, Vietnam",
+                "address_line1": "September 23 Park",
+                "address_line2": "Ho Chi Minh City, Phường Bến Thành, Vietnam",
+                "categories": [
+                    "leisure",
+                    "leisure.park"
+                ],
+                "details": [
+                    "details",
+                    "details.wiki_and_media"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Công viên 23 tháng 9",
+                        "osm_id": -14939719,
+                        "leisure": "park",
+                        "name:de": "September 23 Park",
+                        "name:en": "September 23 Park",
+                        "name:id": "Taman 23 September",
+                        "name:ru": "Парк 23-го сентября",
+                        "name:vi": "Công viên 23 tháng 9",
+                        "name:zh": "9月23日公园",
+                        "osm_type": "r",
+                        "wikidata": "Q10752046",
+                        "addr:city": "Ho Chi Minh City",
+                        "wikipedia": "vi:Công viên 23 tháng 9",
+                        "addr:district": "District 1",
+                        "opening_hours": "24/7"
+                    }
+                },
+                "opening_hours": "24/7",
+                "name_international": {
+                    "de": "September 23 Park",
+                    "en": "September 23 Park",
+                    "id": "Taman 23 September",
+                    "ru": "Парк 23-го сентября",
+                    "vi": "Công viên 23 tháng 9",
+                    "zh": "9月23日公园"
+                },
+                "wiki_and_media": {
+                    "wikidata": "Q10752046",
+                    "wikipedia": "vi:Công viên 23 tháng 9"
+                },
+                "distance": 1114,
+                "place_id": "51ac9fe5564fac5a4059f23d4974a7892540f00101f90147f6e3000000000092031743c3b46e67207669c3aa6e203233207468c3a16e672039"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6923424951953,
+                    10.768855699482604
+                ]
+            },
+            "id": 61
         },
         {
             "type": "Feature",
@@ -523,7 +3302,359 @@
                     10.765366849482373
                 ]
             },
-            "id": 7
+            "id": 62
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "lon": 106.67491448422192,
+                "lat": 10.756491999481781,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1086980077,
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 982,
+                "place_id": "511c5585cc31ab5a405978eb5aeb52832540f00102f901edffc94000000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67491448422192,
+                    10.756491999481781
+                ]
+            },
+            "id": 63
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Kênh Bến Nghé",
+                "lon": 106.69652357959507,
+                "lat": 10.761102149482092,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Kênh Bến Nghé",
+                        "water": "river",
+                        "osm_id": 166264572,
+                        "name:en": "Ben Nghe Creek",
+                        "name:zh": "滨义河",
+                        "natural": "water",
+                        "int_name": "Ben Nghe Channel",
+                        "old_name": "Arroyo Chinois",
+                        "osm_type": "w"
+                    }
+                },
+                "name_other": {
+                    "old_name": "Arroyo Chinois"
+                },
+                "name_international": {
+                    "en": "Ben Nghe Creek",
+                    "zh": "滨义河"
+                },
+                "distance": 1111,
+                "place_id": "513cd0a2d793ac5a4059bce1512eaf852540f00102f901fcfee809000000009203114bc3aa6e682042e1babf6e204e6768c3a9"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69652357959507,
+                    10.761102149482092
+                ]
+            },
+            "id": 64
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Kênh Tàu Hủ",
+                "lon": 106.6493532343977,
+                "lat": 10.742863699480878,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Kênh Tàu Hủ",
+                        "water": "river",
+                        "osm_id": 165802932,
+                        "name:en": "Tau Hu Channel",
+                        "natural": "water",
+                        "old_name": "Arroyo Chinois",
+                        "osm_type": "w"
+                    }
+                },
+                "name_other": {
+                    "old_name": "Arroyo Chinois"
+                },
+                "name_international": {
+                    "en": "Tau Hu Channel"
+                },
+                "distance": 1150,
+                "place_id": "518e52de008fa95a4059d84f7da1587c2540f00102f901b4f3e109000000009203104bc3aa6e68205461cc8075204875cc89"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6493532343977,
+                    10.742863699480878
+                ]
+            },
+            "id": 65
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "lon": 106.68914950828709,
+                "lat": 10.753716999481604,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "water": "river",
+                        "osm_id": 188114181,
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1169,
+                "place_id": "5171098a061bac5a4059ec6cce31e7812540f00102f9010565360b00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68914950828709,
+                    10.753716999481604
+                ]
+            },
+            "id": 66
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "lon": 106.68631764257071,
+                "lat": 10.751476449481455,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "water": "river",
+                        "osm_id": 165802965,
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1232,
+                "place_id": "519460d5a0ecab5a40595e796c85c1802540f00102f901d5f3e10900000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68631764257071,
+                    10.751476449481455
+                ]
+            },
+            "id": 67
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "lon": 106.69220444580333,
+                "lat": 10.768573849482586,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "water": "lake",
+                        "osm_id": 160340019,
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1262,
+                "place_id": "51c037e0134dac5a4059542df88282892540f00102f90133988e0900000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69220444580333,
+                    10.768573849482586
+                ]
+            },
+            "id": 68
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Kênh Tẻ",
+                "lon": 106.71995194335649,
+                "lat": 10.75470389948166,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "boat": "yes",
+                        "name": "Kênh Tẻ",
+                        "water": "canal",
+                        "osm_id": 51254525,
+                        "name:en": "Kenh Te Canal",
+                        "name:fr": "Canal de Dérivation",
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "Kenh Te Canal",
+                    "fr": "Canal de Dérivation"
+                },
+                "distance": 1289,
+                "place_id": "5119da50b113ae5a4059f3dfac8c68822540f00102f901fd140e030000000092030a4bc3aa6e682054e1babb"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.71995194335649,
+                    10.75470389948166
+                ]
+            },
+            "id": 69
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Kênh Đôi",
+                "lon": 106.63901888147336,
+                "lat": 10.731069349480096,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Kênh Đôi",
+                        "water": "canal",
+                        "osm_id": 165802942,
+                        "name:en": "Kenh Doi Canal",
+                        "name:fr": "Canal de Doublement",
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "name_international": {
+                    "en": "Kenh Doi Canal",
+                    "fr": "Canal de Doublement"
+                },
+                "distance": 1306,
+                "place_id": "51185d73afe5a85a40590140c6b84e762540f00102f901bef3e1090000000092030b4bc3aa6e6820c490c3b469"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.63901888147336,
+                    10.731069349480096
+                ]
+            },
+            "id": 70
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "lon": 106.67318812692521,
+                "lat": 10.77315774948289,
+                "categories": [
+                    "natural",
+                    "natural.water"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 727014724,
+                        "natural": "water",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 1456,
+                "place_id": "51c14ca78315ab5a40591f5b2155db8b2540f00102f901445d552b00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67318812692521,
+                    10.77315774948289
+                ]
+            },
+            "id": 71
         },
         {
             "type": "Feature",
@@ -569,7 +3700,483 @@
                     10.757312699481833
                 ]
             },
-            "id": 8
+            "id": 72
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà Thờ Đức Bà Fatima",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "street": "hẻm 214",
+                "lon": 106.6861908,
+                "lat": 10.7648008,
+                "formatted": "Nhà Thờ Đức Bà Fatima, hẻm 214, 70200, Vietnam",
+                "address_line1": "Nhà Thờ Đức Bà Fatima",
+                "address_line2": "hẻm 214, 70200, Vietnam",
+                "categories": [
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.christianity"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà Thờ Đức Bà Fatima",
+                        "osm_id": 4615672718,
+                        "amenity": "place_of_worship",
+                        "osm_type": "n",
+                        "religion": "christian"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "christian"
+                },
+                "distance": 549,
+                "place_id": "513b34d18ceaab5a405970766bf893872540f00103f9018e931d130100000092031c4e68c3a0205468e1bb9d20c490e1bba9632042c3a020466174696d61"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6861908,
+                    10.764800799482344
+                ]
+            },
+            "id": 73
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Chùa Linh Chưởng",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Hẻm 145 Nguyễn Thiện Thuật",
+                "lon": 106.67888975497127,
+                "lat": 10.7668992,
+                "formatted": "Chùa Linh Chưởng, Hẻm 145 Nguyễn Thiện Thuật, 72406, Vietnam",
+                "address_line1": "Chùa Linh Chưởng",
+                "address_line2": "Hẻm 145 Nguyễn Thiện Thuật, 72406, Vietnam",
+                "categories": [
+                    "building",
+                    "building.place_of_worship",
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.buddhism"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Chùa Linh Chưởng",
+                        "osm_id": 1042789394,
+                        "amenity": "place_of_worship",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "religion": "buddhist"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "buddhist"
+                },
+                "distance": 563,
+                "place_id": "513acc03ee72ab5a40592e360a03a7882540f00102f90112b4273e000000009203144368c3b961204c696e68204368c6b0e1bb9f6e67"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67888975497127,
+                    10.766899199482477
+                ]
+            },
+            "id": 74
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Nhà thờ Chợ Quán",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Hẻm 120 Đường Trần Bình Trọng",
+                "lon": 106.6817269105739,
+                "lat": 10.757335000000001,
+                "formatted": "Nhà thờ Chợ Quán, Hẻm 120 Đường Trần Bình Trọng, 72760, Vietnam",
+                "address_line1": "Nhà thờ Chợ Quán",
+                "address_line2": "Hẻm 120 Đường Trần Bình Trọng, 72760, Vietnam",
+                "categories": [
+                    "building",
+                    "building.place_of_worship",
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.christianity"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Nhà thờ Chợ Quán",
+                        "osm_id": 39619657,
+                        "amenity": "place_of_worship",
+                        "building": "church",
+                        "osm_type": "w",
+                        "religion": "christian"
+                    }
+                },
+                "building": {
+                    "type": "church"
+                },
+                "place_of_worship": {
+                    "religion": "christian"
+                },
+                "distance": 565,
+                "place_id": "51f46de869a1ab5a405906c8bd69c1832540f00102f901498c5c02000000009203164e68c3a0207468e1bb9d204368e1bba3205175c3a16e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6817269105739,
+                    10.757334999481838
+                ]
+            },
+            "id": 75
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Chùa Long An",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "city": "Ho Chi Minh City",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "housenumber": "106",
+                "lon": 106.68494789684536,
+                "lat": 10.75821335,
+                "formatted": "Chùa Long An, 106, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "address_line1": "Chùa Long An",
+                "address_line2": "106, Nguyễn Văn Cừ, Ho Chi Minh City, 72760, Vietnam",
+                "categories": [
+                    "building",
+                    "building.place_of_worship",
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.buddhism"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Chùa Long An",
+                        "osm_id": 466316397,
+                        "amenity": "place_of_worship",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "religion": "buddhist",
+                        "addr:city": "Thành phố Hồ Chí Minh",
+                        "addr:street": "Nguyễn Văn Cừ",
+                        "addr:district": "Quận 1",
+                        "addr:housenumber": 106,
+                        "addr:subdistrict": "Phường Nguyễn Cư Trinh"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "buddhist"
+                },
+                "distance": 596,
+                "place_id": "518b1ab42fd6ab5a4059acd4468a34842540f00102f9016d6ccb1b0000000092030d4368c3b961204c6f6e6720416e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68494789684534,
+                    10.758213349481899
+                ]
+            },
+            "id": 76
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Chùa Phước Hòa",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Hẻm 16/41 Nguyễn Thiện Thuật",
+                "lon": 106.6813131,
+                "lat": 10.7683847,
+                "formatted": "Chùa Phước Hòa, Hẻm 16/41 Nguyễn Thiện Thuật, 72406, Vietnam",
+                "address_line1": "Chùa Phước Hòa",
+                "address_line2": "Hẻm 16/41 Nguyễn Thiện Thuật, 72406, Vietnam",
+                "categories": [
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.buddhism"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Chùa Phước Hòa",
+                        "osm_id": 2677242469,
+                        "amenity": "place_of_worship",
+                        "osm_type": "n",
+                        "religion": "buddhist"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "buddhist"
+                },
+                "distance": 643,
+                "place_id": "5187b542a29aab5a4059840c26b869892540f00103f901657a939f000000009203134368c3b961205068c6b0e1bb9b632048c3b261"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6813131,
+                    10.768384699482574
+                ]
+            },
+            "id": 77
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Tu viện Mến Thánh Giá Chợ Quán",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "housenumber": "118",
+                "lon": 106.68162707165172,
+                "lat": 10.756232449999999,
+                "formatted": "Tu viện Mến Thánh Giá Chợ Quán, 118, Phường Chợ Quán, Vietnam",
+                "address_line1": "Tu viện Mến Thánh Giá Chợ Quán",
+                "address_line2": "118, Phường Chợ Quán, Vietnam",
+                "categories": [
+                    "religion"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Tu viện Mến Thánh Giá Chợ Quán",
+                        "osm_id": 418298189,
+                        "landuse": "religious",
+                        "osm_type": "w",
+                        "religion": "christian",
+                        "addr:city": "Phường 2",
+                        "addr:street": "Trần Bình Trọng",
+                        "denomination": "roman_catholic",
+                        "addr:district": "Quận 5",
+                        "addr:province": "Hồ Chí Minh",
+                        "addr:housenumber": 118,
+                        "addr:subdistrict": "Phường 2"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "christian",
+                    "denomination": "roman_catholic"
+                },
+                "distance": 653,
+                "place_id": "51fe3327c79fab5a405972654de630832540f00102f9014db9ee18000000009203275475207669e1bb876e204de1babf6e205468c3a16e68204769c3a1204368e1bba3205175c3a16e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68162707165172,
+                    10.756232449481761
+                ]
+            },
+            "id": 78
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Tu viện Mến Thánh Giá Chợ Quán",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Binh Trong St.",
+                "housenumber": "118",
+                "lon": 106.68158715379887,
+                "lat": 10.756253350000001,
+                "formatted": "Tu viện Mến Thánh Giá Chợ Quán, 118, Tran Binh Trong St., 72760, Vietnam",
+                "address_line1": "Tu viện Mến Thánh Giá Chợ Quán",
+                "address_line2": "118, Tran Binh Trong St., 72760, Vietnam",
+                "categories": [
+                    "building",
+                    "building.place_of_worship",
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.christianity"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Tu viện Mến Thánh Giá Chợ Quán",
+                        "osm_id": 1212006792,
+                        "amenity": "place_of_worship",
+                        "building": "yes",
+                        "osm_type": "w",
+                        "religion": "christian",
+                        "addr:city": "Phường 2",
+                        "addr:street": "Trần Bình Trọng",
+                        "denomination": "roman_catholic",
+                        "addr:district": "Quận 5",
+                        "addr:province": "Hồ Chí Minh",
+                        "addr:housenumber": 118,
+                        "addr:subdistrict": "Phường 2"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "christian",
+                    "denomination": "roman_catholic"
+                },
+                "distance": 681,
+                "place_id": "5126bcb91f9fab5a40597e0797a333832540f00102f90188c13d48000000009203275475207669e1bb876e204de1babf6e205468c3a16e68204769c3a1204368e1bba3205175c3a16e"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68158715379886,
+                    10.756253349481764
+                ]
+            },
+            "id": 79
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Chùa Lâm Tế",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "street": "Nguyen Trai Street",
+                "lon": 106.68752477001743,
+                "lat": 10.7656369,
+                "formatted": "Chùa Lâm Tế, Nguyen Trai Street, 70200, Vietnam",
+                "address_line1": "Chùa Lâm Tế",
+                "address_line2": "Nguyen Trai Street, 70200, Vietnam",
+                "categories": [
+                    "religion",
+                    "religion.place_of_worship",
+                    "religion.place_of_worship.buddhism"
+                ],
+                "details": [
+                    "details.place_of_worship"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Chùa Lâm Tế",
+                        "osm_id": 465820437,
+                        "amenity": "place_of_worship",
+                        "osm_type": "w",
+                        "religion": "buddhist"
+                    }
+                },
+                "place_of_worship": {
+                    "religion": "buddhist"
+                },
+                "distance": 700,
+                "place_id": "518c9ae46700ac5a405982c6478f01882540f00102f90115dbc31b0000000092030f4368c3b961204cc3a26d2054e1babf"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68752477001743,
+                    10.765636899482391
+                ]
+            },
+            "id": 80
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "TranNhanTon church",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "lon": 106.67522204949486,
+                "lat": 10.76216955,
+                "formatted": "TranNhanTon church, Phường Vườn Lài, Vietnam",
+                "address_line1": "TranNhanTon church",
+                "address_line2": "Phường Vườn Lài, Vietnam",
+                "categories": [
+                    "religion"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "TranNhanTon church",
+                        "osm_id": 617582966,
+                        "landuse": "religious",
+                        "osm_type": "w"
+                    }
+                },
+                "distance": 705,
+                "place_id": "5196078bd636ab5a4059da1052163b862540f00102f9017691cf24000000009203125472616e4e68616e546f6e20636875726368"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67522204949486,
+                    10.762169549482156
+                ]
+            },
+            "id": 81
         },
         {
             "type": "Feature",
@@ -640,7 +4247,91 @@
                     10.774648999482984
                 ]
             },
-            "id": 9
+            "id": 82
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "city": "Ho Chi Minh City",
+                "postcode": "71006",
+                "district": "Khu phố 8",
+                "suburb": "Saigon",
+                "street": "Đường Tôn Ðức Thắng",
+                "lon": 106.7068196,
+                "lat": 10.7768952,
+                "formatted": "Đường Tôn Ðức Thắng, Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "address_line1": "Đường Tôn Ðức Thắng",
+                "address_line2": "Saigon, Ho Chi Minh City, 71006, Vietnam",
+                "categories": [
+                    "rental",
+                    "rental.bicycle"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 9633000617,
+                        "amenity": "bicycle_rental",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 3171,
+                "place_id": "51ff8a46883cad5a405926662435c58d2540f00103f901a9ec2b3e02000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.7068196,
+                    10.776895199483146
+                ]
+            },
+            "id": 83
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Phú Nhuận",
+                "postcode": "72215",
+                "street": "Nguyễn Trọng Tuyển",
+                "lon": 106.6703191,
+                "lat": 10.7980592,
+                "formatted": "Nguyễn Trọng Tuyển, 72215, Vietnam",
+                "address_line1": "Nguyễn Trọng Tuyển",
+                "address_line2": "72215, Vietnam",
+                "categories": [
+                    "rental",
+                    "rental.bicycle"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4281804099,
+                        "amenity": "bicycle_rental",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 4116,
+                "place_id": "5195181582e6aa5a4059c71d24379b982540f00103f901432537ff00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67031909999999,
+                    10.798059199484568
+                ]
+            },
+            "id": 84
         },
         {
             "type": "Feature",
@@ -700,7 +4391,438 @@
                     10.76362189948226
                 ]
             },
-            "id": 10
+            "id": 85
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Nguyễn Văn Cừ",
+                "lon": 106.6831584,
+                "lat": 10.7609081,
+                "formatted": "Nguyễn Văn Cừ, 72760, Vietnam",
+                "address_line1": "Nguyễn Văn Cừ",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "service",
+                    "service.vehicle",
+                    "service.vehicle.fuel"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 12878285656,
+                        "amenity": "fuel",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 245,
+                "place_id": "51367f02deb8ab5a4059f31215bf95852540f00103f901580b9bff02000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6831584,
+                    10.760908099482071
+                ]
+            },
+            "id": 86
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Phu Avenue",
+                "lon": 106.6795474,
+                "lat": 10.7633775,
+                "formatted": "Tran Phu Avenue, 72760, Vietnam",
+                "address_line1": "Tran Phu Avenue",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "service",
+                    "service.travel_agency"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "travel_agency",
+                        "osm_id": 6315687012,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "travel_agency"
+                },
+                "distance": 251,
+                "place_id": "513dc560b47dab5a4059988e656ad9862540f00103f90164bc717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6795474,
+                    10.763377499482246
+                ]
+            },
+            "id": 87
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6806877,
+                "lat": 10.7602029,
+                "formatted": "An Dương Vương, 72760, Vietnam",
+                "address_line1": "An Dương Vương",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "service",
+                    "service.vehicle",
+                    "service.vehicle.repair",
+                    "service.vehicle.repair.car"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "car_repair",
+                        "osm_id": 6315672438,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "car_repair"
+                },
+                "distance": 286,
+                "place_id": "518592246390ab5a405907337f5039852540f00103f9017683717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68068769999998,
+                    10.760202899482023
+                ]
+            },
+            "id": 88
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "ShinHanBank",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6805878,
+                "lat": 10.7601927,
+                "formatted": "ShinHanBank, An Dương Vương, 72760, Vietnam",
+                "address_line1": "ShinHanBank",
+                "address_line2": "An Dương Vương, 72760, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.bank"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "ShinHanBank",
+                        "osm_id": 6315672436,
+                        "amenity": "bank",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 291,
+                "place_id": "519fc321c08eab5a4059d4dd3dfa37852540f00103f901748371780100000092030b5368696e48616e42616e6b"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6805878,
+                    10.760192699482026
+                ]
+            },
+            "id": 89
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Acb",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6807535,
+                "lat": 10.7601098,
+                "formatted": "Acb, An Dương Vương, 72760, Vietnam",
+                "address_line1": "Acb",
+                "address_line2": "An Dương Vương, 72760, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.bank"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315672437,
+                        "amenity": "bank",
+                        "name:en": "Acb",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Acb"
+                },
+                "distance": 292,
+                "place_id": "51cdc8207791ab5a4059f249941c2d852540f00103f9017583717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6807535,
+                    10.760109799482027
+                ]
+            },
+            "id": 90
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6804002,
+                "lat": 10.7599042,
+                "formatted": "An Dương Vương, 72760, Vietnam",
+                "address_line1": "An Dương Vương",
+                "address_line2": "72760, Vietnam",
+                "categories": [
+                    "commercial",
+                    "service",
+                    "service.vehicle",
+                    "service.vehicle.repair",
+                    "service.vehicle.repair.car"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "shop": "car_repair",
+                        "osm_id": 6315672896,
+                        "osm_type": "n"
+                    }
+                },
+                "commercial": {
+                    "type": "car_repair"
+                },
+                "distance": 329,
+                "place_id": "5147cc47ad8bab5a40598ebcc92912852540f00103f9014085717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6804002,
+                    10.759904199482005
+                ]
+            },
+            "id": 91
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "VietinBank",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "An Dương Vương",
+                "lon": 106.6802727,
+                "lat": 10.7598202,
+                "formatted": "VietinBank, An Dương Vương, 72760, Vietnam",
+                "address_line1": "VietinBank",
+                "address_line2": "An Dương Vương, 72760, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.bank"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "VietinBank",
+                        "brand": "VietinBank",
+                        "osm_id": 6315672895,
+                        "amenity": "bank",
+                        "osm_type": "n",
+                        "brand:wikidata": "Q7928459",
+                        "brand:wikipedia": "en:Vietinbank"
+                    }
+                },
+                "brand": "VietinBank",
+                "brand_details": {
+                    "wikidata": "Q7928459",
+                    "wikipedia": "en:Vietinbank"
+                },
+                "distance": 343,
+                "place_id": "5125b7819689ab5a4059163b372707852540f00103f9013f8571780100000092030a56696574696e42616e6b"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6802727,
+                    10.759820199482004
+                ]
+            },
+            "id": 92
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Sacombank",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Ngã sáu Cộng Hòa",
+                "lon": 106.6814691,
+                "lat": 10.7657585,
+                "formatted": "Sacombank, Ngã sáu Cộng Hòa, 72406, Vietnam",
+                "address_line1": "Sacombank",
+                "address_line2": "Ngã sáu Cộng Hòa, 72406, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.bank"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Sacombank",
+                        "brand": "Sacombank",
+                        "osm_id": 6315683492,
+                        "amenity": "bank",
+                        "osm_type": "n",
+                        "brand:wikidata": "Q6123772",
+                        "brand:wikipedia": "vi:Ngân hàng thương mại cổ phần Sài Gòn Thương Tín"
+                    }
+                },
+                "brand": "Sacombank",
+                "brand_details": {
+                    "wikidata": "Q6123772",
+                    "wikipedia": "vi:Ngân hàng thương mại cổ phần Sài Gòn Thương Tín"
+                },
+                "distance": 352,
+                "place_id": "51036f92309dab5a405966d27f7f11882540f00103f901a4ae7178010000009203095361636f6d62616e6b"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6814691,
+                    10.765758499482398
+                ]
+            },
+            "id": 93
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Vietin",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Lý Thái Tổ",
+                "lon": 106.6811016,
+                "lat": 10.7657208,
+                "formatted": "Vietin, Lý Thái Tổ, 72406, Vietnam",
+                "address_line1": "Vietin",
+                "address_line2": "Lý Thái Tổ, 72406, Vietnam",
+                "categories": [
+                    "service",
+                    "service.financial",
+                    "service.financial.bank"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 6315672923,
+                        "amenity": "bank",
+                        "name:en": "Vietin",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Vietin"
+                },
+                "distance": 353,
+                "place_id": "5136502a2b97ab5a4059a7497f8e0c882540f00103f9015b85717801000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6811016,
+                    10.765720799482393
+                ]
+            },
+            "id": 94
         },
         {
             "type": "Feature",
@@ -751,7 +4873,462 @@
                     10.76612509948242
                 ]
             },
-            "id": 11
+            "id": 95
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Street Food Ghetto",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Hẻm 633 Ðiện Biên Phủ",
+                "lon": 106.6781032,
+                "lat": 10.7676116,
+                "formatted": "Street Food Ghetto, Hẻm 633 Ðiện Biên Phủ, 72406, Vietnam",
+                "address_line1": "Street Food Ghetto",
+                "address_line2": "Hẻm 633 Ðiện Biên Phủ, 72406, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.attraction"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 5747234522,
+                        "name:en": "Street Food Ghetto",
+                        "tourism": "attraction",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "en": "Street Food Ghetto"
+                },
+                "distance": 681,
+                "place_id": "5107d4f60a66ab5a4059889d376304892540f00103f901dad68f5601000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6781032,
+                    10.767611599482521
+                ]
+            },
+            "id": 96
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70200",
+                "district": "Khu phố 3",
+                "street": "Cong Quynh Street",
+                "housenumber": "247",
+                "lon": 106.68716147701525,
+                "lat": 10.7668237,
+                "formatted": "247, Cong Quynh Street, Khu phố 3, 70200, Vietnam",
+                "address_line1": "247, Cong Quynh Street",
+                "address_line2": "Khu phố 3, 70200, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.sights"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 1222022483,
+                        "historic": "building",
+                        "osm_type": "w",
+                        "addr:street": "Cống Quỳnh",
+                        "addr:housenumber": 247
+                    }
+                },
+                "historic": {
+                    "type": "building"
+                },
+                "distance": 737,
+                "place_id": "517fb62174faab5a40595e26ae1d9d882540f00102f9015395d64800000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68716147701524,
+                    10.766823699482469
+                ]
+            },
+            "id": 97
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Lăng Trương Vĩnh Ký",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Chợ Quán",
+                "postcode": "72760",
+                "street": "Tran Hung Dao Boulevard",
+                "lon": 106.6815644,
+                "lat": 10.7556868,
+                "formatted": "Lăng Trương Vĩnh Ký, Tran Hung Dao Boulevard, 72760, Vietnam",
+                "address_line1": "Lăng Trương Vĩnh Ký",
+                "address_line2": "Tran Hung Dao Boulevard, 72760, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.sights",
+                    "tourism.sights.memorial",
+                    "tourism.sights.memorial.tomb"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Lăng Trương Vĩnh Ký",
+                        "tomb": "mausoleum",
+                        "osm_id": 4187322590,
+                        "historic": "tomb",
+                        "osm_type": "n"
+                    }
+                },
+                "historic": {
+                    "type": "tomb"
+                },
+                "distance": 763,
+                "place_id": "518b074ac09eab5a4059fa955361e9822540f00103f901de7895f9000000009203184cc4836e67205472c6b0c6a16e672056c4a96e68204bc3bd"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6815644,
+                    10.755686799481726
+                ]
+            },
+            "id": 98
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72712",
+                "street": "Ngã bảy Lý Thái Tổ",
+                "lon": 106.6743947,
+                "lat": 10.7676873,
+                "formatted": "Ngã bảy Lý Thái Tổ, 72712, Vietnam",
+                "address_line1": "Ngã bảy Lý Thái Tổ",
+                "address_line2": "72712, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.sights",
+                    "tourism.sights.memorial",
+                    "tourism.sights.memorial.monument"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4220779696,
+                        "historic": "monument",
+                        "osm_type": "n"
+                    }
+                },
+                "historic": {
+                    "type": "monument"
+                },
+                "distance": 978,
+                "place_id": "512046634829ab5a405902aa494f0e892540f00103f901b0fc93fb00000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6743947,
+                    10.767687299482535
+                ]
+            },
+            "id": 99
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "គុយទាវ Hong Phat",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bàn Cờ",
+                "postcode": "72406",
+                "street": "Đường Nguyễn Đình Chiểu",
+                "lon": 106.6833353,
+                "lat": 10.7714656,
+                "formatted": "គុយទាវ Hong Phat, Đường Nguyễn Đình Chiểu, 72406, Vietnam",
+                "address_line1": "គុយទាវ Hong Phat",
+                "address_line2": "Đường Nguyễn Đình Chiểu, 72406, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.attraction"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "គុយទាវ Hong Phat",
+                        "osm_id": 4720321393,
+                        "name:vi": "គុយទាវ Hong Phat",
+                        "tourism": "attraction",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "vi": "គុយទាវ Hong Phat"
+                },
+                "distance": 999,
+                "place_id": "51f36cfbc3bbab5a4059fc88ff89fd8a2540f00103f90171635a190100000092031ce19e82e19ebbe19e99e19e91e19eb6e19e9c20486f6e672050686174"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6833353,
+                    10.771465599482774
+                ]
+            },
+            "id": 100
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Bia Truyền thống Vườn Lài",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Vườn Lài",
+                "postcode": "72712",
+                "street": "Vĩnh Viễn",
+                "lon": 106.6727071,
+                "lat": 10.7649738,
+                "formatted": "Bia Truyền thống Vườn Lài, Vĩnh Viễn, 72712, Vietnam",
+                "address_line1": "Bia Truyền thống Vườn Lài",
+                "address_line2": "Vĩnh Viễn, 72712, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.sights",
+                    "tourism.sights.memorial",
+                    "tourism.sights.memorial.monument"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Bia Truyền thống Vườn Lài",
+                        "osm_id": 11700124145,
+                        "historic": "monument",
+                        "osm_type": "n"
+                    }
+                },
+                "historic": {
+                    "type": "monument"
+                },
+                "distance": 1018,
+                "place_id": "515d9214a20dab5a4059ab2556a5aa872540f00103f901f1b961b9020000009203214269612054727579e1bb816e207468e1bb916e672056c6b0e1bb9d6e204cc3a069"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.67270709999998,
+                    10.764973799482354
+                ]
+            },
+            "id": 101
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Maitrism",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Cầu Ông Lãnh",
+                "postcode": "70000",
+                "street": "Hẻm TK24A Nguyễn Cảnh Chân",
+                "lon": 106.6893134,
+                "lat": 10.7568076,
+                "formatted": "Maitrism, Hẻm TK24A Nguyễn Cảnh Chân, 70000, Vietnam",
+                "address_line1": "Maitrism",
+                "address_line2": "Hẻm TK24A Nguyễn Cảnh Chân, 70000, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.information.map",
+                    "tourism.sights"
+                ],
+                "details": [
+                    "details",
+                    "details.contact",
+                    "details.historic",
+                    "details.wiki_and_media"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Maitrism",
+                        "email": "maitrism@proton.me",
+                        "phone": "+13173449969",
+                        "osm_id": 10831380266,
+                        "tourism": "information",
+                        "website": "https://granol.io/maitrism",
+                        "historic": "yes",
+                        "map_type": "information",
+                        "operator": "Maitrism",
+                        "osm_type": "n",
+                        "wikipedia": "vi:Đạo Nhân Từ",
+                        "board_type": "religion",
+                        "information": "map",
+                        "inscription": "Maitrism",
+                        "addr:postcode": 70000,
+                        "opening_hours": "24/7"
+                    }
+                },
+                "website": "https://granol.io/maitrism",
+                "opening_hours": "24/7",
+                "operator": "Maitrism",
+                "contact": {
+                    "phone": "+13173449969",
+                    "email": "maitrism@proton.me"
+                },
+                "wiki_and_media": {
+                    "wikipedia": "vi:Đạo Nhân Từ"
+                },
+                "historic": {
+                    "inscription": "Maitrism"
+                },
+                "distance": 1050,
+                "place_id": "51736cf3b51dac5a4059f64622497c832540f00103f9012abf9985020000009203084d6169747269736d"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.68931339999999,
+                    10.7568075994818
+                ]
+            },
+            "id": 102
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "買佛頭",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "70200",
+                "district": "Khu phố 4",
+                "street": "Bui Vien Street",
+                "lon": 106.6913686,
+                "lat": 10.7662905,
+                "formatted": "買佛頭, Bui Vien Street, Khu phố 4, 70200, Vietnam",
+                "address_line1": "買佛頭",
+                "address_line2": "Bui Vien Street, Khu phố 4, 70200, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.attraction"
+                ],
+                "details": [
+                    "details"
+                ],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "osm_id": 4611060490,
+                        "name:zh": "買佛頭",
+                        "tourism": "attraction",
+                        "osm_type": "n"
+                    }
+                },
+                "name_international": {
+                    "zh": "買佛頭"
+                },
+                "distance": 1135,
+                "place_id": "51cd9e15623fac5a40596b06753a57882540f00103f9010a33d71201000000"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.69136859999999,
+                    10.766290499482428
+                ]
+            },
+            "id": 103
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Cambodia Bus Companies (many)",
+                "country": "Vietnam",
+                "country_code": "vn",
+                "county": "Phường Bến Thành",
+                "postcode": "70200",
+                "district": "Khu phố 4",
+                "street": "Pham Ngu Lao Street",
+                "lon": 106.6915258,
+                "lat": 10.7678095,
+                "formatted": "Cambodia Bus Companies (many), Pham Ngu Lao Street, Khu phố 4, 70200, Vietnam",
+                "address_line1": "Cambodia Bus Companies (many)",
+                "address_line2": "Pham Ngu Lao Street, Khu phố 4, 70200, Vietnam",
+                "categories": [
+                    "tourism",
+                    "tourism.attraction"
+                ],
+                "details": [],
+                "datasource": {
+                    "sourcename": "openstreetmap",
+                    "attribution": "© OpenStreetMap contributors",
+                    "license": "Open Database License",
+                    "url": "https://www.openstreetmap.org/copyright",
+                    "raw": {
+                        "name": "Cambodia Bus Companies (many)",
+                        "osm_id": 11430381711,
+                        "tourism": "attraction",
+                        "osm_type": "n"
+                    }
+                },
+                "distance": 1221,
+                "place_id": "51c6d56df541ac5a4059d4aba3531e892540f00103f9018fc84da90200000092031d43616d626f6469612042757320436f6d70616e69657320286d616e7929"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6915258,
+                    10.767809499482532
+                ]
+            },
+            "id": 104
         }
     ]
 }
