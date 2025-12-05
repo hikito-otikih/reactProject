@@ -10,7 +10,7 @@ import json
 import requests
 import os
 from dotenv import load_dotenv
-from translator import translate
+from translator import translate, detectLanguage
 
 load_dotenv()
 GEMINI_KEY = os.getenv('GEMINI_KEY')
@@ -166,8 +166,6 @@ def pass2_generate_response(user_input, analysis, conversation_history=None):
                 "confidence": 0.0,
                 "slots": {{{slots}}},
                 {special_fields}
-                "entities": [{{"type":"string", "text":"string"}}],
-                "keywords": []
             }}
         ],
         "followup": {str(is_ambiguous).lower()},
@@ -199,7 +197,14 @@ EXTRACTION RULES:
 3. If information is missing (as identified in analysis), set fields to null.
 4. Extract all entities mentioned in the query (LOCATION, DATE, MONEY, NUMBER, PREFERENCES).
 5. Set confidence based on completeness and clarity.
-6. Suggested functions: plan_trip, search_itinerary, suggest_itinerary, get_attractions, suggest_attractions, ask_clarify, confirm_start_location, confirm_destination, greet, farewell, faq_answer. 
+6. Available functions and their purposes:
+   - itinerary_planning: Create complete trip itinerary with locations, timing, routes.
+   - suggest_categories: Suggest place categories based on user context 
+   - suggest_attractions: Suggest attractions of given category based on start location
+   - get_attraction_details: Display attraction details (image, description, opening hours, ticket price)
+   - ask_clarify: Ask for clarification when info is missing.
+   - confirm_start_location: Confirm or ask for journey starting point.
+   - confirm_destination: Confirm or ask for destination preferences.
 {special_rules}
 
 {examples}
@@ -374,14 +379,20 @@ if __name__ == "__main__":
     print("=== Two-Pass Orchestrator Testing (ACCURACY FIRST) ===\n")
     
     test_cases = [
-        "Quanh đây có gì chơi không?",
-        "Tôi muốn tham khảo một số quán cafe gần đây.",
-        "Lập kế hoạch chuyến đi 3 ngày ở Đà Nẵng với các điểm tham quan nổi bật và nhà hàng địa phương.",
+        "Tôi muốn tham gia buổi hoà nhạc?",
+        "Lên kế hoạch đi vòng quanh hồ gươm và thưởng thức ẩm thực đường phố trong một ngày.",
+        "Đi vòng quanh thành phố Hồ Chí Minh, lai rai mấy quán cà phê đẹp và các điểm tham quan lịch sử.",
     ]
     
     for i, test_input in enumerate(test_cases, 1):
+        srcLanguage = detectLanguage(test_input)
         test_input = translate(test_input, target_language='en')
         print(f"Test {i}: {test_input}")
         result = extract_info_with_orchestrator(test_input)
+        # translate the location names back to Vietnamese for display
+        if 'intents' in result:
+            for intent in result['intents']:
+                if 'slots' in intent and 'destination' in intent['slots'] and intent['slots']['destination']:
+                    intent['slots']['destination'] = translate(intent['slots']['destination'], target_language=srcLanguage)
         print(json.dumps(result, indent=2))
         print("\n" + "="*70 + "\n")

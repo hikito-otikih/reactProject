@@ -8,6 +8,13 @@ translator = Translator(service_urls=[
     'translate.google.co.jp'
 ])
 
+def detectLanguage(text):
+    try:
+        detected = translator.detect(text)
+        return detected.lang
+    except Exception as e:
+        print(f"Detection error: {e}")
+        return None
 
 def translate(text, target_language = 'en'):
     try:
