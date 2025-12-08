@@ -10,7 +10,7 @@ import json
 import requests
 import os
 from dotenv import load_dotenv
-from translator import translate, detectLanguage
+from .translator import translate, detectLanguage
 
 load_dotenv()
 GEMINI_KEY = os.getenv('GEMINI_KEY')
@@ -37,37 +37,28 @@ def pass1_analyze_query(user_input, conversation_history=None):
     Returns:
         dict: Analysis results with recommendations for Pass 2
     """
-    
-    # Build conversation context string
-    context_str = ""
-    if conversation_history:
-        context_str = "\n\nRecent Conversation:\n"
-        for msg in conversation_history[-3:]:
-            context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
-    
+
     analysis_prompt = f"""You are a Query Analysis Expert for a Travel Chatbot. Your ONLY job is to analyze the user's query and provide strategic recommendations for how to process it.
 
 DO NOT attempt to answer the user's query. Only analyze it.
 
 USER QUERY: "{user_input}"
-{context_str}
 
 Provide a detailed analysis in JSON format:
-
 {{
-  "query_type": "string",  // e.g., "accommodation_search", "itinerary_planning", "clarification_needed", "modification", "greeting"
+  "query_type": "string",  // e.g., "attractions_search", "itinerary_planning", "clarification_needed", "answer_previous_question", "general_inquiry", etc.
   "complexity": "low|medium|high",
   "domains_involved": ["domain1", "domain2"],  // e.g., ["accommodation", "transport"]
   "is_ambiguous": true/false,
   "ambiguity_reasons": ["reason1", "reason2"],  // What's unclear?
   "missing_information": ["field1", "field2"],  // What data is missing?
   "context_dependency": true/false,  // Does this rely on previous messages?
+  "history_traverse_necessary": true/false,  // Should we look through conversation history to answer this?
   "recommended_schema_fields": ["field1", "field2"],  // Which fields are relevant?
   "suggested_examples": ["example_id1", "example_id2"],  // Which examples would help?
   "clarification_needed": true/false,
   "suggested_clarification": "string or null",  // What to ask user?
   "special_handling": ["flag1", "flag2"],  // e.g., ["vague_location", "multi_intent"]
-  "confidence": 0.0-1.0,  // How confident are you in this analysis?
   "reasoning": "string"  // Explain your analysis
 }}
 
@@ -128,7 +119,7 @@ CRITICAL: Return ONLY the JSON. No additional text."""
         }
 
 
-def pass2_generate_response(user_input, analysis, conversation_history=None):
+def pass2_generate_response(user_input, analysis, conversation_history=None, history_traverse=False):
     """
     PASS 2: EXECUTION PHASE
     
@@ -151,7 +142,7 @@ def pass2_generate_response(user_input, analysis, conversation_history=None):
     
     # Build schema dynamically
     slots = _build_slots_from_analysis(analysis)
-    
+
     # Add special fields for ambiguous cases
     special_fields = ""
     if is_ambiguous:
@@ -175,9 +166,9 @@ def pass2_generate_response(user_input, analysis, conversation_history=None):
     
     # Build context if needed
     context_str = ""
-    if analysis.get('context_dependency') and conversation_history:
+    if (history_traverse or analysis.get('context_dependency')) and conversation_history:
         context_str = "\n\nRECENT CONVERSATION CONTEXT:\n"
-        for msg in conversation_history[-2:]:
+        for msg in conversation_history[-5:]:
             context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
     
     # Build special rules based on analysis
@@ -269,7 +260,7 @@ EXTRACT THE JSON NOW:"""
 
 def _build_slots_from_analysis(analysis):
     """Build schema slots based on analysis recommendations."""
-    from prompt_config import SCHEMA_SLOTS
+    from .prompt_config import SCHEMA_SLOTS
     
     domains = analysis.get('domains_involved', ['general'])
     merged_slots = {}
@@ -306,7 +297,7 @@ def _build_special_rules(analysis):
 
 def _build_examples_from_analysis(analysis):
     """Build relevant examples based on analysis."""
-    from prompt_config import FEW_SHOT_EXAMPLES
+    from .prompt_config import FEW_SHOT_EXAMPLES
     
     examples = []
     suggested = analysis.get('suggested_examples', [])
@@ -362,13 +353,15 @@ def extract_info_with_orchestrator(user_input, conversation_history=None):
     # PASS 1: ANALYSIS
     print("🔍 Pass 1: Analyzing query...")
     analysis = pass1_analyze_query(user_input, conversation_history)
-    print(f"   Query Type: {analysis.get('query_type')}")
-    print(f"   Complexity: {analysis.get('complexity')}")
-    print(f"   Confidence: {analysis.get('confidence')}")
+    # print the dictionary analysis
+    print("Analysis Result:")
+    print(json.dumps(analysis, indent=2))
+    print("✅ Analysis complete\n")
     
     # PASS 2: EXECUTION
     print("⚙️  Pass 2: Generating precise response...")
-    result = pass2_generate_response(user_input, analysis, conversation_history)
+    history_traverse = analysis.get('history_traverse_necessary', False)
+    result = pass2_generate_response(user_input, analysis, conversation_history, history_traverse=history_traverse)
     print("✅ Extraction complete\n")
     
     return result
