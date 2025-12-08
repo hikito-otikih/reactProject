@@ -16,8 +16,8 @@ class UserResponse(Response) :
     
 class BotResponse(Response) :
     def __init__(self,history,bot_message,whom='bot') : 
-        if history and history[history.__len__()-1][0]['role'] != 'user':
-            raise ValueError("Last history entry must be 'user'")
+        # if history and history[history.__len__()-1][0]['role'] != 'user':
+            # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
 
 class CompositeResponse(BotResponse) :
@@ -165,7 +165,7 @@ class Bot_create_itinerary(BotResponse):
         self.categories = categories
         self.destinations = destinations
         self.duration_days = duration_days
-    
+
 
 
 
