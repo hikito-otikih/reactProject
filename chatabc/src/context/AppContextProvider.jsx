@@ -18,6 +18,7 @@ export const AppContextProvider = ({ children }) => {
     //const [token, setToken] = useState(localStorage.getItem('token') || null);
     const [loadingUser, setLoadingUser] = useState(false);
     const [chatsListChanged, setChatsListChanged] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     // const fetchUserChats = useCallback(async () => {
     //     if (!token) return; 
@@ -143,7 +144,7 @@ export const AppContextProvider = ({ children }) => {
 
     const value = {
         // navigate, user, setUser, chats, setChats, selectedChat, setSelectedChat, theme, setTheme
-        navigate, user, setUser, chats, setChats, selectedChat, setSelectedChat, theme, setTheme, createNewChat, loadingUser, fetchUser, token, setToken, axios, fetchUserChats, setChatsListChanged
+        navigate, user, setUser, chats, setChats, selectedChat, setSelectedChat, theme, setTheme, createNewChat, loadingUser, fetchUser, token, setToken, axios, fetchUserChats, setChatsListChanged, selectedImage, setSelectedImage
     };
     return (
         <AppContext.Provider value={value}>
