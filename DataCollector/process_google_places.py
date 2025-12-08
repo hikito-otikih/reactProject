@@ -3,7 +3,7 @@ import sqlite3
 import re
 
 # Load the dataset
-file_path = 'result/dataset_crawler-google-places_2025-12-06_13-12-36-381.csv'
+file_path = 'result/dataset_crawler-google-places_2025-12-08_13-32-02-074.csv'
 df = pd.read_csv(file_path)
 
 # --- Feature Engineering & Cleaning Steps ---
@@ -34,7 +34,7 @@ df_clean.columns = [re.sub(r'[^a-zA-Z0-9]', '_', col).lower() for col in df_clea
 
 # --- Export to SQLite ---
 
-db_filename = 'result/google_places.db'
+db_filename = 'result/enhance.db'
 conn = sqlite3.connect(db_filename)
 
 # Write the dataframe to the 'places' table
