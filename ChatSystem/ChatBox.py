@@ -45,8 +45,9 @@ class ChatBox :
         return bot_response 
 
 if __name__ == "__main__" :
-    chatbox = ChatBox()
-    user_input = "I want to go to Paris"
-    bot_response = chatbox.ComputeResponse_from_user_input(user_input)
-    print(f"Bot Response: {bot_response.get_message()}")
-    chatbox.add_response(bot_response)
+    # interactive test
+    chat_box = ChatBox()
+    while True :
+        user_input = input("You: ")
+        bot_response = chat_box.process_input(user_input)
+        print(f"Bot: {bot_response.get_message()}")

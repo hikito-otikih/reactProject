@@ -126,7 +126,7 @@ def convert_userInput_to_response(user_input: str, conversation_history: list = 
     
     # Map function to appropriate Response class
     if function_name == 'ask_clarify':
-        return Bot_ask_clarify(conversation_history, text or 'Could you provide more details?')
+        return Bot_ask_clarify(text or 'Could you provide more details?')
     
     elif function_name == 'confirm_start_location':
         location = params.get('location')
@@ -166,8 +166,8 @@ def convert_userInput_to_response(user_input: str, conversation_history: list = 
     
     else:
         # Default fallback
-        return Bot_ask_clarify(conversation_history, 'I\'m processing your request. Could you provide more details?')
-
+        return Bot_ask_clarify('I\'m processing your request. Could you provide more details?')
+    
 
 if __name__ == "__main__":
     print("=== End-to-End User Input Processing ===\n")

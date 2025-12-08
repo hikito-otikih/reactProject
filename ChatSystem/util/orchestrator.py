@@ -37,12 +37,17 @@ def pass1_analyze_query(user_input, conversation_history=None):
     Returns:
         dict: Analysis results with recommendations for Pass 2
     """
-
+    context_str = ""
+    if conversation_history:
+        context_str = "\n\nRecent Conversation:\n"
+        for msg in conversation_history[-5:]:
+            context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
     analysis_prompt = f"""You are a Query Analysis Expert for a Travel Chatbot. Your ONLY job is to analyze the user's query and provide strategic recommendations for how to process it.
 
 DO NOT attempt to answer the user's query. Only analyze it.
 
 USER QUERY: "{user_input}"
+{context_str}
 
 Provide a detailed analysis in JSON format:
 {{
@@ -118,8 +123,7 @@ CRITICAL: Return ONLY the JSON. No additional text."""
             "reasoning": f"Analysis failed: {str(e)}"
         }
 
-
-def pass2_generate_response(user_input, analysis, conversation_history=None, history_traverse=False):
+def pass2_generate_response(user_input, analysis, conversation_history=None):
     """
     PASS 2: EXECUTION PHASE
     
@@ -142,7 +146,7 @@ def pass2_generate_response(user_input, analysis, conversation_history=None, his
     
     # Build schema dynamically
     slots = _build_slots_from_analysis(analysis)
-
+    
     # Add special fields for ambiguous cases
     special_fields = ""
     if is_ambiguous:
@@ -166,9 +170,9 @@ def pass2_generate_response(user_input, analysis, conversation_history=None, his
     
     # Build context if needed
     context_str = ""
-    if (history_traverse or analysis.get('context_dependency')) and conversation_history:
+    if analysis.get('context_dependency') and conversation_history:
         context_str = "\n\nRECENT CONVERSATION CONTEXT:\n"
-        for msg in conversation_history[-5:]:
+        for msg in conversation_history[-2:]:
             context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
     
     # Build special rules based on analysis
@@ -257,7 +261,6 @@ EXTRACT THE JSON NOW:"""
             'error': str(e)
         }
 
-
 def _build_slots_from_analysis(analysis):
     """Build schema slots based on analysis recommendations."""
     from .prompt_config import SCHEMA_SLOTS
@@ -293,6 +296,7 @@ def _build_special_rules(analysis):
         rules.append('10. CONTEXT DEPENDENT: Reference the recent conversation context to understand this query.')
     
     return '\n'.join(rules) if rules else ''
+
 
 
 def _build_examples_from_analysis(analysis):
@@ -360,8 +364,7 @@ def extract_info_with_orchestrator(user_input, conversation_history=None):
     
     # PASS 2: EXECUTION
     print("⚙️  Pass 2: Generating precise response...")
-    history_traverse = analysis.get('history_traverse_necessary', False)
-    result = pass2_generate_response(user_input, analysis, conversation_history, history_traverse=history_traverse)
+    result = pass2_generate_response(user_input, analysis, conversation_history)
     print("✅ Extraction complete\n")
     
     return result
