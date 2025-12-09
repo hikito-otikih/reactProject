@@ -19,6 +19,9 @@ class BotResponse(Response) :
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
+    
+    def process(self):
+        pass
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses) :

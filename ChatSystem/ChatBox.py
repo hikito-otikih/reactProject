@@ -39,9 +39,10 @@ class ChatBox :
 
     def process_input(self, user_input: str) -> None :
         user_response = UserResponse(user_input)
-        self.add_response(user_response)
+        self.add_response(user_response) ## add to history
         bot_response = self.ComputeResponse_from_user_input(user_input)
         self.add_response(bot_response)
+        bot_response.process() ## process the response
         return bot_response 
 
 if __name__ == "__main__" :
