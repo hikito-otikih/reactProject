@@ -15,15 +15,28 @@ class UserResponse(Response) :
         super().__init__(user_message,whom)
     
 class BotResponse(Response) :
-    def __init__(self,history,bot_message,whom='bot') : 
+    def __init__(self,bot_message,whom='bot') : 
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
 
+    def process(self):
+        pass
+
+class Bot_ask_extra_info(BotResponse) :
+    list_of_responses = [
+        "Could you provide more details about your budget, duration, or preferences?",
+        "To help you better, can you share more about your budget, trip length, or interests?",
+        "Please tell me more about your budget, how long you'll be traveling, or what you like.",
+        "Can you give me additional info on your budget, duration, or travel preferences?",
+        "I'd love to assist you better! Could you share more about your budget, trip duration, or interests?"
+    ]
+    def __init__(self,info_text) : 
+        super().__init__(info_text)
 class CompositeResponse(BotResponse) :
     def __init__(self, responses) :
         combined_message = "\n".join([resp.get_message() for resp in responses])
-        super().__init__(None, combined_message)
+        super().__init__(combined_message)
         self.responses = responses
      
 class Bot_ask_start_location(BotResponse) :
@@ -35,8 +48,8 @@ class Bot_ask_start_location(BotResponse) :
         "Let's have a trip, tell me where to begin!"
     ]
 
-    def __init__(self, history) : 
-        super().__init__(history, random.choice(self.list_of_responses))
+    def __init__(self) : 
+        super().__init__(random.choice(self.list_of_responses))
 
 class Bot_ask_destination(BotResponse) :
     list_of_responses = [
@@ -46,8 +59,8 @@ class Bot_ask_destination(BotResponse) :
         "Where are we headed?",
         "What's the place you want to visit?"
     ]
-    def __init__(self, history) : 
-        super().__init__(history, random.choice(self.list_of_responses))
+    def __init__(self) : 
+        super().__init__(random.choice(self.list_of_responses))
 
 class Bot_confirm_start_location(BotResponse):
     list_of_responses = [
@@ -57,9 +70,9 @@ class Bot_confirm_start_location(BotResponse):
         "Perfect! Your starting location is {location}.",
         "Got it! Starting from {location}. Let's plan your trip!"
     ]
-    def __init__(self, history, location):
+    def __init__(self, location):
         response = random.choice(self.list_of_responses).format(location=location)
-        super().__init__(history, response)
+        super().__init__(response)
         self.location = location
 
 
@@ -71,9 +84,9 @@ class Bot_confirm_destination(BotResponse):
         "Confirmed! Adding {destination} to your itinerary.",
         "Perfect! We'll include {destination} in your trip."
     ]
-    def __init__(self, history, destination):
+    def __init__(self, destination):
         response = random.choice(self.list_of_responses).format(destination=destination)
-        super().__init__(history, response)
+        super().__init__(response)
         self.destination = destination
 
 
@@ -85,8 +98,8 @@ class Bot_ask_category(BotResponse) :
         "What kind of spot are you looking for?",
         "What category of destination are you thinking about?"
     ]
-    def __init__(self, history) : 
-        super().__init__(history, random.choice(self.list_of_responses))
+    def __init__(self) : 
+        super().__init__(random.choice(self.list_of_responses))
 
 class Bot_suggest_attraction(BotResponse) :
     list_of_responses = [
@@ -98,7 +111,7 @@ class Bot_suggest_attraction(BotResponse) :
     ]
     def __init__(self,location,category) : 
         response = random.choice(self.list_of_responses).format(location=location,category=category)
-        super().__init__(None,response)
+        super().__init__(response)
 
 class Bot_suggest_categories(BotResponse) :
     list_of_responses = [
@@ -108,20 +121,20 @@ class Bot_suggest_categories(BotResponse) :
         "Some great categories to explore are museum, park, restaurant, historical site, and shopping area. What do you think?",
         "How about selecting from museum, park, restaurant, historical site, or shopping area? Any favorites?"
     ]
-    def __init__(self, history) : 
-        super().__init__(history, random.choice(self.list_of_responses))
+    def __init__(self) : 
+        super().__init__(random.choice(self.list_of_responses))
 
 class Bot_ask_clarify(BotResponse) :
     def __init__(self,clarify_text) : 
-        super().__init__(None,clarify_text)
-
+        super().__init__(clarify_text)
 
 class Bot_display_attraction_details(BotResponse) :
-    def __init__(self, history, attraction_name) : 
+    # attributes: id of place in database
+    def __init__(self, attraction_name) : 
         response = f"Here are the details for {attraction_name}"
         # Frontend can format better 
         # @Huynh Chi Ton
-        super().__init__(history, response)
+        super().__init__(response)
 
 
 
@@ -134,13 +147,13 @@ class Bot_suggest_attractions_search(BotResponse):
         "Let me show you {limit} {category} places near {location}.",
         "Found {limit} amazing {category} spots in {location}!"
     ]
-    def __init__(self, history, category, location, limit=5):
+    def __init__(self, category, location, limit=5):
         response = random.choice(self.list_of_responses).format(
             category=category,
             location=location,
             limit=limit
         )
-        super().__init__(history, response)
+        super().__init__(response)
         self.category = category
         self.location = location
         self.limit = limit
@@ -160,7 +173,7 @@ class Bot_create_itinerary(BotResponse):
             start = start_location or 'your location',
             days = duration_days
         )
-        super().__init__(history, response)
+        super().__init__(response)
         self.start_location = start_location
         self.categories = categories
         self.destinations = destinations

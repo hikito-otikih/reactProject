@@ -4,9 +4,9 @@ Combines orchestrator, translator, and formatter for complete processing.
 """
 
 import json
+from typing import Dict
 from .orchestrator import extract_info_with_orchestrator
 from .translator import translate, detectLanguage
-from .function_dispatcher import format_llm_response
 from .Response import (
     Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
@@ -14,7 +14,7 @@ from .Response import (
     Bot_suggest_attractions_search, Bot_display_attraction_details, Bot_create_itinerary
 )
 
-def process_user_input(user_input: str, conversation_history: list = None) -> dict:
+def process_user_input(user_input: str, collected_information: list = None, conversation_history: list = None) -> dict:
     """
     End-to-end function: User text → Function name + params
     
@@ -57,16 +57,53 @@ def process_user_input(user_input: str, conversation_history: list = None) -> di
     english_input = translate(user_input, target_language='en') if source_language != 'en' else user_input
     
     # Step 2: Extract intent using 2-pass orchestrator
-    extracted_data = extract_info_with_orchestrator(english_input, conversation_history)
+    extracted_data = extract_info_with_orchestrator(english_input, collected_information, conversation_history)
     
     # Step 3: Format to clean structure
-    result = format_llm_response(extracted_data)
+    result = _format_llm_response(extracted_data)
     
     # Translate all text fields back to source language if needed
     if source_language and source_language != 'en' and 'params' in result:
         _translate_all_text_back(result['params'], source_language)
     
     return result
+
+
+def _format_llm_response(extracted_data: Dict) -> Dict:
+    """
+    Convert LLM extraction to clean, readable format.
+    
+    Input: Raw LLM extraction from orchestrator
+    Output: Simplified structure for your team
+    
+    Example:
+        Input: {'intents': [{'intent': 'suggest_itinerary', 'slots': {...}}], ...}
+        Output: {'action': 'suggest_itinerary', 'params': {...}, 'needs_clarification': False}
+    """
+    
+    # Handle clarification needed
+    if extracted_data.get('followup') and extracted_data.get('clarify_question'):
+        return {
+            'function': 'ask_clarify',
+            'text': extracted_data.get('clarify_question'),
+        }
+    
+    # Handle empty/invalid response
+    intents = extracted_data.get('intents', [])
+    if not intents:
+        return {
+            'function': 'ask_clarify',
+            'text': 'Could you please provide more details?',
+            'error': 'No intent detected'
+        }
+    
+    # Extract main intent
+    primary = intents[0]
+    
+    return {
+        'function': primary.get('suggested_function') or primary.get('intent'),
+        'params': primary.get('slots', {}),
+    }
 
 
 def _translate_all_text_back(params: dict, target_language: str):
@@ -106,68 +143,6 @@ def _translate_all_text_back(params: dict, target_language: str):
         elif isinstance(value, dict):
             # Recursively translate nested dictionaries
             _translate_all_text_back(value, target_language)
-
-def convert_userInput_to_response(user_input: str, conversation_history: list = None) -> Response:
-    """
-    Convert raw user input to appropriate Response object based on function output.
-    
-    Parameters:
-        user_input (str): Raw input from user.
-        conversation_history (list): Conversation context.
-    
-    Returns:
-        Response: BotResponse subclass based on function type.
-    """
-    outputDict = process_user_input(user_input, conversation_history)
-    
-    function_name = outputDict.get('function')
-    params = outputDict.get('params', {})
-    text = outputDict.get('text')
-    
-    # Map function to appropriate Response class
-    if function_name == 'ask_clarify':
-        return Bot_ask_clarify(text or 'Could you provide more details?')
-    
-    elif function_name == 'confirm_start_location':
-        location = params.get('location')
-        if location:
-            return CompositeResponse([Bot_confirm_start_location(conversation_history, location),
-                                      Bot_ask_destination(conversation_history)])
-        else:
-            return Bot_ask_start_location(conversation_history)
-    
-    elif function_name == 'confirm_destination':
-        destination = params.get('destination')
-        if destination:
-            return CompositeResponse([Bot_confirm_destination(conversation_history, destination),
-                                      Bot_ask_category(conversation_history)])
-        else:
-            return Bot_ask_category(conversation_history)
-    
-    elif function_name == 'suggest_categories':
-        return Bot_suggest_categories(conversation_history)
-    
-    elif function_name == 'suggest_attractions':
-        category = params.get('category', 'attraction')
-        location = params.get('location', 'your area')
-        limit = params.get('limit', 5)
-        return Bot_suggest_attractions_search(conversation_history, category, location, limit)
-    
-    elif function_name == 'get_attraction_details':
-        attraction_name = params.get('attraction_name') or f"Attraction #{params.get('attraction_id')}"
-        return Bot_display_attraction_details(conversation_history, attraction_name)
-    
-    elif function_name == 'itinerary_planning':
-        start_location = params.get('start_location')
-        categories = params.get('categories', [])
-        destinations = params.get('destinations', [])
-        duration_days = params.get('duration_days', 1)
-        return Bot_create_itinerary(conversation_history, start_location, categories, destinations, duration_days)
-    
-    else:
-        # Default fallback
-        return Bot_ask_clarify('I\'m processing your request. Could you provide more details?')
-    
 
 if __name__ == "__main__":
     print("=== End-to-End User Input Processing ===\n")
