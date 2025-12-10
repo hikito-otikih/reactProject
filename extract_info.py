@@ -395,6 +395,7 @@ if __name__ == "__main__":
     # Test cases
     test_cases = [
         "journey to Da Lat",
+        "I wanto to visit 3 museums and 2 parks starting from HCMUS"
     ]
     
     for i, test_text in enumerate(test_cases, 1):
