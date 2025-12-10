@@ -10,7 +10,7 @@ from .translator import translate, detectLanguage
 from .Response import (
     Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
-    Bot_suggest_categories, Bot_confirm_start_location, Bot_confirm_destination,
+    Bot_suggest_categories,
     Bot_suggest_attractions_search, Bot_display_attraction_details, Bot_create_itinerary
 )
 

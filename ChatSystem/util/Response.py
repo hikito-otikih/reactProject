@@ -1,5 +1,10 @@
+import sys
+import os
+# Add project root to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import random
+from DataCollector import db_utils  
 
 
 class Response : 
@@ -62,34 +67,6 @@ class Bot_ask_destination(BotResponse) :
     def __init__(self) : 
         super().__init__(random.choice(self.list_of_responses))
 
-class Bot_confirm_start_location(BotResponse):
-    list_of_responses = [
-        "So you're starting from {location}",
-        "Confirmed! Starting point: {location}.",
-        "Great! We'll begin your journey from {location}.",
-        "Perfect! Your starting location is {location}.",
-        "Got it! Starting from {location}. Let's plan your trip!"
-    ]
-    def __init__(self, location):
-        response = random.choice(self.list_of_responses).format(location=location)
-        super().__init__(response)
-        self.location = location
-
-
-class Bot_confirm_destination(BotResponse):
-    list_of_responses = [
-        "You want to visit {destination}, correct?",
-        "So {destination} is on your list?",
-        "Great choice! {destination} it is!",
-        "Confirmed! Adding {destination} to your itinerary.",
-        "Perfect! We'll include {destination} in your trip."
-    ]
-    def __init__(self, destination):
-        response = random.choice(self.list_of_responses).format(destination=destination)
-        super().__init__(response)
-        self.destination = destination
-
-
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
         "What type of place are you interested in?",
@@ -109,9 +86,12 @@ class Bot_suggest_attraction(BotResponse) :
         "Consider adding {location} to your itinerary. It's perfect for {category} lovers!",
         "{location} is a fantastic spot that aligns with your interests in {category}."
     ]
+
     def __init__(self,location,category) : 
         response = random.choice(self.list_of_responses).format(location=location,category=category)
         super().__init__(response)
+        self.id_location = db_utils.search_by_name(location)
+
 
 class Bot_suggest_categories(BotResponse) :
     list_of_responses = [
@@ -136,9 +116,6 @@ class Bot_display_attraction_details(BotResponse) :
         # @Huynh Chi Ton
         super().__init__(response)
 
-
-
-
 class Bot_suggest_attractions_search(BotResponse):
     list_of_responses = [
         "I found {limit} great {category} options near {location}. Would you like to see them?",
@@ -157,7 +134,6 @@ class Bot_suggest_attractions_search(BotResponse):
         self.category = category
         self.location = location
         self.limit = limit
-
 
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
@@ -182,4 +158,9 @@ class Bot_create_itinerary(BotResponse):
 
 
 
+if __name__ == "__main__":
+    botresp = Bot_suggest_attraction("Quận 1","cafe")
+    print(botresp.id_location)
+
+    print(botresp.get_message())   
 
