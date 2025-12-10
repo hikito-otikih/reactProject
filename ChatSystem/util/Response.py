@@ -157,10 +157,12 @@ class Bot_create_itinerary(BotResponse):
 
 
 
-
 if __name__ == "__main__":
-    botresp = Bot_suggest_attraction("Quận 1","cafe")
-    print(botresp.id_location)
+    botresp = Bot_suggest_attraction("Khách sạn Nikko Saigon","cafe")
+    # [[] , [] , []]
+    print(type(botresp.id_location))
+    for location in botresp.id_location :
+        print(location)
 
     print(botresp.get_message())   
 
