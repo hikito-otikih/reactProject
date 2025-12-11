@@ -12,8 +12,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util.UserInputProcessing import process_user_input
 
+from ChatSystem.location_sequence import LocationSequence
+
 class ChatBox :
-    def __init__(self) :
+    def __init__(self,location_sequence: LocationSequence) :
+        self.location_sequence = location_sequence
         self.response_history = []
         self.message_history = []  # for process_user_input
         self.collected_information = {
@@ -151,7 +154,7 @@ class ChatBox :
 
 if __name__ == "__main__" :
     # interactive test
-    chat_box = ChatBox()
+    chat_box = ChatBox(location_sequence=LocationSequence())
     while True :
         user_input = input("You: ")
         bot_response = chat_box.process_input(user_input)
