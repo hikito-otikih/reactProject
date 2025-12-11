@@ -1,12 +1,12 @@
-# LocationSequence Usage Guide
+# LocationSequence: Quick Guide
 
-This class manages an ordered list of place IDs backed by `DataCollector/result/places.db`.
+This class manages an ordered itinerary of place IDs backed by `DataCollector/result/places.db`.
 
 ## Database expectations
 - SQLite DB at `DataCollector/result/places.db`
 - Required columns: `rowid`, `Title`, `location_lat`, `location_lng`, `rating`, `Categories`
+- `Categories` is a text field storing bracketed, comma-separated values, e.g. `[catering,commercial,service]`.
 - `rating` is treated as up to 5; if 0/NULL it is floored to 1 for scoring.
-- Category filters in the current code use `Categories LIKE '%<category>%'` (no `cat_*` flag support yet).
 
 ## Core methods
 - `append(position, ID)`: Insert an ID at a position (IndexError if out of bounds).
@@ -26,21 +26,25 @@ This class manages an ordered list of place IDs backed by `DataCollector/result/
   - `pos >= len(sequence)`: nearest to the last item.
   - Between two items: minimizes distance to both neighbors.
   - Scoring: `distance / rating` (rating floored to 1); excludes IDs already in the sequence.
-  - Category filtering uses `Categories LIKE` (adjust code if you rely on `cat_*` columns).
+  - Category filtering uses `Categories LIKE '%<category>%'`.
 - `suggest_around(lat, lon, limit=5, category=None)`
   - Finds nearby places around a coordinate; scoring is `distance / rating`; category via `Categories LIKE`.
-
-## Random category helper
-- `get_suggest_category()`: Returns a random category from a preset list.
+- `suggest_itinerary_to_sequence(limit=5)`
+  - Append-style recommendations: uses the last stop as anchor (if any), otherwise cold-starts by rating.
+  - Scoring: `distance / rating` (rating floored to 1; assumes rating up to 5).
+  - Parses `Categories` as bracketed list strings (e.g., `[catering,commercial,service]`).
+  - Returns up to `limit` new IDs; does not mutate the sequence itself.
+- `get_suggest_category()`
+  - Returns a random category from a preset list.
 
 ## Quick smoke test
 Run directly:
 ```
 python ChatSystem/location_sequence.py
 ```
-This executes a sample `search_by_name` and a `suggest_for_position` run, printing IDs, names, and scores.
+This executes sample runs for `search_by_name`, `suggest_for_position`, and `suggest_itinerary_to_sequence`, printing IDs, names, and scores.
 
 ## Notes and caveats
 - Missing/invalid coordinates skip a candidate silently.
-- If your schema uses `cat_*` columns instead of `Categories` text, add a text `Categories` column or extend the queries to OR on `cat_<category> > 0`.
-- Sequence is not automatically mutated by suggestion methods; they return IDs for the caller to append.
+- Category filtering uses the `Categories` text field; ensure your stored categories follow the bracketed, comma-separated format.
+- Suggestion methods return IDs; the caller is responsible for appending them to the sequence.

@@ -276,8 +276,92 @@ class LocationSequence:
                 scored.append((score, row["rowid"]))
             scored.sort(key=lambda x: x[0])
             return [rid for _, rid in scored[:limit]]
-    # def suggest_itinerary_to_sequence(self, limit=5):
-        
+    def suggest_itinerary_to_sequence(self, limit=5):
+        """
+        Recommend up to `limit` new place IDs to append at the end of the trip.
+        - Uses the last ID in the current sequence as the anchor if present; otherwise cold-start by rating.
+        - Scoring = distance / rating (rating floored to 1; assumes rating up to 5).
+        - Category filtering expects the `Categories` column to store bracketed, comma-separated values like
+          "[catering,commercial,service]". We parse and match on lowercase tokens.
+        """
+
+        if limit <= 0:
+            return []
+
+        db_path = os.path.join(self.RESULT_DIR, 'places.db')
+        exclude_ids = set(self.sequence)
+
+        def _parse_categories(cat_str):
+            if not cat_str:
+                return []
+            s = str(cat_str).strip()
+            if s.startswith('[') and s.endswith(']'):
+                s = s[1:-1]
+            return [token.strip().lower() for token in s.split(',') if token.strip()]
+
+        def _dist(lat1, lon1, lat2, lon2):
+            return 6371000 * (math.acos(math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+                                        math.cos(math.radians(lon2 - lon1)) +
+                                        math.sin(math.radians(lat1)) * math.sin(math.radians(lat2))))
+
+        anchor_id = self.sequence[-1] if self.sequence else None
+        candidates = []
+        pool = max(limit * 5, limit + 5)
+
+        with sqlite3.connect(db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            if anchor_id:
+                cur.execute("SELECT location_lat, location_lng FROM places WHERE rowid = ?", (anchor_id,))
+                anchor = cur.fetchone()
+                if not anchor:
+                    return []
+                a_lat, a_lon = anchor["location_lat"], anchor["location_lng"]
+
+                cur.execute(
+                    """
+                    SELECT rowid, rating, Categories, location_lat, location_lng,
+                    (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                    cos(radians(location_lng) - radians(?)) +
+                    sin(radians(?)) * sin(radians(location_lat)))) AS distance
+                    FROM places
+                    WHERE rowid != ?
+                    ORDER BY distance
+                    LIMIT ?
+                    """,
+                    (a_lat, a_lon, a_lat, anchor_id, pool)
+                )
+                for row in cur.fetchall():
+                    rid = row["rowid"]
+                    if rid in exclude_ids:
+                        continue
+                    cats = _parse_categories(row["Categories"])
+                    # If a category filter is later needed, match here.
+                    rating = row["rating"] if row["rating"] not in (None, 0) else 1
+                    score = row["distance"] / rating
+                    candidates.append((score, rid, cats))
+            else:
+                cur.execute(
+                    "SELECT rowid, rating, Categories, location_lat, location_lng FROM places ORDER BY rating DESC LIMIT ?",
+                    (pool,)
+                )
+                for row in cur.fetchall():
+                    rid = row["rowid"]
+                    if rid in exclude_ids:
+                        continue
+                    cats = _parse_categories(row["Categories"])
+                    rating = row["rating"] if row["rating"] not in (None, 0) else 1
+                    score = 1 / rating
+                    candidates.append((score, rid, cats))
+
+        # If a category filter string is desired, enforce it here on parsed cats
+        # (user can modify signature to pass category; keeping simple for now).
+
+        candidates.sort(key=lambda x: x[0])
+        return [rid for _, rid, _ in candidates[:limit]]
+
+
         
 if __name__ == "__main__": 
     loc_seq = LocationSequence()
@@ -337,3 +421,14 @@ if __name__ == "__main__":
                          _dist(p_lat, p_lon, next_coords[0], next_coords[1])) / rating
                 name = loc_seq.id_to_name(rid)
                 print(f" - id={rid}, name={name}, score={score:.2f}")
+
+    # Test suggest_itinerary_to_sequence (append-style recommendations)
+    print("\n=== Testing suggest_itinerary_to_sequence ===")
+    # Seed a simple sequence if empty
+    if not loc_seq.sequence:
+        loc_seq.sequence = [seed_ids[0]] if seed_ids else []
+
+    itin_ids = loc_seq.suggest_itinerary_to_sequence(limit=5)
+    print(f"Itinerary suggestions (IDs): {itin_ids}")
+    for pid in itin_ids:
+        print(f" - {pid}: {loc_seq.id_to_name(pid)}")

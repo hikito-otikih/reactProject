@@ -6,6 +6,7 @@ class TOOL:
     def __init__(self): 
         self.sequence =  LocationSequence() 
         self.chatbox = Chatbox(self.sequence)
+    
     def load(self, history) : 
         pass 
 
@@ -14,13 +15,28 @@ class TOOL:
         self.sequence.append(position,ID) 
 
     def pop(self , position ) : 
-        self.sequence.remove(position) 
-    
+        self.sequence.pop(position) 
 
     def clear_sequence(self): 
         self.sequence.clear() 
     
+    def id_to_name(self, placeid) :
+        return self.sequence.id_to_name(placeid)
+    
+    def search_by_name(self,name,exact=False,limit=10):
+        return self.sequence.search_by_name(name,exact,limit)
 
+    def get_suggest_categories(self):
+        return self.sequence.get_suggest_categories()
+
+    def suggest_for_position(self,position,limit=5,category=None):
+        return self.sequence.suggest_for_position(position,limit,category)
+    
+    def suggest_around(self,lat,lon,limit=5,category=None):
+        return self.sequence.suggest_around(lat,lon,limit,category)
+
+    def suggest_itinerary_to_sequence(self, limit=5):
+        return self.sequence.suggest_itinerary(limit)
 
     # chatbox related  
     def process_input(self, user_input : str):
