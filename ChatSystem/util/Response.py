@@ -4,7 +4,6 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import random
-from DataCollector import db_utils  
 
 
 class Response : 
@@ -92,7 +91,7 @@ class Bot_suggest_attraction(BotResponse) :
     def __init__(self, location, category, location_sequence=None) : 
         response = random.choice(self.list_of_responses).format(location=location, category=category)
         super().__init__(location_sequence, response)
-        self.db_location = db_utils.search_by_name(location)
+        self.db_location = location_sequence.search_by_name(location)
 
 
 class Bot_suggest_categories(BotResponse) :
@@ -118,7 +117,7 @@ class Bot_display_attraction_details(BotResponse) :
         # Frontend can format better 
         # @Huynh Chi Ton
         super().__init__(location_sequence, response)
-        self.db_attraction = db_utils.search_by_name(attraction_name)
+        self.db_attraction = location_sequence.search_by_name(attraction_name)
 
 class Bot_suggest_attractions(BotResponse):
     list_of_responses = [
@@ -138,7 +137,9 @@ class Bot_suggest_attractions(BotResponse):
         self.category = category
         self.location = location
         self.limit = limit
-        self.suggested_attractions = db_utils.search_by_category(category, limit=limit)
+
+        self.suggested_attractions = location_sequence.search_by_category(category, limit=limit)
+
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
         "Creating a {days}-day itinerary starting from {start}! This will be exciting!",
@@ -158,7 +159,7 @@ class Bot_create_itinerary(BotResponse):
         self.categories = categories
         self.destinations = destinations
         self.duration_days = duration_days
-        
+
         self.listOfItinerary = location_sequence.suggest_itinerary_to_sequence(limit)
 
 

@@ -68,7 +68,7 @@ class ChatBox :
             if not self.collected_information.get('start_location'):
                 return Bot_ask_start_location(location_sequence=self.location_sequence)
             else:
-                return CompositeResponse([Bot_display_attraction_details(location_sequence=self.location_sequence), Bot_ask_extra_info(location_sequence=self.location_sequence)], location_sequence=self.location_sequence) # ask for budget/duration/preferences
+                return CompositeResponse([Bot_display_attraction_details(self.collected_information.get('destinations'), location_sequence=self.location_sequence), Bot_ask_extra_info(location_sequence=self.location_sequence)], location_sequence=self.location_sequence) # ask for budget/duration/preferences
         
         elif function_name == 'suggest_categories':
             return Bot_suggest_categories(location_sequence=self.location_sequence)
@@ -76,7 +76,7 @@ class ChatBox :
         elif function_name == 'suggest_attractions':
             category = params.get('category', 'attraction')
             location = params.get('location', 'your area')
-            limit = params.get('limit', 5)
+            limit = params.get('limit_attractions', 5)
             return Bot_suggest_attractions(category, location, limit, location_sequence=self.location_sequence)
         
         elif function_name == 'get_attraction_details':
@@ -101,42 +101,63 @@ class ChatBox :
         """
         Extract and update collected_information from user input.
         Merges newly extracted slots into the persistent collected_information dict.
+        Uses 'all_slots' for comprehensive extraction from all intents.
         """
-        # Get the raw extraction result
-
+        # Extract slots from the result - use all_slots for comprehensive extraction
         
-        # Extract slots from the result
-        params = result.get('params', {})
+        # print result for debugging
+        print(f"\n📝 process_user_input output: {result}\n")
+        params = result.get('all_slots', result.get('params', {}))
         
         # Update collected_information with new data (only non-null values)
         if params.get('start_location'):
             self.collected_information['start_location'] = params['start_location']
         
+        # Handle categories (both plural and singular)
         if params.get('categories'):
-            self.collected_information['categories'] = params['categories']
+            if isinstance(params['categories'], list):
+                self.collected_information['categories'] = params['categories']
+            else:
+                self.collected_information['categories'] = [params['categories']]
         elif params.get('category'):
-            # Handle single category
+            # Handle single category - append to existing list or create new
             if self.collected_information['categories']:
                 if params['category'] not in self.collected_information['categories']:
                     self.collected_information['categories'].append(params['category'])
             else:
                 self.collected_information['categories'] = [params['category']]
         
-        if params.get('destinations') or params.get('destination'):
-            dest = params.get('destinations') or params.get('destination')
-            if isinstance(dest, list):
-                self.collected_information['destinations'] = dest
+        # Handle destinations (both plural and singular)
+        if params.get('destinations'):
+            if isinstance(params['destinations'], list):
+                self.collected_information['destinations'] = params['destinations']
             else:
-                self.collected_information['destinations'] = [dest] if dest else None
+                self.collected_information['destinations'] = [params['destinations']]
+        elif params.get('destination'):
+            dest = params['destination']
+            if self.collected_information['destinations']:
+                if dest not in self.collected_information['destinations']:
+                    self.collected_information['destinations'].append(dest)
+            else:
+                self.collected_information['destinations'] = [dest]
         
+        # Update budget
         if params.get('budget'):
             self.collected_information['budget'] = params['budget']
         
+        # Update duration_days (try both field names)
         if params.get('duration_days'):
             self.collected_information['duration_days'] = params['duration_days']
+        elif params.get('duration'):
+            self.collected_information['duration_days'] = params['duration']
         
+        # Update limit_attractions (try multiple field names)
         if params.get('limit_attractions'):
             self.collected_information['limit_attractions'] = params['limit_attractions']
+        elif params.get('limit'):
+            self.collected_information['limit_attractions'] = params['limit']
+        elif params.get('number_of_places'):
+            self.collected_information['limit_attractions'] = params['number_of_places']
         
         # Print for debugging (can be removed later)
         print(f"\n📊 Updated collected_information: {self.collected_information}\n")
@@ -162,4 +183,18 @@ if __name__ == "__main__" :
     while True :
         user_input = input("You: ")
         bot_response = chat_box.process_input(user_input)
+        
+        # print database results if any
+        print("\n" + "="*50)
+        if hasattr(bot_response, 'db_attraction'):
+            print(f"🏛️  DB Attraction IDs: {bot_response.db_attraction}")
+        if hasattr(bot_response, 'suggested_attractions'):
+            print(f"🎯 Suggested Attraction IDs: {bot_response.suggested_attractions}")
+            if bot_response.suggested_attractions:
+                print(f"   Category searched: {bot_response.category if hasattr(bot_response, 'category') else 'N/A'}")
+                print(f"   Limit: {bot_response.limit if hasattr(bot_response, 'limit') else 'N/A'}")
+        if hasattr(bot_response, 'listOfItinerary'):
+            print(f"📋 Itinerary IDs: {bot_response.listOfItinerary}")
+        print("="*50 + "\n")
+
         print(f"Bot: {bot_response.get_message()}")

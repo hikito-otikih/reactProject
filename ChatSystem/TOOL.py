@@ -1,12 +1,13 @@
-from ChatSystem.location_sequence import LocationSequence
-from ChatSystem.ChatBox import Chatbox
+from location_sequence import LocationSequence
+from ChatBox import ChatBox
 
 
 class TOOL: 
     def __init__(self): 
-        self.sequence =  LocationSequence() 
-        self.chatbox = Chatbox(self.sequence)
+        self.sequence = LocationSequence() 
+        self.chatbox = ChatBox(self.sequence)
     
+
     def load(self, history) : 
         pass 
 
@@ -45,3 +46,37 @@ class TOOL:
     def clear_conversation(self) :
         pass 
         # self.chatbox._clear_conversation()
+
+
+if __name__ == "__main__": 
+    tool = TOOL() 
+
+    # interactive test
+    while True :
+        user_input = input("You: ")
+        bot_response = tool.process_input(user_input)
+        
+        # print database results if any
+        print("\n" + "="*50)
+        if hasattr(bot_response, 'db_attraction'):
+            print(f"🏛️  DB Attraction IDs: {bot_response.db_attraction}")
+            for id in bot_response.db_attraction :
+                print(f"   - {tool.id_to_name(id)}")
+            
+
+        if hasattr(bot_response, 'suggested_attractions'):
+            print(f"🎯 Suggested Attraction IDs: {bot_response.suggested_attractions}")
+            if bot_response.suggested_attractions:
+                print(f"   Category searched: {bot_response.category if hasattr(bot_response, 'category') else 'N/A'}")
+                print(f"   Limit: {bot_response.limit if hasattr(bot_response, 'limit') else 'N/A'}")
+                for id in bot_response.suggested_attractions :
+                    print(f"   - {tool.id_to_name(id)}")
+
+        if hasattr(bot_response, 'listOfItinerary'):
+            print(f"📋 Itinerary IDs: {bot_response.listOfItinerary}")
+            for id in bot_response.listOfItinerary :
+                print(f"   - {tool.id_to_name(id)}")
+                
+        print("="*50 + "\n")
+        
+        print(f"Bot: {bot_response.get_message()}")
