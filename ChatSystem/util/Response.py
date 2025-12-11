@@ -20,28 +20,30 @@ class UserResponse(Response) :
         super().__init__(user_message,whom)
     
 class BotResponse(Response) :
-    def __init__(self,bot_message,whom='bot') : 
+    def __init__(self,location_sequence, bot_message,whom='bot') : 
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
+        self.location_sequence = location_sequence
 
     def process(self):
         pass
 
 class Bot_ask_extra_info(BotResponse) :
     list_of_responses = [
-        "Could you provide more details about your budget, duration, or preferences?",
-        "To help you better, can you share more about your budget, trip length, or interests?",
-        "Please tell me more about your budget, how long you'll be traveling, or what you like.",
-        "Can you give me additional info on your budget, duration, or travel preferences?",
-        "I'd love to assist you better! Could you share more about your budget, trip duration, or interests?"
+        "Could you provide more details about your budget, duration, number of attractions, or preferences?",
+        "To help you better, can you share more about your budget, trip length, limit number of attractions, or interests?",
+        "Please tell me more about your budget, how long you'll be traveling, number of attractions, or what you like.",
+        "Can you give me additional info on your budget, duration, number of attractions, or travel preferences?",
+        "I'd love to assist you better! Could you share more about your budget, trip duration, number of attractions, or interests?"
     ]
-    def __init__(self,info_text) : 
-        super().__init__(info_text)
+    def __init__(self, info_text, location_sequence=None) : 
+        super().__init__(location_sequence, info_text)
+
 class CompositeResponse(BotResponse) :
-    def __init__(self, responses) :
+    def __init__(self, responses, location_sequence=None) :
         combined_message = "\n".join([resp.get_message() for resp in responses])
-        super().__init__(combined_message)
+        super().__init__(location_sequence, combined_message)
         self.responses = responses
      
 class Bot_ask_start_location(BotResponse) :
@@ -53,8 +55,8 @@ class Bot_ask_start_location(BotResponse) :
         "Let's have a trip, tell me where to begin!"
     ]
 
-    def __init__(self) : 
-        super().__init__(random.choice(self.list_of_responses))
+    def __init__(self, location_sequence=None) : 
+        super().__init__(location_sequence, random.choice(self.list_of_responses))
 
 class Bot_ask_destination(BotResponse) :
     list_of_responses = [
@@ -64,8 +66,8 @@ class Bot_ask_destination(BotResponse) :
         "Where are we headed?",
         "What's the place you want to visit?"
     ]
-    def __init__(self) : 
-        super().__init__(random.choice(self.list_of_responses))
+    def __init__(self, location_sequence=None) : 
+        super().__init__(location_sequence, random.choice(self.list_of_responses))
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
@@ -75,8 +77,8 @@ class Bot_ask_category(BotResponse) :
         "What kind of spot are you looking for?",
         "What category of destination are you thinking about?"
     ]
-    def __init__(self) : 
-        super().__init__(random.choice(self.list_of_responses))
+    def __init__(self, location_sequence=None) : 
+        super().__init__(location_sequence, random.choice(self.list_of_responses))
 
 class Bot_suggest_attraction(BotResponse) :
     list_of_responses = [
@@ -87,10 +89,10 @@ class Bot_suggest_attraction(BotResponse) :
         "{location} is a fantastic spot that aligns with your interests in {category}."
     ]
 
-    def __init__(self,location,category) : 
-        response = random.choice(self.list_of_responses).format(location=location,category=category)
-        super().__init__(response)
-        self.id_location = db_utils.search_by_name(location)
+    def __init__(self, location, category, location_sequence=None) : 
+        response = random.choice(self.list_of_responses).format(location=location, category=category)
+        super().__init__(location_sequence, response)
+        self.db_location = db_utils.search_by_name(location)
 
 
 class Bot_suggest_categories(BotResponse) :
@@ -101,22 +103,24 @@ class Bot_suggest_categories(BotResponse) :
         "Some great categories to explore are museum, park, restaurant, historical site, and shopping area. What do you think?",
         "How about selecting from museum, park, restaurant, historical site, or shopping area? Any favorites?"
     ]
-    def __init__(self) : 
-        super().__init__(random.choice(self.list_of_responses))
+    def __init__(self, location_sequence=None) : 
+        super().__init__(location_sequence, random.choice(self.list_of_responses))
+        self.suggested_category = location_sequence.get_suggest_category()
 
 class Bot_ask_clarify(BotResponse) :
-    def __init__(self,clarify_text) : 
-        super().__init__(clarify_text)
+    def __init__(self, clarify_text, location_sequence=None) : 
+        super().__init__(location_sequence, clarify_text)
 
 class Bot_display_attraction_details(BotResponse) :
     # attributes: id of place in database
-    def __init__(self, attraction_name) : 
+    def __init__(self, attraction_name, location_sequence=None) : 
         response = f"Here are the details for {attraction_name}"
         # Frontend can format better 
         # @Huynh Chi Ton
-        super().__init__(response)
+        super().__init__(location_sequence, response)
+        self.db_attraction = db_utils.search_by_name(attraction_name)
 
-class Bot_suggest_attractions_search(BotResponse):
+class Bot_suggest_attractions(BotResponse):
     list_of_responses = [
         "I found {limit} great {category} options near {location}. Would you like to see them?",
         "Here are {limit} {category} recommendations in {location} area.",
@@ -124,17 +128,17 @@ class Bot_suggest_attractions_search(BotResponse):
         "Let me show you {limit} {category} places near {location}.",
         "Found {limit} amazing {category} spots in {location}!"
     ]
-    def __init__(self, category, location, limit=5):
+    def __init__(self, category, location, limit=5, location_sequence=None):
         response = random.choice(self.list_of_responses).format(
             category=category,
             location=location,
             limit=limit
         )
-        super().__init__(response)
+        super().__init__(location_sequence, response)
         self.category = category
         self.location = location
         self.limit = limit
-
+        self.suggested_attractions = db_utils.search_by_category(category, limit=limit)
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
         "Creating a {days}-day itinerary starting from {start}! This will be exciting!",
@@ -144,16 +148,18 @@ class Bot_create_itinerary(BotResponse):
         "Working on your {days}-day itinerary from {start}. Almost ready!"
     ]
 
-    def __init__(self, history, start_location, categories, destinations, duration_days):
+    def __init__(self, history, start_location, categories, destinations, duration_days, location_sequence, limit):
         response = random.choice(self.list_of_responses).format(
             start = start_location or 'your location',
             days = duration_days
         )
-        super().__init__(response)
+        super().__init__(location_sequence, response)
         self.start_location = start_location
         self.categories = categories
         self.destinations = destinations
         self.duration_days = duration_days
+        
+        self.listOfItinerary = location_sequence.suggest_itinerary_to_sequence(limit)
 
 
 
@@ -164,5 +170,5 @@ if __name__ == "__main__":
     for location in botresp.id_location :
         print(location)
 
-    print(botresp.get_message())   
+    print(botresp.get_message())
 
