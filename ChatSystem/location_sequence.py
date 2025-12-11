@@ -107,7 +107,7 @@ class LocationSequence:
     def get_suggest_category(self) :
         categories = ['restaurant', 'cafe', 'bar', 'museum', 'park', 'shopping', 'theater', 'gallery']
         return random.choice(categories)
-    def suggest_for_position(self, pos, category=None, limit=5):
+    def suggest_for_position(self, pos = -1 , category=None, limit=5):
         """
         Suggest IDs to place at insertion position `pos` (no insertion performed).
         - If sequence empty: return top IDs by category (or any) limited by `limit`.
@@ -116,7 +116,8 @@ class LocationSequence:
         - If inserting between: minimize distance to both neighbors.
         Always excludes IDs already in the current sequence.
         """
-
+        if pos ==-1 : 
+            pos = len(self.sequence)-1
         exclude_ids = set(self.sequence)
         db_path = os.path.join(self.RESULT_DIR, 'places.db')
 

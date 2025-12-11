@@ -19,8 +19,15 @@ This class manages an ordered itinerary of place IDs backed by `DataCollector/re
 - `id_to_name(place_id)`: Return the `Title` for a `rowid`, or `None` if missing.
 - `search_by_name(name, exact=True, limit=10)`: Exact title match first; then fuzzy keyword LIKEs to fill remaining slots; always excludes IDs already in the sequence.
 
+[id0,....,id1,...,id2]
+
+[start,...]
+
 ## Suggestion methods
-- `suggest_for_position(pos, category=None, limit=5)`
+
+[id1,id2,id3] 
+
+- `suggest_for_position(pos=, category=None, limit=5)`
   - Empty sequence: returns first `limit` matches (category-filtered if provided).
   - `pos <= 0`: nearest to the first item.
   - `pos >= len(sequence)`: nearest to the last item.
@@ -29,6 +36,7 @@ This class manages an ordered itinerary of place IDs backed by `DataCollector/re
   - Category filtering uses `Categories LIKE '%<category>%'`.
 - `suggest_around(lat, lon, limit=5, category=None)`
   - Finds nearby places around a coordinate; scoring is `distance / rating`; category via `Categories LIKE`.
+  - 
 - `suggest_itinerary_to_sequence(limit=5)`
   - Append-style recommendations: uses the last stop as anchor (if any), otherwise cold-starts by rating.
   - Scoring: `distance / rating` (rating floored to 1; assumes rating up to 5).
