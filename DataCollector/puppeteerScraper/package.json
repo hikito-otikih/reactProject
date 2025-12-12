@@ -2,7 +2,7 @@
   "name": "jstool",
   "version": "1.0.0",
   "description": "",
-  "main": "try.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,4 @@
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sqlite3": "^5.1.7"
   }
-  
 }
-

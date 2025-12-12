@@ -629,7 +629,8 @@ async function main() {
   // const queries = fs.readFileSync(csv_path, 'utf8').split('\n');
   // console.log(queries);
   // console.log(queries.length);
-  const queries = ["Ben Thanh Market"];
-  queryScrapeAll(queries, 3, DB_PATH, DB_TABLE);
+
+  // const queries = ["Ben Thanh Market"];
+  // queryScrapeAll(queries, 3, DB_PATH, DB_TABLE);
 }
 main();
