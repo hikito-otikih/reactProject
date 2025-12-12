@@ -88,14 +88,26 @@ class Bot_ask_destination(BotResponse) :
         "What's the place you want to visit?"
     ]
     
-    static_suggestions = [
+    default_suggestions = [
         "Ben Thanh Market",
         "War Remnants Museum",
         "Notre Dame Cathedral"
     ]
     
-    def __init__(self, location_sequence=None) : 
-        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
+    def __init__(self, location_sequence) :
+        # Generate dynamic suggestions based on start_location
+        suggestions = self.default_suggestions
+        
+        if location_sequence:
+            # Get nearby popular attractions from database
+            nearby_ids = location_sequence.suggest_for_position()
+            if nearby_ids:
+                # Convert IDs to names
+                suggestions = [location_sequence.id_to_name(pid) for pid in nearby_ids]
+                # Filter out None values and ensure we have suggestions
+                suggestions = [s for s in suggestions if s] or self.default_suggestions
+        
+        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=suggestions)
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
@@ -207,7 +219,7 @@ class Bot_suggest_attractions(BotResponse):
         self.location = location
         self.limit = limit
 
-        self.suggested_attractions = location_sequence.search_by_category(category, limit=limit) if location_sequence else []
+        self.suggested_attractions = location_sequence.suggest_for_position(category=category, limit=limit) if location_sequence else []
 
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [

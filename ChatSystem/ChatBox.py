@@ -105,7 +105,11 @@ class ChatBox :
             if not self.collected_information.get('categories'):
                 return Bot_ask_category(location_sequence=self.location_sequence)
             elif not self.collected_information.get('destinations'):
-                return Bot_ask_destination(location_sequence=self.location_sequence)
+                # Pass the start_location to get dynamic suggestions
+                start_location = self.collected_information.get('start_location')
+                return Bot_ask_destination(
+                    location_sequence=self.location_sequence
+                )
         
         elif function_name == 'confirm_destination':
             if not self.collected_information.get('start_location'):
