@@ -1,11 +1,11 @@
-from ChatSystem.location_sequence import LocationSequence
-from ChatSystem.ChatBox import Chatbox
+from location_sequence import LocationSequence
+from ChatBox import ChatBox
 
 
 class TOOL: 
     def __init__(self): 
         self.sequence =  LocationSequence() 
-        self.chatbox = Chatbox(self.sequence)
+        self.chatbox = ChatBox(self.sequence)
     
     def load(self, history) : 
         pass 
@@ -26,8 +26,8 @@ class TOOL:
     def search_by_name(self,name,exact=False,limit=10):
         return self.sequence.search_by_name(name,exact,limit)
 
-    def get_suggest_categories(self):
-        return self.sequence.get_suggest_categories()
+    def get_suggest_category(self):
+        return self.sequence.get_suggest_category()
 
     def suggest_for_position(self,position,limit=5,category=None):
         return self.sequence.suggest_for_position(position,limit,category)
@@ -44,4 +44,9 @@ class TOOL:
     
     def clear_conversation(self) :
         pass 
-        # self.chatbox._clear_conversation()
+    
+if __name__ == "__main__":
+    tool = TOOL()
+    tool.append(0,1) 
+    print(tool.get_suggest_category())
+    print(tool.id_to_name(1)) 
