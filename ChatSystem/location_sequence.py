@@ -111,19 +111,30 @@ class LocationSequence:
     def get_suggest_category(self) :
         categories = ['restaurant', 'cafe', 'bar', 'museum', 'park', 'shopping', 'theater', 'gallery']
         return random.choice(categories)
-    def suggest_for_position(self, pos = -1 , category=None, limit=5):
+    def suggest_for_position(self, pos=-1, category=None, limit=5):
         """
         Suggest IDs to place at insertion position `pos` (no insertion performed).
-        - If sequence empty: return top IDs by category (or any) limited by `limit`.
-        - If inserting at begin: nearest to first item.
+        - Virtual start location lives at index 0 using `start_coordinate` (not in DB).
+        - If sequence empty: nearest to start.
+        - If inserting at begin: minimize start → candidate → first item.
         - If inserting at end: nearest to last item.
-        - If inserting between: minimize distance to both neighbors.
+        - If inserting between: minimize distance between neighbors.
         Always excludes IDs already in the current sequence.
         """
-        if pos ==-1 : 
-            pos = len(self.sequence)-1
+
+        if limit <= 0:
+            return []
+
+        if pos == -1:
+            pos = len(self.sequence) - 1
+
         exclude_ids = set(self.sequence)
         db_path = os.path.join(self.RESULT_DIR, 'places.db')
+
+        def _dist(lat1, lon1, lat2, lon2):
+            return 6371000 * (math.acos(math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+                                        math.cos(math.radians(lon2 - lon1)) +
+                                        math.sin(math.radians(lat1)) * math.sin(math.radians(lat2))))
 
         def _coords_rating(place_id):
             with sqlite3.connect(db_path) as conn:
@@ -132,121 +143,93 @@ class LocationSequence:
                 row = cursor.fetchone()
                 return (row[0], row[1], row[2]) if row else None
 
-        def _near(anchor_id):
-            coords = _coords_rating(anchor_id)
-            if not coords:
-                return []
-            lat, lon, _ = coords
+        def _fetch_candidates(anchor_lat, anchor_lon, base_limit):
+            exclude_clause = "1=1"
+            params = [anchor_lat, anchor_lon, anchor_lat]
+            if exclude_ids:
+                placeholders = ",".join(["?"] * len(exclude_ids))
+                exclude_clause = f"rowid NOT IN ({placeholders})"
+                params.extend(list(exclude_ids))
+            cat_clause = ""
+            if category:
+                cat_clause = "AND Categories LIKE ?"
+                params.append(f"%{category}%")
+            params.append(base_limit)
+
+            query = f"""
+                SELECT rowid, rating,
+                (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                cos(radians(location_lng) - radians(?)) +
+                sin(radians(?)) * sin(radians(location_lat)))) AS dist_prev
+                FROM places
+                WHERE {exclude_clause}
+                {cat_clause}
+                ORDER BY dist_prev
+                LIMIT ?
+            """
             with sqlite3.connect(db_path) as conn:
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
-                radius_meters = 15000
-                query = """
-                    SELECT rowid, rating,
-                    (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) * 
-                    cos(radians(location_lng) - radians(?)) + 
-                    sin(radians(?)) * sin(radians(location_lat)))) AS distance
-                    FROM places
-                    WHERE rowid != ? {cat_filter}
-                    ORDER BY distance
-                    LIMIT ?
-                """
-                cat_clause = ""
-                params = [lat, lon, lat, anchor_id]
-                if category:
-                    cat_clause = "AND Categories LIKE ?"
-                    params.append(f"%{category}%")
-                params.append(limit + len(exclude_ids))
-                cursor.execute(query.format(cat_filter=cat_clause), params)
-                scored = []
-                for row in cursor.fetchall():
-                    rid = row["rowid"]
-                    if rid in exclude_ids:
-                        continue
-                    rating = row["rating"] if row["rating"] not in (None, 0) else 1
-                    score = row["distance"] / rating
-                    scored.append((score, rid))
-                scored.sort(key=lambda x: x[0])
-                return [rid for _, rid in scored[:limit]]
+                cursor.execute(query, params)
+                return cursor.fetchall()
 
-        def _between(a_id, b_id):
-            a_coords = _coords_rating(a_id)
-            b_coords = _coords_rating(b_id)
-            if not a_coords or not b_coords:
-                return []
-            a_lat, a_lon, _ = a_coords
-            b_lat, b_lon, _ = b_coords
-            with sqlite3.connect(db_path) as conn:
-                conn.row_factory = sqlite3.Row
-                cursor = conn.cursor()
-                # Fetch a wider set ordered by distance to prev, then sort in Python by combined cost
-                base_limit = (limit + len(exclude_ids)) * 3
-                query = """
-                    SELECT rowid, rating,
-                    (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) * 
-                    cos(radians(location_lng) - radians(?)) + 
-                    sin(radians(?)) * sin(radians(location_lat)))) AS dist_prev
-                    FROM places
-                    WHERE rowid NOT IN (?, ?)
-                    {cat_filter}
-                    ORDER BY dist_prev
-                    LIMIT ?
-                """
-                cat_clause = ""
-                params = [a_lat, a_lon, a_lat, a_id, b_id]
-                if category:
-                    cat_clause = "AND Categories LIKE ?"
-                    params.append(f"%{category}%")
-                params.append(base_limit)
-                cursor.execute(query.format(cat_filter=cat_clause), params)
-                candidates = []
-                for row in cursor.fetchall():
-                    rid = row["rowid"]
-                    if rid in exclude_ids:
-                        continue
-                    candidates.append(rid)
-
-            # Compute cost = dist(a,p) + dist(p,b)
+        def _near_coords(anchor_lat, anchor_lon):
+            rows = _fetch_candidates(anchor_lat, anchor_lon, limit + len(exclude_ids))
             scored = []
-            for rid in candidates:
+            for row in rows:
+                rid = row["rowid"]
+                if rid in exclude_ids:
+                    continue
+                rating = row["rating"] if row["rating"] not in (None, 0) else 1
+                score = row["dist_prev"] / rating
+                scored.append((score, rid))
+            scored.sort(key=lambda x: x[0])
+            return [rid for _, rid in scored[:limit]]
+
+        def _between_coords(a_lat, a_lon, b_lat, b_lon):
+            rows = _fetch_candidates(a_lat, a_lon, (limit + len(exclude_ids)) * 3)
+            scored = []
+            for row in rows:
+                rid = row["rowid"]
+                if rid in exclude_ids:
+                    continue
                 coords = _coords_rating(rid)
                 if not coords:
                     continue
                 p_lat, p_lon, rating = coords
                 rating = rating if rating not in (None, 0) else 1
-                def _dist(lat1, lon1, lat2, lon2):
-                    return 6371000 * (math.acos(math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
-                                                math.cos(math.radians(lon2 - lon1)) +
-                                                math.sin(math.radians(lat1)) * math.sin(math.radians(lat2))))
                 cost = (_dist(a_lat, a_lon, p_lat, p_lon) + _dist(p_lat, p_lon, b_lat, b_lon)) / rating
                 scored.append((cost, rid))
             scored.sort(key=lambda x: x[0])
             return [rid for _, rid in scored[:limit]]
 
-        # Case handling
+        # Case handling with virtual start
         if not self.sequence:
-            # No anchors: fall back to category list or any
-            with sqlite3.connect(db_path) as conn:
-                cursor = conn.cursor()
-                if category:
-                    cursor.execute(
-                        "SELECT rowid FROM places WHERE Categories LIKE ? LIMIT ?",
-                        (f"%{category}%", limit)
-                    )
-                else:
-                    cursor.execute("SELECT rowid FROM places LIMIT ?", (limit,))
-                return [row[0] for row in cursor.fetchall() if row[0] not in exclude_ids][:limit]
+            s_lat, s_lon = self.start_coordinate
+            return _near_coords(s_lat, s_lon)
 
         if pos <= 0:
-            return _near(self.sequence[0])
+            first_coords = _coords_rating(self.sequence[0])
+            if not first_coords:
+                return []
+            s_lat, s_lon = self.start_coordinate
+            f_lat, f_lon, _ = first_coords
+            return _between_coords(s_lat, s_lon, f_lat, f_lon)
 
         if pos >= len(self.sequence):
-            return _near(self.sequence[-1])
+            last_coords = _coords_rating(self.sequence[-1])
+            if not last_coords:
+                return []
+            l_lat, l_lon, _ = last_coords
+            return _near_coords(l_lat, l_lon)
 
-        # Between two nodes
-        prev_id = self.sequence[pos-1]
-        next_id = self.sequence[pos]
-        return _between(prev_id, next_id)
+        prev_coords = _coords_rating(self.sequence[pos - 1])
+        next_coords = _coords_rating(self.sequence[pos])
+        if not prev_coords or not next_coords:
+            return []
+        a_lat, a_lon, _ = prev_coords
+        b_lat, b_lon, _ = next_coords
+        return _between_coords(a_lat, a_lon, b_lat, b_lon)
     def suggest_around(self, lat, lon, limit=5, category=None):
         if category is None:
             category = random.choice(['restaurant', 'cafe', 'bar', 'museum', 'park'])
@@ -317,13 +300,18 @@ class LocationSequence:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
 
+            anchor_coords = None
             if anchor_id:
                 cur.execute("SELECT location_lat, location_lng FROM places WHERE rowid = ?", (anchor_id,))
-                anchor = cur.fetchone()
-                if not anchor:
+                anchor_row = cur.fetchone()
+                if not anchor_row:
                     return []
-                a_lat, a_lon = anchor["location_lat"], anchor["location_lng"]
+                anchor_coords = (anchor_row["location_lat"], anchor_row["location_lng"])
+            else:
+                anchor_coords = tuple(self.start_coordinate) if self.start_coordinate else None
 
+            if anchor_coords:
+                a_lat, a_lon = anchor_coords
                 cur.execute(
                     """
                     SELECT rowid, rating, Categories, location_lat, location_lng,
@@ -331,18 +319,16 @@ class LocationSequence:
                     cos(radians(location_lng) - radians(?)) +
                     sin(radians(?)) * sin(radians(location_lat)))) AS distance
                     FROM places
-                    WHERE rowid != ?
                     ORDER BY distance
                     LIMIT ?
                     """,
-                    (a_lat, a_lon, a_lat, anchor_id, pool)
+                    (a_lat, a_lon, a_lat, pool)
                 )
                 for row in cur.fetchall():
                     rid = row["rowid"]
-                    if rid in exclude_ids:
+                    if rid in exclude_ids or (anchor_id and rid == anchor_id):
                         continue
                     cats = _parse_categories(row["Categories"])
-                    # If a category filter is later needed, match here.
                     rating = row["rating"] if row["rating"] not in (None, 0) else 1
                     score = row["distance"] / rating
                     candidates.append((score, rid, cats))
@@ -369,71 +355,65 @@ class LocationSequence:
 
         
 if __name__ == "__main__": 
-    loc_seq = LocationSequence()
+    def run_tests():
+        print("\n=== LocationSequence smoke tests ===")
+        loc_seq = LocationSequence()
+        db_path = os.path.join(loc_seq.RESULT_DIR, 'places.db')
+        if not os.path.exists(db_path):
+            print("No places.db found; skipping DB-dependent tests.")
+            return
 
-    # Test search_by_name
-    print("\n=== Testing search_by_name ===")
-    ids = loc_seq.search_by_name("Khách sạn Nikko SaiGon", exact=False, limit=10)
-    print(f"IDs for 'Khách sạn Nikko SaiGon' (excluding current sequence): {ids}")
-    for pid in ids:
-        name = loc_seq.id_to_name(pid)
-        print(f" - {pid}: {name}")
+        with sqlite3.connect(db_path) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT rowid FROM places LIMIT 5")
+            seed_ids = [row[0] for row in cur.fetchall()]
 
-    # Test suggest_for_position: print id, name, and score (distance/rating)
-    print("\n=== Testing suggest_for_position (score = distance/rating) ===")
-    db_path = os.path.join(loc_seq.RESULT_DIR, 'places.db')
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT rowid FROM places LIMIT 3")
-        seed_ids = [row[0] for row in cursor.fetchall()]
+        def show(msg):
+            print(f"- {msg}")
 
-    if len(seed_ids) < 2:
-        print("Not enough places in DB to run suggest_for_position test.")
-    else:
-        # Seed the sequence with two anchors
-        loc_seq.sequence = [seed_ids[0], seed_ids[1]]
-        insert_pos = 1  # between the two anchors
-        suggestions = loc_seq.suggest_for_position(pos=insert_pos, limit=5)
+        # append / pop / clear / get_sequence
+        loc_seq.append(0, 9999)
+        show(f"append -> {loc_seq.get_sequence()}")
+        loc_seq.pop(0)
+        show(f"pop -> {loc_seq.get_sequence()}")
+        loc_seq.clear_sequence()
+        show(f"clear -> {loc_seq.get_sequence()}")
 
-        def _coords_rating(pid):
-            with sqlite3.connect(db_path) as conn:
-                c = conn.cursor()
-                c.execute("SELECT location_lat, location_lng, rating FROM places WHERE rowid = ?", (pid,))
-                row = c.fetchone()
-                return (row[0], row[1], row[2]) if row else None
+        # input_start_coordinate
+        # loc_seq.input_start_coordinate(11.0, 107.0)
+        show(f"start_coordinate -> {loc_seq.start_coordinate}")
 
-        def _dist(lat1, lon1, lat2, lon2):
-            return 6371000 * (math.acos(math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
-                                        math.cos(math.radians(lon2 - lon1)) +
-                                        math.sin(math.radians(lat1)) * math.sin(math.radians(lat2))))
+        # id_to_name and search_by_name
+        if seed_ids:
+            name = loc_seq.id_to_name(seed_ids[0])
+            show(f"id_to_name({seed_ids[0]}) -> {name}")
+        ids = loc_seq.search_by_name("Quán ăn", exact=False, limit=5)
+        show(f"search_by_name('Quán ăn') -> {ids}")
 
-        prev_id = loc_seq.sequence[insert_pos - 1]
-        next_id = loc_seq.sequence[insert_pos]
-        prev_coords = _coords_rating(prev_id)
-        next_coords = _coords_rating(next_id)
+        # suggest_for_position: empty sequence uses start_coordinate
+        loc_seq.clear_sequence()
+        s_empty = loc_seq.suggest_for_position(limit=3)
+        show(f"suggest_for_position (empty, start anchor) -> {s_empty}")
 
-        if not prev_coords or not next_coords:
-            print("Could not fetch anchor coordinates; skipping score print.")
-        else:
-            print(f"Anchors: prev={prev_id}, next={next_id}")
-            for rid in suggestions:
-                coords = _coords_rating(rid)
-                if not coords:
-                    continue
-                p_lat, p_lon, rating = coords
-                rating = rating if rating not in (None, 0) else 1
-                score = (_dist(prev_coords[0], prev_coords[1], p_lat, p_lon) +
-                         _dist(p_lat, p_lon, next_coords[0], next_coords[1])) / rating
-                name = loc_seq.id_to_name(rid)
-                print(f" - id={rid}, name={name}, score={score:.2f}")
+        # suggest_for_position: between two anchors if we have at least 2 seeds
+        if len(seed_ids) >= 2:
+            loc_seq.sequence = [seed_ids[0], seed_ids[1]]
+            s_between = loc_seq.suggest_for_position(pos=1, limit=3)
+            show(f"suggest_for_position (between) -> {s_between}")
 
-    # Test suggest_itinerary_to_sequence (append-style recommendations)
-    print("\n=== Testing suggest_itinerary_to_sequence ===")
-    # Seed a simple sequence if empty
-    if not loc_seq.sequence:
-        loc_seq.sequence = [seed_ids[0]] if seed_ids else []
+        # suggest_around
+        s_around = loc_seq.suggest_around(lat=loc_seq.start_coordinate[0], lon=loc_seq.start_coordinate[1], limit=3)
+        show(f"suggest_around -> {s_around}")
 
-    itin_ids = loc_seq.suggest_itinerary_to_sequence(limit=5)
-    print(f"Itinerary suggestions (IDs): {itin_ids}")
-    for pid in itin_ids:
-        print(f" - {pid}: {loc_seq.id_to_name(pid)}")
+        # suggest_itinerary_to_sequence: empty uses start_coordinate, then with anchor
+        loc_seq.clear_sequence()
+        itin_cold = loc_seq.suggest_itinerary_to_sequence(limit=3)
+        show(f"suggest_itinerary_to_sequence (cold start) -> {itin_cold}")
+        if seed_ids:
+            loc_seq.sequence = [seed_ids[0]]
+            itin_anchor = loc_seq.suggest_itinerary_to_sequence(limit=3)
+            show(f"suggest_itinerary_to_sequence (with anchor) -> {itin_anchor}")
+
+        print("=== Tests finished ===\n")
+
+    run_tests()

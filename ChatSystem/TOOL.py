@@ -17,11 +17,20 @@ class TOOL:
     def pop(self , position ) : 
         self.sequence.pop(position) 
 
+    def get_sequence(self) : 
+        return self.sequence.get_sequence()
+    
     def clear_sequence(self): 
         self.sequence.clear_sequence()
     
     def id_to_name(self, placeid) :
         return self.sequence.id_to_name(placeid)
+    
+    def input_start_coordinate(self, lat: float, lon: float):
+        return self.sequence.input_start_coordinate(lat, lon)
+    
+    def get_start_coordinate(self):
+        return self.sequence.get_start_coordinate()
     
     def search_by_name(self,name,exact=False,limit=10):
         return self.sequence.search_by_name(name,exact,limit)
@@ -42,16 +51,13 @@ class TOOL:
     
     # chatbox related  
     def process_input(self, user_input : str):
+        response = self.chatbox.process_input(user_input)
+        id = response.get
         return self.chatbox.process_input(user_input)
-    
-    def input_start_coordinate(self, lat: float, lon: float):
-        return self.sequence.input_start_coordinate(lat, lon)
     
     def clear_conversation(self) :
         pass 
-    # def get_coordinate(self,name) : 
-    #     return self.utils.get_coordinate(name)
-
+        
 if __name__ == "__main__":
     tool = TOOL()
     tool.append(0,1) 
