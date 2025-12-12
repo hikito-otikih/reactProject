@@ -33,6 +33,8 @@ class BotResponse(Response) :
         """Return the list of suggestions for this response"""
         return self.suggestions
 
+    def get_database_results(self) :
+        pass
 class Bot_ask_extra_info(BotResponse) :
     list_of_responses = [
         "Could you provide more details about your budget, duration, number of attractions, or preferences?",
@@ -52,6 +54,10 @@ class Bot_ask_extra_info(BotResponse) :
         if info_text is None:
             info_text = random.choice(self.list_of_responses)
         super().__init__(location_sequence, info_text, suggestions=self.static_suggestions)
+    
+    def get_database_results(self):
+        """No database results for this response type"""
+        return {}
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses, location_sequence=None) :
@@ -60,6 +66,22 @@ class CompositeResponse(BotResponse) :
         suggestions = responses[-1].get_suggestions() if responses else []
         super().__init__(location_sequence, combined_message, suggestions=suggestions)
         self.responses = responses
+    
+    def get_database_results(self):
+        """Aggregate database results from all composite responses"""
+        results = {}
+        for resp in self.responses:
+            resp_results = resp.get_database_results()
+            for key, value in resp_results.items():
+                if key in results:
+                    # Merge lists if both are lists
+                    if isinstance(results[key], list) and isinstance(value, list):
+                        results[key].extend(value)
+                    else:
+                        results[key] = value
+                else:
+                    results[key] = value
+        return results
      
 class Bot_ask_start_location(BotResponse) :
     list_of_responses = [
@@ -108,6 +130,13 @@ class Bot_ask_destination(BotResponse) :
                 suggestions = [s for s in suggestions if s] or self.default_suggestions
         
         super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=suggestions)
+        self.nearby_ids = nearby_ids if location_sequence else []
+    
+    def get_database_results(self):
+        """Return nearby destination IDs suggested to user"""
+        return {
+            'nearby_destination_ids': self.nearby_ids
+        }
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
@@ -146,6 +175,12 @@ class Bot_suggest_attraction(BotResponse) :
         response = random.choice(self.list_of_responses).format(location=location, category=category)
         super().__init__(location_sequence, response, suggestions=self.static_suggestions)
         self.db_location = location_sequence.search_by_name(location) if location_sequence else []
+    
+    def get_database_results(self):
+        """Return the suggested attraction IDs"""
+        return {
+            'suggested_attraction_ids': self.db_location
+        }
 
 
 class Bot_suggest_categories(BotResponse) :
@@ -166,6 +201,12 @@ class Bot_suggest_categories(BotResponse) :
     def __init__(self, location_sequence=None) : 
         super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
         self.suggested_category = location_sequence.get_suggest_category() if location_sequence else []
+    
+    def get_database_results(self):
+        """Return suggested categories"""
+        return {
+            'suggested_categories': self.suggested_category if isinstance(self.suggested_category, list) else [self.suggested_category]
+        }
 
 class Bot_ask_clarify(BotResponse) :
     def __init__(self, clarify_text, suggestions=None, location_sequence=None) : 
@@ -177,6 +218,10 @@ class Bot_ask_clarify(BotResponse) :
                 "Start over"
             ]
         super().__init__(location_sequence, clarify_text, suggestions=suggestions)
+    
+    def get_database_results(self):
+        """No database results for this response type"""
+        return {}
 
 class Bot_display_attraction_details(BotResponse) :
     # attributes: id of place in database
@@ -192,6 +237,12 @@ class Bot_display_attraction_details(BotResponse) :
         # @Huynh Chi Ton
         super().__init__(location_sequence, response, suggestions=self.static_suggestions)
         self.db_attraction = location_sequence.search_by_name(attraction_name) if location_sequence else []
+    
+    def get_database_results(self):
+        """Return the attraction details IDs"""
+        return {
+            'attraction_detail_ids': self.db_attraction
+        }
 
 class Bot_suggest_attractions(BotResponse):
     list_of_responses = [
@@ -220,6 +271,15 @@ class Bot_suggest_attractions(BotResponse):
         self.limit = limit
 
         self.suggested_attractions = location_sequence.suggest_for_position(category=category, limit=limit) if location_sequence else []
+    
+    def get_database_results(self):
+        """Return suggested attractions by category"""
+        return {
+            'suggested_attraction_ids': self.suggested_attractions,
+            'category': self.category,
+            'location': self.location,
+            'limit': self.limit
+        }
 
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
@@ -248,6 +308,16 @@ class Bot_create_itinerary(BotResponse):
         self.duration_days = duration_days
 
         self.listOfItinerary = location_sequence.suggest_itinerary_to_sequence(limit) if location_sequence else []
+    
+    def get_database_results(self):
+        """Return the complete itinerary"""
+        return {
+            'itinerary_ids': self.listOfItinerary,
+            'start_location': self.start_location,
+            'categories': self.categories,
+            'destinations': self.destinations,
+            'duration_days': self.duration_days
+        }
 
 
 
