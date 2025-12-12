@@ -4,7 +4,7 @@ from ChatBox import ChatBox
 
 class TOOL: 
     def __init__(self): 
-        self.sequence = LocationSequence() 
+        self.sequence =  LocationSequence() 
         self.chatbox = ChatBox(self.sequence)
     
 
@@ -18,65 +18,52 @@ class TOOL:
     def pop(self , position ) : 
         self.sequence.pop(position) 
 
+    def get_sequence(self) : 
+        return self.sequence.get_sequence()
+    
     def clear_sequence(self): 
-        self.sequence.clear() 
+        self.sequence.clear_sequence()
     
     def id_to_name(self, placeid) :
         return self.sequence.id_to_name(placeid)
     
+    def input_start_coordinate(self, lat: float, lon: float):
+        return self.sequence.input_start_coordinate(lat, lon)
+    
+    def get_start_coordinate(self):
+        return self.sequence.get_start_coordinate()
+    
     def search_by_name(self,name,exact=False,limit=10):
         return self.sequence.search_by_name(name,exact,limit)
 
-    def get_suggest_categories(self):
-        return self.sequence.get_suggest_categories()
+    def get_suggest_category(self):
+        return self.sequence.get_suggest_category()
 
-    def suggest_for_position(self,position,limit=5,category=None):
-        return self.sequence.suggest_for_position(position,limit,category)
+    def suggest_for_position(self, position=-1, category=None, limit=5):
+        # Forward with explicit keywords to avoid argument-order mistakes
+        return self.sequence.suggest_for_position(pos=position, category=category, limit=limit)
     
-    def suggest_around(self,lat,lon,limit=5,category=None):
-        return self.sequence.suggest_around(lat,lon,limit,category)
+    def suggest_around(self, lat, lon, limit=5, category=None):
+        # Use keywords to align with LocationSequence signature
+        return self.sequence.suggest_around(lat=lat, lon=lon, limit=limit, category=category)
 
     def suggest_itinerary_to_sequence(self, limit=5):
-        return self.sequence.suggest_itinerary(limit)
-
+        return self.sequence.suggest_itinerary_to_sequence(limit)
+    
     # chatbox related  
     def process_input(self, user_input : str):
+        response = self.chatbox.process_input(user_input)
+        id = response.get
         return self.chatbox.process_input(user_input)
     
     def clear_conversation(self) :
         pass 
-        # self.chatbox._clear_conversation()
-
-
-if __name__ == "__main__": 
-    tool = TOOL() 
-
-    # interactive test
-    while True :
-        user_input = input("You: ")
-        bot_response = tool.process_input(user_input)
         
-        # print database results if any
-        print("\n" + "="*50)
-        if hasattr(bot_response, 'db_attraction'):
-            print(f"🏛️  DB Attraction IDs: {bot_response.db_attraction}")
-            for id in bot_response.db_attraction :
-                print(f"   - {tool.id_to_name(id)}")
-            
-
-        if hasattr(bot_response, 'suggested_attractions'):
-            print(f"🎯 Suggested Attraction IDs: {bot_response.suggested_attractions}")
-            if bot_response.suggested_attractions:
-                print(f"   Category searched: {bot_response.category if hasattr(bot_response, 'category') else 'N/A'}")
-                print(f"   Limit: {bot_response.limit if hasattr(bot_response, 'limit') else 'N/A'}")
-                for id in bot_response.suggested_attractions :
-                    print(f"   - {tool.id_to_name(id)}")
-
-        if hasattr(bot_response, 'listOfItinerary'):
-            print(f"📋 Itinerary IDs: {bot_response.listOfItinerary}")
-            for id in bot_response.listOfItinerary :
-                print(f"   - {tool.id_to_name(id)}")
-                
-        print("="*50 + "\n")
-        
-        print(f"Bot: {bot_response.get_message()}")
+if __name__ == "__main__":
+    tool = TOOL()
+    tool.append(0,1) 
+    tool.append(1,2)
+    tool.append(2,3)
+    # print(tool.get_suggest_category())
+    print(tool.suggest_for_position(position=1,limit=3,category=None))
+    # print(tool.id_to_name(1)) 
