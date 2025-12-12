@@ -347,6 +347,60 @@ def _build_examples_from_analysis(analysis):
     return examples_text
 
 
+def generate_dynamic_suggestions(context, question, num_suggestions=3):
+    """
+    Generate dynamic suggestions using LLM based on conversation context.
+    
+    Parameters:
+        context (str): Current conversation context
+        question (str): The question being asked to the user
+        num_suggestions (int): Number of suggestions to generate
+    
+    Returns:
+        list: List of suggested responses
+    """
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={GEMINI_KEY}"
+    
+    prompt = f"""Based on the following context and question, generate {num_suggestions} relevant, helpful, and diverse response suggestions that a user might want to choose from.
+
+Context: {context}
+Question: {question}
+
+Generate exactly {num_suggestions} short, natural suggestions (each 3-8 words). Return ONLY a JSON array of strings, nothing else.
+
+Example format: ["suggestion 1", "suggestion 2", "suggestion 3"]"""
+
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "temperature": 0.7,
+            "maxOutputTokens": 200
+        }
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        
+        result = response.json()
+        text = result['candidates'][0]['content']['parts'][0]['text'].strip()
+        
+        # Extract JSON array from response
+        import re
+        json_match = re.search(r'\[.*\]', text, re.DOTALL)
+        if json_match:
+            suggestions = json.loads(json_match.group())
+            return suggestions[:num_suggestions]
+        
+    except Exception as e:
+        print(f"⚠️  Dynamic suggestion generation failed: {e}")
+    
+    # Fallback suggestions
+    return ["Tell me more", "Skip this", "Continue"]
+
+
 def extract_info_with_orchestrator(user_input, collected_information, conversation_history=None):
     """
     Main orchestrator function implementing Two-Pass workflow.

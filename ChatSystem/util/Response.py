@@ -19,14 +19,19 @@ class UserResponse(Response) :
         super().__init__(user_message,whom)
     
 class BotResponse(Response) :
-    def __init__(self,location_sequence, bot_message,whom='bot') : 
+    def __init__(self,location_sequence, bot_message, suggestions=None, whom='bot') : 
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
         self.location_sequence = location_sequence
+        self.suggestions = suggestions if suggestions is not None else []
 
     def process(self):
         pass
+    
+    def get_suggestions(self):
+        """Return the list of suggestions for this response"""
+        return self.suggestions
 
 class Bot_ask_extra_info(BotResponse) :
     list_of_responses = [
@@ -36,13 +41,24 @@ class Bot_ask_extra_info(BotResponse) :
         "Can you give me additional info on your budget, duration, number of attractions, or travel preferences?",
         "I'd love to assist you better! Could you share more about your budget, trip duration, number of attractions, or interests?"
     ]
-    def __init__(self, info_text, location_sequence=None) : 
-        super().__init__(location_sequence, info_text)
+    
+    static_suggestions = [
+        "3 days, budget friendly, 5 attractions",
+        "1 week, moderate budget, 10 attractions",
+        "Weekend trip, flexible budget, 7 attractions"
+    ]
+    
+    def __init__(self, info_text=None, location_sequence=None) :
+        if info_text is None:
+            info_text = random.choice(self.list_of_responses)
+        super().__init__(location_sequence, info_text, suggestions=self.static_suggestions)
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses, location_sequence=None) :
         combined_message = "\n".join([resp.get_message() for resp in responses])
-        super().__init__(location_sequence, combined_message)
+        # Use suggestions from the last response in the composite
+        suggestions = responses[-1].get_suggestions() if responses else []
+        super().__init__(location_sequence, combined_message, suggestions=suggestions)
         self.responses = responses
      
 class Bot_ask_start_location(BotResponse) :
@@ -53,9 +69,15 @@ class Bot_ask_start_location(BotResponse) :
         "Let's go, but where first?",
         "Let's have a trip, tell me where to begin!"
     ]
+    
+    static_suggestions = [
+        "Ho Chi Minh City",
+        "Hanoi",
+        "Da Nang"
+    ]
 
     def __init__(self, location_sequence=None) : 
-        super().__init__(location_sequence, random.choice(self.list_of_responses))
+        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
 
 class Bot_ask_destination(BotResponse) :
     list_of_responses = [
@@ -65,8 +87,15 @@ class Bot_ask_destination(BotResponse) :
         "Where are we headed?",
         "What's the place you want to visit?"
     ]
+    
+    static_suggestions = [
+        "Ben Thanh Market",
+        "War Remnants Museum",
+        "Notre Dame Cathedral"
+    ]
+    
     def __init__(self, location_sequence=None) : 
-        super().__init__(location_sequence, random.choice(self.list_of_responses))
+        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
@@ -76,8 +105,15 @@ class Bot_ask_category(BotResponse) :
         "What kind of spot are you looking for?",
         "What category of destination are you thinking about?"
     ]
+    
+    static_suggestions = [
+        "Museums & Culture",
+        "Parks & Nature",
+        "Restaurants & Cafes"
+    ]
+    
     def __init__(self, location_sequence=None) : 
-        super().__init__(location_sequence, random.choice(self.list_of_responses))
+        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
 
 class Bot_suggest_attraction(BotResponse) :
     list_of_responses = [
@@ -87,11 +123,17 @@ class Bot_suggest_attraction(BotResponse) :
         "Consider adding {location} to your itinerary. It's perfect for {category} lovers!",
         "{location} is a fantastic spot that aligns with your interests in {category}."
     ]
+    
+    static_suggestions = [
+        "Yes, add it",
+        "Show me alternatives",
+        "Tell me more about this place"
+    ]
 
     def __init__(self, location, category, location_sequence=None) : 
         response = random.choice(self.list_of_responses).format(location=location, category=category)
-        super().__init__(location_sequence, response)
-        self.db_location = location_sequence.search_by_name(location)
+        super().__init__(location_sequence, response, suggestions=self.static_suggestions)
+        self.db_location = location_sequence.search_by_name(location) if location_sequence else []
 
 
 class Bot_suggest_categories(BotResponse) :
@@ -102,22 +144,42 @@ class Bot_suggest_categories(BotResponse) :
         "Some great categories to explore are museum, park, restaurant, historical site, and shopping area. What do you think?",
         "How about selecting from museum, park, restaurant, historical site, or shopping area? Any favorites?"
     ]
+    
+    static_suggestions = [
+        "museum",
+        "park",
+        "restaurant"
+    ]
+    
     def __init__(self, location_sequence=None) : 
-        super().__init__(location_sequence, random.choice(self.list_of_responses))
-        self.suggested_category = location_sequence.get_suggest_category()
+        super().__init__(location_sequence, random.choice(self.list_of_responses), suggestions=self.static_suggestions)
+        self.suggested_category = location_sequence.get_suggest_category() if location_sequence else []
 
 class Bot_ask_clarify(BotResponse) :
-    def __init__(self, clarify_text, location_sequence=None) : 
-        super().__init__(location_sequence, clarify_text)
+    def __init__(self, clarify_text, suggestions=None, location_sequence=None) : 
+        # For clarifications, suggestions should be provided dynamically or use defaults
+        if suggestions is None:
+            suggestions = [
+                "Tell me more",
+                "Skip this",
+                "Start over"
+            ]
+        super().__init__(location_sequence, clarify_text, suggestions=suggestions)
 
 class Bot_display_attraction_details(BotResponse) :
     # attributes: id of place in database
+    static_suggestions = [
+        "Add to itinerary",
+        "Show similar places",
+        "Tell me more"
+    ]
+    
     def __init__(self, attraction_name, location_sequence=None) : 
         response = f"Here are the details for {attraction_name}"
         # Frontend can format better 
         # @Huynh Chi Ton
-        super().__init__(location_sequence, response)
-        self.db_attraction = location_sequence.search_by_name(attraction_name)
+        super().__init__(location_sequence, response, suggestions=self.static_suggestions)
+        self.db_attraction = location_sequence.search_by_name(attraction_name) if location_sequence else []
 
 class Bot_suggest_attractions(BotResponse):
     list_of_responses = [
@@ -127,18 +189,25 @@ class Bot_suggest_attractions(BotResponse):
         "Let me show you {limit} {category} places near {location}.",
         "Found {limit} amazing {category} spots in {location}!"
     ]
+    
+    static_suggestions = [
+        "Show me details",
+        "Find more options",
+        "Create itinerary with these"
+    ]
+    
     def __init__(self, category, location, limit=5, location_sequence=None):
         response = random.choice(self.list_of_responses).format(
             category=category,
             location=location,
             limit=limit
         )
-        super().__init__(location_sequence, response)
+        super().__init__(location_sequence, response, suggestions=self.static_suggestions)
         self.category = category
         self.location = location
         self.limit = limit
 
-        self.suggested_attractions = location_sequence.search_by_category(category, limit=limit)
+        self.suggested_attractions = location_sequence.search_by_category(category, limit=limit) if location_sequence else []
 
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
@@ -148,19 +217,25 @@ class Bot_create_itinerary(BotResponse):
         "Let me craft a {days}-day adventure starting from {start} for you!",
         "Working on your {days}-day itinerary from {start}. Almost ready!"
     ]
+    
+    static_suggestions = [
+        "Looks great!",
+        "Modify itinerary",
+        "Add more attractions"
+    ]
 
     def __init__(self, history, start_location, categories, destinations, duration_days, location_sequence, limit):
         response = random.choice(self.list_of_responses).format(
             start = start_location or 'your location',
             days = duration_days
         )
-        super().__init__(location_sequence, response)
+        super().__init__(location_sequence, response, suggestions=self.static_suggestions)
         self.start_location = start_location
         self.categories = categories
         self.destinations = destinations
         self.duration_days = duration_days
 
-        self.listOfItinerary = location_sequence.suggest_itinerary_to_sequence(limit)
+        self.listOfItinerary = location_sequence.suggest_itinerary_to_sequence(limit) if location_sequence else []
 
 
 

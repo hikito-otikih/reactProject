@@ -14,38 +14,7 @@ from .Response import (
     Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary
 )
 
-def process_user_input(user_input: str, collected_information: list = None, conversation_history: list = None) -> dict:
-    """
-    End-to-end function: User text → Function name + params
-    
-    Pipeline:
-    1. Detect language and translate to English (if needed)
-    2. Extract intent using 2-pass orchestrator
-    3. Format to clean function call structure
-    
-    Parameters:
-        user_input (str): User's message in any language
-        conversation_history (list): Previous conversation context
-            Format: [{'role': 'user'/'bot', 'message': 'text'}, ...]
-    
-    Returns:
-        dict: {
-            'function': 'function_name',
-            'params': {...},
-            'text': 'clarification_text' (only if asking for clarification)
-        }
-    
-    Example:
-        >>> process_user_input("Tôi muốn đi tham quan bảo tàng ở quận 1")
-        {
-            'function': 'suggest_attractions',
-            'params': {
-                'category': 'museum',
-                'location': 'District 1'
-            }
-        }
-    """
-    
+def process_user_input(user_input: str, collected_information: list, conversation_history: list) -> dict:    
     if not user_input or not user_input.strip():
         return {
             'function': 'ask_clarify',
@@ -56,10 +25,24 @@ def process_user_input(user_input: str, collected_information: list = None, conv
     source_language = detectLanguage(user_input)
     english_input = translate(user_input, target_language='en') if source_language != 'en' else user_input
     
+    # Translate conversation history to English for context
+    english_history = []
+    for message in conversation_history:
+        msg_text = message.get('message', '')
+        if msg_text and detectLanguage(msg_text) != 'en':
+            translated_text = translate(msg_text, target_language='en')
+            english_history.append({
+                'role': message.get('role', ''),
+                'message': translated_text
+            })
+        else:
+            english_history.append(message)
+            
     # Step 2: Extract intent using 2-pass orchestrator
-    extracted_data = extract_info_with_orchestrator(english_input, collected_information, conversation_history)
+    extracted_data = extract_info_with_orchestrator(english_input, collected_information, english_history)
     
     # Step 3: Format to clean structure
+    # Can be removed with better orchestrator output
     result = _format_llm_response(extracted_data)
     
     # Translate all text fields back to source language if needed

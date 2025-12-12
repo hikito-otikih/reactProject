@@ -11,6 +11,7 @@ from util.Response import (
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util.UserInputProcessing import process_user_input
+from util.orchestrator import generate_dynamic_suggestions
 
 from ChatSystem.location_sequence import LocationSequence
 
@@ -27,6 +28,18 @@ class ChatBox :
             'duration_days': None,
             'limit_attractions': 5
         }
+        self.conversation_started = False
+
+    def start_conversation(self) -> BotResponse:
+        """Proactively initiate the conversation by asking the first question."""
+        if not self.conversation_started:
+            self.conversation_started = True
+            # Start by asking for the start location
+            bot_response = Bot_ask_start_location(location_sequence=self.location_sequence)
+            self._add_response(bot_response)
+            bot_response.process()
+            return bot_response
+        return None
 
     def _add_response(self, response: Response) :
         self.response_history.append(response)
@@ -38,6 +51,27 @@ class ChatBox :
     def _clear_conversation(self) :
         self.response_history = []
         self.message_history = []
+    
+    def _build_context_string(self) -> str:
+        """Build a context string from collected information and recent messages."""
+        context_parts = []
+        
+        # Add collected information
+        if self.collected_information:
+            info_parts = []
+            for key, value in self.collected_information.items():
+                if value is not None:
+                    info_parts.append(f"{key}: {value}")
+            if info_parts:
+                context_parts.append("Collected info: " + ", ".join(info_parts))
+        
+        # Add recent conversation (last 3 messages)
+        if self.message_history:
+            recent = self.message_history[-3:]
+            msg_strs = [f"{m['role']}: {m['message']}" for m in recent]
+            context_parts.append("Recent conversation: " + " | ".join(msg_strs))
+        
+        return " // ".join(context_parts) if context_parts else "Starting new conversation"
 
     def _computeResponse_from_user_input(self, outputDict: dict) -> BotResponse:
         """
@@ -51,7 +85,18 @@ class ChatBox :
         
         # Map function to appropriate Response class
         if function_name == 'ask_clarify':
-            return Bot_ask_clarify(text or 'Could you provide more details?', location_sequence=self.location_sequence)
+            # Generate dynamic suggestions for clarification
+            context = self._build_context_string()
+            suggestions = generate_dynamic_suggestions(
+                context=context,
+                question=text or 'Could you provide more details?',
+                num_suggestions=3
+            )
+            return Bot_ask_clarify(
+                text or 'Could you provide more details?', 
+                suggestions=suggestions,
+                location_sequence=self.location_sequence
+            )
         
         elif function_name == 'confirm_start_location':
             # user already provided start location
@@ -63,12 +108,11 @@ class ChatBox :
                 return Bot_ask_destination(location_sequence=self.location_sequence)
         
         elif function_name == 'confirm_destination':
-            # user already provided destination
-            # ask to fill in missing info or display details...
             if not self.collected_information.get('start_location'):
                 return Bot_ask_start_location(location_sequence=self.location_sequence)
             else:
-                return CompositeResponse([Bot_display_attraction_details(self.collected_information.get('destinations'), location_sequence=self.location_sequence), Bot_ask_extra_info(location_sequence=self.location_sequence)], location_sequence=self.location_sequence) # ask for budget/duration/preferences
+                return CompositeResponse([Bot_display_attraction_details(self.collected_information.get('destinations'), location_sequence=self.location_sequence), 
+                                          Bot_ask_extra_info(location_sequence=self.location_sequence)], location_sequence=self.location_sequence) # ask for budget/duration/preferences
         
         elif function_name == 'suggest_categories':
             return Bot_suggest_categories(location_sequence=self.location_sequence)
@@ -91,11 +135,19 @@ class ChatBox :
             return Bot_create_itinerary(self.message_history, start_location, categories, destinations, duration_days, location_sequence=self.location_sequence, limit = self.collected_information.get('limit_attractions',5))
         
         else:
-            # Default fallback
-            return Bot_ask_clarify('I\'m processing your request. Could you provide more details?', location_sequence=self.location_sequence)
+            # Default fallback with dynamic suggestions
+            context = self._build_context_string()
+            suggestions = generate_dynamic_suggestions(
+                context=context,
+                question='I\'m processing your request. Could you provide more details?',
+                num_suggestions=3
+            )
+            return Bot_ask_clarify(
+                'I\'m processing your request. Could you provide more details?',
+                suggestions=suggestions,
+                location_sequence=self.location_sequence
+            )
         
-
-
     
     def _update_collected_information(self, result: dict) -> None :
         """
@@ -180,8 +232,25 @@ class ChatBox :
 if __name__ == "__main__" :
     # interactive test
     chat_box = ChatBox(location_sequence=LocationSequence())
+    
+    # Proactively start the conversation
+    print("\n" + "="*50)
+    print("🤖 Chatbot is starting the conversation...")
+    print("="*50 + "\n")
+    
+    initial_response = chat_box.start_conversation()
+    if initial_response:
+        print(f"Bot: {initial_response.get_message()}")
+        if initial_response.get_suggestions():
+            print(f"💡 Suggestions: {initial_response.get_suggestions()}")
+        print()
+    
     while True :
         user_input = input("You: ")
+        if user_input.lower() in ['exit', 'quit', 'bye']:
+            print("Goodbye! 👋")
+            break
+            
         bot_response = chat_box.process_input(user_input)
         
         # print database results if any
@@ -198,3 +267,6 @@ if __name__ == "__main__" :
         print("="*50 + "\n")
 
         print(f"Bot: {bot_response.get_message()}")
+        if bot_response.get_suggestions():
+            print(f"💡 Suggestions: {bot_response.get_suggestions()}")
+        print()
