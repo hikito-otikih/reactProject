@@ -7,6 +7,7 @@ class TOOL:
         self.sequence =  LocationSequence() 
         self.chatbox = ChatBox(self.sequence)
     
+
     def load(self, history) : 
         pass 
 

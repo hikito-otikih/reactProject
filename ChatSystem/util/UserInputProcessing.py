@@ -11,41 +11,10 @@ from .Response import (
     Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
     Bot_suggest_categories,
-    Bot_suggest_attractions_search, Bot_display_attraction_details, Bot_create_itinerary
+    Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary
 )
 
-def process_user_input(user_input: str, collected_information: list = None, conversation_history: list = None) -> dict:
-    """
-    End-to-end function: User text → Function name + params
-    
-    Pipeline:
-    1. Detect language and translate to English (if needed)
-    2. Extract intent using 2-pass orchestrator
-    3. Format to clean function call structure
-    
-    Parameters:
-        user_input (str): User's message in any language
-        conversation_history (list): Previous conversation context
-            Format: [{'role': 'user'/'bot', 'message': 'text'}, ...]
-    
-    Returns:
-        dict: {
-            'function': 'function_name',
-            'params': {...},
-            'text': 'clarification_text' (only if asking for clarification)
-        }
-    
-    Example:
-        >>> process_user_input("Tôi muốn đi tham quan bảo tàng ở quận 1")
-        {
-            'function': 'suggest_attractions',
-            'params': {
-                'category': 'museum',
-                'location': 'District 1'
-            }
-        }
-    """
-    
+def process_user_input(user_input: str, collected_information: list, conversation_history: list) -> dict:    
     if not user_input or not user_input.strip():
         return {
             'function': 'ask_clarify',
@@ -56,15 +25,32 @@ def process_user_input(user_input: str, collected_information: list = None, conv
     source_language = detectLanguage(user_input)
     english_input = translate(user_input, target_language='en') if source_language != 'en' else user_input
     
+    # Translate conversation history to English for context
+    english_history = []
+    for message in conversation_history:
+        msg_text = message.get('message', '')
+        if msg_text and detectLanguage(msg_text) != 'en':
+            translated_text = translate(msg_text, target_language='en')
+            english_history.append({
+                'role': message.get('role', ''),
+                'message': translated_text
+            })
+        else:
+            english_history.append(message)
+            
     # Step 2: Extract intent using 2-pass orchestrator
-    extracted_data = extract_info_with_orchestrator(english_input, collected_information, conversation_history)
+    extracted_data = extract_info_with_orchestrator(english_input, collected_information, english_history)
     
     # Step 3: Format to clean structure
+    # Can be removed with better orchestrator output
     result = _format_llm_response(extracted_data)
     
     # Translate all text fields back to source language if needed
-    if source_language and source_language != 'en' and 'params' in result:
-        _translate_all_text_back(result['params'], source_language)
+    if source_language and source_language != 'en':
+        if 'params' in result:
+            _translate_all_text_back(result['params'], source_language)
+        if 'all_slots' in result:
+            _translate_all_text_back(result['all_slots'], source_language)
     
     return result
 
@@ -72,37 +58,83 @@ def process_user_input(user_input: str, collected_information: list = None, conv
 def _format_llm_response(extracted_data: Dict) -> Dict:
     """
     Convert LLM extraction to clean, readable format.
+    Returns ALL extracted data regardless of function relevance.
     
     Input: Raw LLM extraction from orchestrator
-    Output: Simplified structure for your team
+    Output: Simplified structure with all extracted information
     
     Example:
         Input: {'intents': [{'intent': 'suggest_itinerary', 'slots': {...}}], ...}
-        Output: {'action': 'suggest_itinerary', 'params': {...}, 'needs_clarification': False}
+        Output: {'function': 'suggest_itinerary', 'params': {...}, 'all_slots': {...}}
     """
     
-    # Handle clarification needed
+    # Extract all intents first to preserve information
+    intents = extracted_data.get('intents', [])
+    
+    # Merge ALL slots from ALL intents - do this FIRST
+    all_extracted_slots = {}
+    primary_slots = {}
+    primary_function = None
+    
+    if intents:
+        # Get primary intent info
+        primary = intents[0]
+        primary_function = primary.get('suggested_function') or primary.get('intent')
+        primary_slots = primary.get('slots', {})
+        
+        # Merge all slots from all intents
+        for intent in intents:
+            intent_slots = intent.get('slots', {})
+            for key, value in intent_slots.items():
+                # Include ALL values, even None to show what was checked
+                if key in all_extracted_slots:
+                    # If key exists, handle merging
+                    existing = all_extracted_slots[key]
+                    if value is not None:  # Only merge non-null values
+                        if isinstance(existing, list):
+                            if isinstance(value, list):
+                                # Merge two lists, avoid duplicates
+                                for item in value:
+                                    if item not in existing:
+                                        existing.append(item)
+                            elif value not in existing:
+                                existing.append(value)
+                        elif isinstance(value, list):
+                            # Replace single value with list
+                            all_extracted_slots[key] = value
+                        elif existing != value and value is not None:
+                            # Convert to list if different values
+                            all_extracted_slots[key] = [existing, value]
+                else:
+                    # Add new key with its value
+                    all_extracted_slots[key] = value
+    
+    # Handle clarification needed - but KEEP the extracted slots
     if extracted_data.get('followup') and extracted_data.get('clarify_question'):
         return {
             'function': 'ask_clarify',
             'text': extracted_data.get('clarify_question'),
+            'params': primary_slots,  # Include primary slots
+            'all_slots': all_extracted_slots,  # Include all extracted slots
+            'missing_info': intents[0].get('missing_info', []) if intents else [],
+            'suggested_function': primary_function  # Keep the intended function
         }
     
     # Handle empty/invalid response
-    intents = extracted_data.get('intents', [])
     if not intents:
         return {
             'function': 'ask_clarify',
             'text': 'Could you please provide more details?',
-            'error': 'No intent detected'
+            'error': 'No intent detected',
+            'params': {},
+            'all_slots': {}
         }
     
-    # Extract main intent
-    primary = intents[0]
-    
     return {
-        'function': primary.get('suggested_function') or primary.get('intent'),
-        'params': primary.get('slots', {}),
+        'function': primary_function,
+        'params': primary_slots,  # Slots from primary intent only
+        'all_slots': all_extracted_slots,  # ALL extracted information from ALL intents
+        'missing_info': intents[0].get('missing_info', [])  # What info is still needed
     }
 
 
