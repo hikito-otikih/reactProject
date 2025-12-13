@@ -34,7 +34,16 @@ class BotResponse(Response) :
         return self.suggestions
 
     def get_database_results(self) :
-        pass
+        return {
+            "No database results for this response type" : []
+        }
+    
+    def get_json_serializable(self):
+        return {
+            "message" : self.get_message(),
+            "suggestions" : self.get_suggestions(),
+            "database_results" : self.get_database_results()
+        }
 class Bot_ask_extra_info(BotResponse) :
     list_of_responses = [
         "Could you provide more details about your budget, duration, number of attractions, or preferences?",
@@ -55,9 +64,6 @@ class Bot_ask_extra_info(BotResponse) :
             info_text = random.choice(self.list_of_responses)
         super().__init__(location_sequence, info_text, suggestions=self.static_suggestions)
     
-    def get_database_results(self):
-        """No database results for this response type"""
-        return {}
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses, location_sequence=None) :
@@ -241,7 +247,7 @@ class Bot_display_attraction_details(BotResponse) :
     def get_database_results(self):
         """Return the attraction details IDs"""
         return {
-            'attraction_detail_ids': self.db_attraction
+            'attraction_detail_id': self.db_attraction
         }
 
 class Bot_suggest_attractions(BotResponse):
