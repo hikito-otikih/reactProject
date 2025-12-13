@@ -319,5 +319,7 @@ if __name__ == "__main__" :
             
         bot_response = chat_box.process_input(user_input)
         print(f"Bot: {bot_response.get_message()}")
+        if (bot_response.get_database_results()):
+            print(f"📚 Database Results: {bot_response.get_database_results()}")
         if bot_response.get_suggestions():
             print(f"💡 Suggestions: {bot_response.get_suggestions()}")
