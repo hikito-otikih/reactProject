@@ -294,6 +294,44 @@ class ChatBox :
         self._update_collected_information(outputDict)
 
         return bot_response 
+    
+
+    def save_chatbox(self) -> dict:
+        save_data = {
+            'responses' : None,
+            'collected_information' : self.collected_information
+        }
+
+        for response in self.response_history:
+            if save_data['responses'] is None :
+                save_data['responses'] = []
+            
+            response_dict = {
+                'whom' : response.whom,
+                'message' : response.get_message(),
+                'suggestions' : response.get_suggestions(),
+                'database_results' : response.get_database_results()
+            }
+            save_data['responses'].append(response_dict)
+
+        return save_data
+
+    def load_chatbox(self, json_data: dict) -> None :
+        self._clear_conversation()
+        self.collected_information = json_data.get('collected_information', self.collected_information)
+
+        for response_dict in json_data.get('responses', []) :
+            if response_dict['whom'] == 'bot' :
+                response = BotResponse(
+                    message=response_dict['message'],
+                    suggestions=response_dict.get('suggestions', []),
+                    database_results=response_dict.get('database_results', []),
+                    location_sequence=self.location_sequence
+                )
+            else :
+                response = UserResponse(response_dict['message'])
+            
+            self._add_response(response)
 
 if __name__ == "__main__" :
     # interactive test
