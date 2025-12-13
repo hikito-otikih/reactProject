@@ -140,9 +140,7 @@ class Bot_ask_destination(BotResponse) :
     
     def get_database_results(self):
         """Return nearby destination IDs suggested to user"""
-        return {
-            'nearby_destination_ids': self.nearby_ids
-        }
+        return self.nearby_ids
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [

@@ -46,7 +46,8 @@ class ChatBox :
             bot_response.process()
             return bot_response
         return None
-
+    def get_history(self) :
+        return self.message_history
     def _add_response(self, response: Response) :
         self.response_history.append(response)
         self.message_history.append({
@@ -317,9 +318,10 @@ if __name__ == "__main__" :
             print("Goodbye! 👋")
             break
             
-        bot_response = chat_box.process_input(user_input)
-        print(f"Bot: {bot_response.get_message()}")
-        if (bot_response.get_database_results()):
-            print(f"📚 Database Results: {bot_response.get_database_results()}")
-        if bot_response.get_suggestions():
-            print(f"💡 Suggestions: {bot_response.get_suggestions()}")
+        bot_response = chat_box.process_input(user_input).get_json_serializable()
+        print(bot_response)
+        # print(f"Bot: {bot_response.get_message()}")
+        # if (bot_response.get_database_results()):
+        #     print(f"📚 Database Results: {bot_response.get_database_results()}")
+        # if bot_response.get_suggestions():
+        #     print(f"💡 Suggestions: {bot_response.get_suggestions()}")
