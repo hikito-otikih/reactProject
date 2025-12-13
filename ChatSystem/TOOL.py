@@ -51,11 +51,8 @@ class TOOL:
         return self.sequence.suggest_itinerary_to_sequence(limit)
     
     # chatbox related  
-    def process_input(self, user_input : str):
-        response = self.chatbox.process_input(user_input)
-        id = response.get
+    def process_input(self, user_input : str): 
         return self.chatbox.process_input(user_input)
-    
     def clear_conversation(self) :
         pass 
         
