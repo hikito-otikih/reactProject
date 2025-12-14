@@ -43,7 +43,6 @@ class ChatBox :
                 num_alternatives=2
             )
             self._add_response(bot_response)
-            bot_response.process()
             return bot_response
         return None
     def get_history(self) :
@@ -290,11 +289,48 @@ class ChatBox :
         
         bot_response = self._computeResponse_from_user_input(outputDict)
         self._add_response(bot_response)
-        bot_response.process()
 
         self._update_collected_information(outputDict)
 
         return bot_response 
+    
+
+    def save_chatbox(self) -> dict:
+        save_data = {
+            'responses' : None,
+            'collected_information' : self.collected_information
+        }
+
+        for response in self.response_history:
+            if save_data['responses'] is None :
+                save_data['responses'] = []
+            
+            response_dict = {
+                'whom' : response.whom,
+                'message' : response.get_message(),
+                'suggestions' : response.get_suggestions(),
+                'database_results' : response.get_database_results()
+            }
+            save_data['responses'].append(response_dict)
+
+        return save_data
+
+    def load_chatbox(self, json_data: dict) -> None :
+        self._clear_conversation()
+        self.collected_information = json_data.get('collected_information', self.collected_information)
+
+        for response_dict in json_data.get('responses', []) :
+            if response_dict['whom'] == 'bot' :
+                response = BotResponse(
+                    message=response_dict['message'],
+                    suggestions=response_dict.get('suggestions', []),
+                    database_results=response_dict.get('database_results', []),
+                    location_sequence=self.location_sequence
+                )
+            else :
+                response = UserResponse(response_dict['message'])
+            
+            self._add_response(response)
 
 if __name__ == "__main__" :
     # interactive test
@@ -318,10 +354,14 @@ if __name__ == "__main__" :
             print("Goodbye! 👋")
             break
             
-        bot_response = chat_box.process_input(user_input).get_json_serializable()
-        print(bot_response)
-        # print(f"Bot: {bot_response.get_message()}")
-        # if (bot_response.get_database_results()):
-        #     print(f"📚 Database Results: {bot_response.get_database_results()}")
-        # if bot_response.get_suggestions():
-        #     print(f"💡 Suggestions: {bot_response.get_suggestions()}")
+        bot_response = chat_box.process_input(user_input)
+        print(f"Bot: {bot_response.get_message()}")
+        if (bot_response.get_database_results()):
+            print(f"📚 Database Results: {bot_response.get_database_results()}")
+        if bot_response.get_suggestions():
+            print(f"💡 Suggestions: {bot_response.get_suggestions()}")
+
+        save_data = chat_box.save_chatbox()
+        # print (save_data)  # For debugging purposes
+        if save_data.get('responses'):
+            print(f"(Conversation saved with {len(save_data['responses'])} messages.)")

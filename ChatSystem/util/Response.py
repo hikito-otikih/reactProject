@@ -14,6 +14,16 @@ class Response :
     def get_message(self) : 
         return self.message
     
+    def get_suggestions(self) : 
+        return []
+    
+    def get_database_results(self) :
+        """Return list of database result IDs"""
+        return []
+    
+    def get_json_serializable(self):
+        return {}
+    
 class UserResponse(Response) :
     def __init__(self,user_message,whom='user') : 
         super().__init__(user_message,whom)
@@ -23,21 +33,16 @@ class BotResponse(Response) :
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
-<<<<<<< HEAD
         self.location_sequence = location_sequence
         self.suggestions = suggestions if suggestions is not None else []
-
-    def process(self):
-        pass
     
     def get_suggestions(self):
         """Return the list of suggestions for this response"""
         return self.suggestions
 
     def get_database_results(self) :
-        return {
-            "No database results for this response type" : []
-        }
+        """Return list of database result IDs"""
+        return []
     
     def get_json_serializable(self):
         return {
@@ -65,11 +70,6 @@ class Bot_ask_extra_info(BotResponse) :
             info_text = random.choice(self.list_of_responses)
         super().__init__(location_sequence, info_text, suggestions=self.static_suggestions)
     
-=======
-    
-    def process(self):
-        pass
->>>>>>> phuoc
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses, location_sequence=None) :
@@ -81,18 +81,13 @@ class CompositeResponse(BotResponse) :
     
     def get_database_results(self):
         """Aggregate database results from all composite responses"""
-        results = {}
+        results = []
         for resp in self.responses:
             resp_results = resp.get_database_results()
-            for key, value in resp_results.items():
-                if key in results:
-                    # Merge lists if both are lists
-                    if isinstance(results[key], list) and isinstance(value, list):
-                        results[key].extend(value)
-                    else:
-                        results[key] = value
-                else:
-                    results[key] = value
+            if isinstance(resp_results, list):
+                results.extend(resp_results)
+            elif resp_results:  # Handle any non-list, non-empty result
+                results.append(resp_results)
         return results
      
 class Bot_ask_start_location(BotResponse) :
@@ -146,7 +141,7 @@ class Bot_ask_destination(BotResponse) :
     
     def get_database_results(self):
         """Return nearby destination IDs suggested to user"""
-        return self.nearby_ids
+        return self.nearby_ids if self.nearby_ids else []
 
 class Bot_ask_category(BotResponse) :
     list_of_responses = [
@@ -188,9 +183,7 @@ class Bot_suggest_attraction(BotResponse) :
     
     def get_database_results(self):
         """Return the suggested attraction IDs"""
-        return {
-            'suggested_attraction_ids': self.db_location
-        }
+        return self.db_location if self.db_location else []
 
 
 class Bot_suggest_categories(BotResponse) :
@@ -214,9 +207,11 @@ class Bot_suggest_categories(BotResponse) :
     
     def get_database_results(self):
         """Return suggested categories"""
-        return {
-            'suggested_categories': self.suggested_category if isinstance(self.suggested_category, list) else [self.suggested_category]
-        }
+        if isinstance(self.suggested_category, list):
+            return self.suggested_category
+        elif self.suggested_category:
+            return [self.suggested_category]
+        return []
 
 class Bot_ask_clarify(BotResponse) :
     def __init__(self, clarify_text, suggestions=None, location_sequence=None) : 
@@ -250,9 +245,7 @@ class Bot_display_attraction_details(BotResponse) :
     
     def get_database_results(self):
         """Return the attraction details IDs"""
-        return {
-            'attraction_detail_id': self.db_attraction
-        }
+        return self.db_attraction if self.db_attraction else []
 
 class Bot_suggest_attractions(BotResponse):
     list_of_responses = [
@@ -284,12 +277,7 @@ class Bot_suggest_attractions(BotResponse):
     
     def get_database_results(self):
         """Return suggested attractions by category"""
-        return {
-            'suggested_attraction_ids': self.suggested_attractions,
-            'category': self.category,
-            'location': self.location,
-            'limit': self.limit
-        }
+        return self.suggested_attractions if self.suggested_attractions else []
 
 class Bot_create_itinerary(BotResponse):
     list_of_responses = [
@@ -321,13 +309,7 @@ class Bot_create_itinerary(BotResponse):
     
     def get_database_results(self):
         """Return the complete itinerary"""
-        return {
-            'itinerary_ids': self.listOfItinerary,
-            'start_location': self.start_location,
-            'categories': self.categories,
-            'destinations': self.destinations,
-            'duration_days': self.duration_days
-        }
+        return self.listOfItinerary if self.listOfItinerary else []
 
 
 
