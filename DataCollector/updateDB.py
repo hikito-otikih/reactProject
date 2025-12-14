@@ -15,15 +15,18 @@ def clean_database(db_name='places.db', table_name='places'):
         return
 
     columns = [description[0] for description in cursor.description]
-    
     cat_columns = [col for col in columns if col.startswith('cat_')]
-    print(f"Found {len(cat_columns)} category columns: {cat_columns}")
+    
+    # Flag to determine if we should update categories
+    update_categories = False
 
     try:
         cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN categories TEXT")
-        print("Added 'categories' column.")
+        print("Added 'categories' column. Will populate it.")
+        update_categories = True
     except sqlite3.OperationalError:
-        print("'categories' column already exists. Updating existing data.")
+        print("'categories' column already exists. Skipping category aggregation; only updating openingHours.")
+        update_categories = False
 
     cursor.execute(f"SELECT rowid, * FROM {table_name}")
     rows = cursor.fetchall()
@@ -32,27 +35,47 @@ def clean_database(db_name='places.db', table_name='places'):
 
     print("Processing rows...")
     for row in rows:
-        active_categories = []
-        for cat_col in cat_columns:
-            if row[cat_col] == 1:
-                clean_name = cat_col.replace('cat_', '')
-                active_categories.append(clean_name)
-        
-        categories_str = ",".join(active_categories)
-
+        # 1. Always process openingHours
         opening_hours = row['openingHours']
         if opening_hours and isinstance(opening_hours, str):
             opening_hours = opening_hours.replace('|', ',')
         
-        updates.append((categories_str, opening_hours, row['rowid']))
+        # 2. Only process categories if the column was just created
+        if update_categories:
+            active_categories = []
+            for cat_col in cat_columns:
+                if row[cat_col] == 1:
+                    clean_name = cat_col.replace('cat_', '')
+                    active_categories.append(clean_name)
+            categories_str = ",".join(active_categories)
+            
+            # Tuple structure: (categories, openingHours, rowid)
+            updates.append((categories_str, opening_hours, row['rowid']))
+        else:
+            # Tuple structure: (openingHours, rowid)
+            updates.append((opening_hours, row['rowid']))
+
+    if not updates:
+        print("No rows to update.")
+        conn.close()
+        return
 
     print(f"Updating {len(updates)} rows...")
-    cursor.executemany(f"""
-        UPDATE {table_name} 
-        SET categories = ?, 
-            openingHours = ? 
-        WHERE rowid = ?
-    """, updates)
+    
+    # 3. Execute the appropriate query based on the flag
+    if update_categories:
+        cursor.executemany(f"""
+            UPDATE {table_name} 
+            SET categories = ?, 
+                openingHours = ? 
+            WHERE rowid = ?
+        """, updates)
+    else:
+        cursor.executemany(f"""
+            UPDATE {table_name} 
+            SET openingHours = ? 
+            WHERE rowid = ?
+        """, updates)
 
     conn.commit()
     conn.close()
@@ -158,5 +181,5 @@ def refactor_and_fill(db_name, table_name='places'):
 # --- RUN THE FUNCTION ---
 # REPLACE 'places' BELOW WITH YOUR ACTUAL TABLE NAME IF IT IS DIFFERENT
 # clean_database(db_name='result/places.db', table_name='places')
-delete_category_columns(db_name='result/places.db', table_name='places')
+# delete_category_columns(db_name='result/places.db', table_name='places')
 refactor_and_fill(db_name='result/places.db', table_name='places')
