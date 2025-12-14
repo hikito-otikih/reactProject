@@ -1,3 +1,4 @@
+import json
 import os
 from location_sequence import LocationSequence
 from ChatBox import ChatBox
@@ -7,13 +8,12 @@ class TOOL:
     def __init__(self): 
         self.sequence =  LocationSequence() 
         self.chatbox = ChatBox(self.sequence)
-    
-
+        
     def load(self, history) : 
         self.chatbox.load_history(history["history"])
         self.sequence.load_sequence(history["start coordinate"], history["sequence"])
     def save(self) : 
-        history = self.chatbox.get_history()
+        history = self.chatbox.save_chatbox()
         sequence = self.sequence.get_sequence()  
         return {
             "history" : history,
@@ -64,18 +64,15 @@ class TOOL:
     def process_input(self, user_input : str): 
         if user_input == "" :
             return self.chatbox.start_conversation().get_json_serializable()
-        return self.chatbox.process_input(user_input).get_json_serializable()
+        return self.chatbox.process_input(user_input=user_input).get_json_serializable()
     def clear_conversation(self) :
         pass 
 if __name__ == "__main__":
     tool = TOOL()
     while True:
-        user_input = input("You: ")
+        user_input = input("User: ")
         response = tool.process_input(user_input)
-        # print("Bot:", response)
-        break
-    print(tool.save()) 
-
+        print(json.dumps(tool.save(), indent=2)) 
 
 """   
 {
