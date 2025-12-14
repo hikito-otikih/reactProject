@@ -43,7 +43,6 @@ class ChatBox :
                 num_alternatives=2
             )
             self._add_response(bot_response)
-            bot_response.process()
             return bot_response
         return None
 
@@ -289,7 +288,6 @@ class ChatBox :
         
         bot_response = self._computeResponse_from_user_input(outputDict)
         self._add_response(bot_response)
-        bot_response.process()
 
         self._update_collected_information(outputDict)
 
@@ -361,3 +359,8 @@ if __name__ == "__main__" :
             print(f"📚 Database Results: {bot_response.get_database_results()}")
         if bot_response.get_suggestions():
             print(f"💡 Suggestions: {bot_response.get_suggestions()}")
+
+        save_data = chat_box.save_chatbox()
+        # print (save_data)  # For debugging purposes
+        if save_data.get('responses'):
+            print(f"(Conversation saved with {len(save_data['responses'])} messages.)")

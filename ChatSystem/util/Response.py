@@ -14,6 +14,16 @@ class Response :
     def get_message(self) : 
         return self.message
     
+    def get_suggestions(self) : 
+        return []
+    
+    def get_database_results(self) :
+        """Return list of database result IDs"""
+        return []
+    
+    def get_json_serializable(self):
+        return {}
+    
 class UserResponse(Response) :
     def __init__(self,user_message,whom='user') : 
         super().__init__(user_message,whom)
@@ -25,9 +35,6 @@ class BotResponse(Response) :
         super().__init__(bot_message, whom)
         self.location_sequence = location_sequence
         self.suggestions = suggestions if suggestions is not None else []
-
-    def process(self):
-        pass
     
     def get_suggestions(self):
         """Return the list of suggestions for this response"""
