@@ -74,19 +74,42 @@ if __name__ == "__main__":
         response = tool.process_input(user_input)
         print(json.dumps(tool.save(), indent=2)) 
 
-"""   
 {
-    'history': [
-        {
-            'role': 'user', 
-            'message': 'hello'
-        }, 
-        {
-            'role': 'bot', 
-            'message': "I'm processing your request. Could you provide more details?"
-        }
-    ],
-    'start coordinate': [10.7628356, 106.6824824], 
-    'sequence': []
+  "history": {
+    "responses": [
+      {
+        "whom": "bot",
+        "message": "Where does the fun begin today?",
+        "suggestions": [
+          "What type of places interest me?",
+          "Which attractions should I visit?"
+        ],
+        "database_results": []
+      },
+      {
+        "whom": "user",
+        "message": "ho chi minh ",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      }
+    ]
+  },
+  "start coordinate": [
+    10.7628356,
+    106.6824824
+  ],
+  "sequence": [1,2,3]
 }
-"""
