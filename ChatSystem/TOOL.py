@@ -10,8 +10,8 @@ class TOOL:
         self.chatbox = ChatBox(self.sequence)
         
     def load(self, history) : 
-        self.chatbox.load_history(history["history"])
-        self.sequence.load_sequence(history["start coordinate"], history["sequence"])
+        self.chatbox.load_chatbox(history["history"])
+        self.sequence.load_sequence(history["start_coordinate"], history["sequence"])
     def save(self) : 
         history = self.chatbox.save_chatbox()
         sequence = self.sequence.get_sequence()  
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     while True:
         user_input = input("User: ")
         response = tool.process_input(user_input)
-        print(json.dumps(tool.save(), indent=2)) 
+        print(json.dumps(response, indent=2)) 
 """
 {
   "history": {
@@ -107,7 +107,7 @@ if __name__ == "__main__":
       }
     ]
   },
-  "start coordinate": [
+  "start_coordinate": [
     10.7628356,
     106.6824824
   ],
