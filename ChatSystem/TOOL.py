@@ -1,3 +1,4 @@
+import os
 from location_sequence import LocationSequence
 from ChatBox import ChatBox
 
@@ -9,8 +10,17 @@ class TOOL:
     
 
     def load(self, history) : 
-        pass 
-
+        self.chatbox.load_history(history["history"])
+        self.sequence.load_sequence(history["start coordinate"], history["sequence"])
+    def save(self) : 
+        history = self.chatbox.get_history()
+        sequence = self.sequence.get_sequence()  
+        return {
+            "history" : history,
+            "start coordinate" : self.sequence.get_start_coordinate(),
+            "sequence" : sequence
+        }
+    
     # location sequence related
     def append(self , position , ID ) : 
         self.sequence.append(position,ID) 
@@ -51,19 +61,35 @@ class TOOL:
         return self.sequence.suggest_itinerary_to_sequence(limit)
     
     # chatbox related  
-    def process_input(self, user_input : str):
-        response = self.chatbox.process_input(user_input)
-        id = response.get
-        return self.chatbox.process_input(user_input)
-    
+    def process_input(self, user_input : str): 
+        if user_input == "" :
+            return self.chatbox.start_conversation().get_json_serializable()
+        return self.chatbox.process_input(user_input).get_json_serializable()
     def clear_conversation(self) :
         pass 
-        
 if __name__ == "__main__":
     tool = TOOL()
-    tool.append(0,1) 
-    tool.append(1,2)
-    tool.append(2,3)
-    # print(tool.get_suggest_category())
-    print(tool.suggest_for_position(position=1,limit=3,category=None))
-    # print(tool.id_to_name(1)) 
+    while True:
+        user_input = input("You: ")
+        response = tool.process_input(user_input)
+        # print("Bot:", response)
+        break
+    print(tool.save()) 
+
+
+"""   
+{
+    'history': [
+        {
+            'role': 'user', 
+            'message': 'hello'
+        }, 
+        {
+            'role': 'bot', 
+            'message': "I'm processing your request. Could you provide more details?"
+        }
+    ],
+    'start coordinate': [10.7628356, 106.6824824], 
+    'sequence': []
+}
+"""

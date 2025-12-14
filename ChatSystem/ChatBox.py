@@ -45,7 +45,8 @@ class ChatBox :
             self._add_response(bot_response)
             return bot_response
         return None
-
+    def get_history(self) :
+        return self.message_history
     def _add_response(self, response: Response) :
         self.response_history.append(response)
         self.message_history.append({

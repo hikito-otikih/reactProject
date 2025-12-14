@@ -1,0 +1,71 @@
+-- database: ./places.db
+
+SELECT * FROM places;
+
+
+CREATE TABLE backup_places AS
+SELECT * FROM places
+WHERE rating IS NULL
+   OR openingHours IS NULL
+   OR TRIM(categories) = '[]'
+   OR TRIM(categories) = ''
+   OR LOWER(TRIM(categories)) = 'null'
+   OR categories IS NULL;
+
+SELECT COUNT(*) AS backed_up FROM backup_places;
+
+DELETE FROM places
+WHERE rating IS NULL
+   OR openingHours IS NULL
+   OR TRIM(categories) = '[]'
+   OR TRIM(categories) = ''
+   OR LOWER(TRIM(categories)) = 'null'
+   OR categories IS NULL;
+
+SELECT * FROM places
+WHERE categories IS NULL
+   OR TRIM(categories) = ''
+   OR TRIM(categories) = '[]'
+   OR LOWER(TRIM(categories)) = 'null';
+
+INSERT INTO backup_places
+select * from places
+where places.imageurl is NULL or places.imageurls_0 is NULL;
+
+delete from places
+where places.imageurl is NULL or places.imageurls_0 is NULL;
+
+BEGIN TRANSACTION;
+INSERT INTO backup_places SELECT * FROM places WHERE imageurl IS NULL OR imageurls_0 IS NULL;
+DELETE FROM places WHERE imageurl IS NULL OR imageurls_0 IS NULL;
+commit;
+
+
+select * from places
+WHERE categories IS NULL
+   OR TRIM(categories) = ''
+   OR TRIM(categories) = '[]'
+   OR LOWER(TRIM(categories)) = 'null'
+   OR imageurl is NULL OR imageurls_0 is NULL;
+
+SELECT group_concat(name, ', ') AS cols
+FROM pragma_table_info('places')
+WHERE name NOT IN (
+  'cat_accommodation','cat_activity','cat_catering','cat_commercial',
+  'cat_entertainment','cat_heritage','cat_leisure','cat_manufacturing',
+  'cat_natural','cat_religion','cat_rental','cat_service','cat_tourism'
+);
+
+BEGIN TRANSACTION;
+
+CREATE TABLE places_new AS
+SELECT title, address, location_lat, location_lng, website, imageurl, phone, rating, mapURL, imageurls_0, reviews, openingHours, categories
+FROM places;
+
+-- Kiểm tra số hàng đã copy (tùy chọn)
+SELECT COUNT(*) FROM places_new;
+
+DROP TABLE places;
+ALTER TABLE places_new RENAME TO places;
+
+COMMIT;

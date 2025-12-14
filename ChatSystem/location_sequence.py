@@ -11,7 +11,9 @@ class LocationSequence:
     def __init__(self):
         self.start_coordinate = [10.7628356, 106.6824824]  # lat , lon  of hcmus by default
         self.sequence = []
-
+    def load_sequence(self, start_coordinate, sequence):
+        self.start_coordinate = start_coordinate
+        self.sequence = sequence
     def append(self, position , ID ):
         if position < 0 or position > len(self.sequence):
             raise IndexError("Location out of bounds")
@@ -22,7 +24,8 @@ class LocationSequence:
 
     def input_start_coordinate(self, lat: float, lon: float):
         self.start_coordinate = [lat, lon]
-    
+    def get_start_coordinate(self):
+        return self.start_coordinate
     def __str__(self):
         """Return a string representation of the sequence with place names from database"""
         if not self.sequence:

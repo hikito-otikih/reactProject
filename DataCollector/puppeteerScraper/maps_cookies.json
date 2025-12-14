@@ -1,0 +1,31 @@
+[
+  {
+    "name": "__Secure-BUCKET",
+    "value": "CO0B",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1781014096.246494,
+    "size": 19,
+    "httpOnly": true,
+    "secure": true,
+    "session": false,
+    "priority": "Medium",
+    "sameParty": false,
+    "sourceScheme": "Secure"
+  },
+  {
+    "name": "NID",
+    "value": "527=ITwSwDTRS26t-udQKjgTVelsOZd9UiGbowBwjrdriaQzsEUuI323CzlWjQXbfFR5ti1O9hMSc2aqnqcAd0PHDPef09oHf31FPFxVs0WqijwaZlRcJhYocxCZ939j48RxomLkx9421Roq5uDvGwWsRBMJTTjFm_ND5owCvGwjgmpJvSeacfk-7puE2_dhlmPHQI-kYzMFR97uLu0O55pHW57RErdJ0Ixy6lCtPU5iGn4j7PBZ",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1781273300.242355,
+    "size": 247,
+    "httpOnly": true,
+    "secure": true,
+    "session": false,
+    "sameSite": "None",
+    "priority": "Medium",
+    "sameParty": false,
+    "sourceScheme": "Secure"
+  }
+]
