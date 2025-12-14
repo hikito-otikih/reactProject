@@ -73,7 +73,7 @@ if __name__ == "__main__":
         user_input = input("User: ")
         response = tool.process_input(user_input)
         print(json.dumps(tool.save(), indent=2)) 
-
+"""
 {
   "history": {
     "responses": [
@@ -113,3 +113,4 @@ if __name__ == "__main__":
   ],
   "sequence": [1,2,3]
 }
+"""

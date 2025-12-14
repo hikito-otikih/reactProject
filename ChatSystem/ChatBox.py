@@ -282,7 +282,7 @@ class ChatBox :
         print(f"\n📊 Updated collected_information: {self.collected_information}\n")
 
 
-    def process_input(self, user_input: str) -> None :
+    def process_input(self, user_input: str) -> BotResponse:
         user_response = UserResponse(user_input)
         self._add_response(user_response)
 
