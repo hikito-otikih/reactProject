@@ -7,7 +7,7 @@ def loadEmbeddingData(index_file_path = constant.index_file_path, db_path = cons
     """
     return:
     - index: a faiss index
-    - grouped_images: a dictionary with keys (place_id) and values (list of dictionaries with keys (rowid, isMainImage, embedding))
+    - grouped_images: a dictionary with keys (place_id) and values (list of dictionaries with keys (rowid, url, isMainImage, embedding))
     """
     def loadFromFaiss():
         index = faiss.read_index(index_file_path)
@@ -15,25 +15,26 @@ def loadEmbeddingData(index_file_path = constant.index_file_path, db_path = cons
 
     def loadFromImagesDatabase():
         """
-        return a list of dictionaries with keys (rowid, place_id, isMainImage)
+        return a list of dictionaries with keys (rowid, place_id, url, isMainImage)
         """
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.execute(f"SELECT rowid, place_id, isMainImage FROM {table_name}")
+        cursor.execute(f"SELECT rowid, place_id, url, isMainImage FROM {table_name}")
         result = cursor.fetchall()
         cursor.close()
         conn.close()
-        return [{"rowid": imageData[0], "place_id": imageData[1], "isMainImage": imageData[2]} for imageData in result]
+        return [{"rowid": imageData[0], "place_id": imageData[1], "url": imageData[2], "isMainImage": imageData[3]} for imageData in result]
+        
     def groupImagesByPlaceId(imagesData, index):
         """
-        return: a dictionary with keys (place_id) and values (list of dictionaries with keys (rowid, isMainImage, embedding))
+        return: a dictionary with keys (place_id) and values (list of dictionaries with keys (rowid, url, isMainImage, embedding))
         """
         result = {}
         for imageData in imagesData:
             if imageData["place_id"] not in result:
                 result[imageData["place_id"]] = []
-            result[imageData["place_id"]].append({"rowid": imageData["rowid"], "isMainImage": imageData["isMainImage"], "embedding": index.reconstruct(imageData["rowid"] - 1)}) 
-            ## faiss index is 0-based, but rowid is 1-based
+            item = {"rowid": imageData["rowid"], "url": imageData["url"], "isMainImage": imageData["isMainImage"], "embedding": index.reconstruct(imageData["rowid"])}
+            result[imageData["place_id"]].append(item)
         return result
     
     index = loadFromFaiss()

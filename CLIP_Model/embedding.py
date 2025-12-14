@@ -6,6 +6,7 @@ from PIL import Image
 import requests
 import numpy as np
 import faiss
+from tqdm import tqdm
 
 from init_model import load_CLIP_model
 
@@ -20,7 +21,7 @@ def imagesEmbeddingForDatabase():
     def getImagesJson():
         conn = sqlite3.connect(original_DB_path)
         cursor = conn.cursor()
-        cursor.execute(f"SELECT rowid, images FROM {places_table_name} WHERE rowid <= 2")
+        cursor.execute(f"SELECT rowid, images FROM {places_table_name}")
         images = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -37,7 +38,14 @@ def imagesEmbeddingForDatabase():
         assert isinstance(urlList, list), "urlList must be a list of urls"
         assert isinstance(id, int), "id must be an integer"
 
-        imgList = [Image.open(requests.get(url, stream=True).raw) for url in urlList]
+        imgList = []
+        for url in urlList:
+            try:
+                img = Image.open(requests.get(url, stream=True).raw)
+                imgList.append(img)
+            except Exception as e:
+                print(f"Error opening image {url}: {e}")
+                continue
         embeddingList = [model.encode(img) for img in imgList]
         return [{"id": id, "url": url, "img": img, "embedding": embedding} for url,img,embedding in zip(urlList,imgList,embeddingList)]
 
@@ -52,8 +60,11 @@ def imagesEmbeddingForDatabase():
     #     return [embeddingList + [np.zeros(shape)] * (maxLen - len(embeddingList)) for embeddingList in ListOfEmbeddingList]
 
     AllImageList = getImagesJson()
-
-    ListOfImageInfoList = [ProcessJsonString(imageJsonAndID) for imageJsonAndID in AllImageList]
+    
+    ListOfImageInfoList = []
+    for imageJsonAndID in tqdm(AllImageList):
+        imageInfoList = ProcessJsonString(imageJsonAndID)
+        ListOfImageInfoList.append(imageInfoList)
 
     return ListOfImageInfoList
 
