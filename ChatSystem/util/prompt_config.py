@@ -249,7 +249,8 @@ SCHEMA_SLOTS = {
         'duration_days': 'null',
         'start_time': 'null',
         'budget': 'null',
-        'preferences': '[]'
+        'preferences': '[]',
+        'limit_attractions': 'null'
     },
     'general': {
         'query': 'null'

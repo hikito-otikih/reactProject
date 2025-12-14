@@ -16,7 +16,7 @@ load_dotenv()
 GEMINI_KEY = os.getenv('GEMINI_KEY')
 
 
-def pass1_analyze_query(user_input, conversation_history=None):
+def pass1_analyze_query(user_input, collected_information=None, conversation_history=None):
     """
     PASS 1: ANALYSIS PHASE
     
@@ -32,23 +32,30 @@ def pass1_analyze_query(user_input, conversation_history=None):
     
     Parameters:
         user_input (str): User's query
+        collected_information (dict): Previously collected slot data
         conversation_history (list): Recent conversation context
     
     Returns:
         dict: Analysis results with recommendations for Pass 2
     """
+    # Build collected information context
+    collected_info_str = ""
+    if collected_information:
+        collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
+        collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
+        collected_info_str += "\n\nIMPORTANT: Use this information to better understand what's missing and what's already known.\n"
+    
     context_str = ""
     if conversation_history:
         context_str = "\n\nRecent Conversation:\n"
         for msg in conversation_history[-5:]:
             context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
+
     analysis_prompt = f"""You are a Query Analysis Expert for a Travel Chatbot. Your ONLY job is to analyze the user's query and provide strategic recommendations for how to process it.
-
 DO NOT attempt to answer the user's query. Only analyze it.
-
-USER QUERY: "{user_input}"
+{collected_info_str}
 {context_str}
-
+USER QUERY: "{user_input}"
 Provide a detailed analysis in JSON format:
 {{
   "query_type": "string",  // e.g., "attractions_search", "itinerary_planning", "clarification_needed", "answer_previous_question", "general_inquiry", etc.
@@ -123,7 +130,7 @@ CRITICAL: Return ONLY the JSON. No additional text."""
             "reasoning": f"Analysis failed: {str(e)}"
         }
 
-def pass2_generate_response(user_input, analysis, conversation_history=None):
+def pass2_generate_response(user_input, analysis, collected_information=None, conversation_history=None):
     """
     PASS 2: EXECUTION PHASE
     
@@ -133,6 +140,7 @@ def pass2_generate_response(user_input, analysis, conversation_history=None):
     Parameters:
         user_input (str): User's query
         analysis (dict): Results from Pass 1
+        collected_information (dict): Previously collected slot data
         conversation_history (list): Recent conversation context
     
     Returns:
@@ -168,11 +176,18 @@ def pass2_generate_response(user_input, analysis, conversation_history=None):
     }}
     """
     
+    # Build collected information context
+    collected_info_str = ""
+    if collected_information:
+        collected_info_str = "\n\nCOLLECTED INFORMATION (already known):\n"
+        collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
+        collected_info_str += "\n\nIMPORTANT: Do NOT ask for information already present above. Focus on extracting NEW or MISSING information only.\n"
+    
     # Build context if needed
     context_str = ""
     if analysis.get('context_dependency') and conversation_history:
         context_str = "\n\nRECENT CONVERSATION CONTEXT:\n"
-        for msg in conversation_history[-2:]:
+        for msg in conversation_history[-5:]:
             context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
     
     # Build special rules based on analysis
@@ -203,6 +218,7 @@ EXTRACTION RULES:
 {special_rules}
 
 {examples}
+{collected_info_str}
 {context_str}
 
 USER QUERY: "{user_input}"
@@ -331,7 +347,61 @@ def _build_examples_from_analysis(analysis):
     return examples_text
 
 
-def extract_info_with_orchestrator(user_input, conversation_history=None):
+def generate_dynamic_suggestions(context, question, num_suggestions=3):
+    """
+    Generate dynamic suggestions using LLM based on conversation context.
+    
+    Parameters:
+        context (str): Current conversation context
+        question (str): The question being asked to the user
+        num_suggestions (int): Number of suggestions to generate
+    
+    Returns:
+        list: List of suggested responses
+    """
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
+    
+    prompt = f"""Based on the following context and question, generate {num_suggestions} relevant, helpful, and diverse response suggestions that a user might want to choose from.
+
+Context: {context}
+Question: {question}
+
+Generate exactly {num_suggestions} short, natural suggestions (each 3-8 words). Return ONLY a JSON array of strings, nothing else.
+
+Example format: ["suggestion 1", "suggestion 2", "suggestion 3"]"""
+
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "temperature": 0.7,
+            "maxOutputTokens": 200
+        }
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        
+        result = response.json()
+        text = result['candidates'][0]['content']['parts'][0]['text'].strip()
+        
+        # Extract JSON array from response
+        import re
+        json_match = re.search(r'\[.*\]', text, re.DOTALL)
+        if json_match:
+            suggestions = json.loads(json_match.group())
+            return suggestions[:num_suggestions]
+        
+    except Exception as e:
+        print(f"⚠️  Dynamic suggestion generation failed: {e}")
+    
+    # Fallback suggestions
+    return ["Tell me more", "Skip this", "Continue"]
+
+
+def extract_info_with_orchestrator(user_input, collected_information, conversation_history=None):
     """
     Main orchestrator function implementing Two-Pass workflow.
     
@@ -356,7 +426,7 @@ def extract_info_with_orchestrator(user_input, conversation_history=None):
     
     # PASS 1: ANALYSIS
     print("🔍 Pass 1: Analyzing query...")
-    analysis = pass1_analyze_query(user_input, conversation_history)
+    analysis = pass1_analyze_query(user_input, collected_information, conversation_history)
     # print the dictionary analysis
     print("Analysis Result:")
     print(json.dumps(analysis, indent=2))
@@ -364,8 +434,11 @@ def extract_info_with_orchestrator(user_input, conversation_history=None):
     
     # PASS 2: EXECUTION
     print("⚙️  Pass 2: Generating precise response...")
-    result = pass2_generate_response(user_input, analysis, conversation_history)
+    result = pass2_generate_response(user_input, analysis, collected_information, conversation_history)
     print("✅ Extraction complete\n")
+    #print the result
+    print("Extraction Result:")
+    print(json.dumps(result, indent=2))
     
     return result
 
