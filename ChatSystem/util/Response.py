@@ -23,6 +23,7 @@ class BotResponse(Response) :
         # if history and history[history.__len__()-1][0]['role'] != 'user':
             # raise ValueError("Last history entry must be 'user'")
         super().__init__(bot_message, whom)
+<<<<<<< HEAD
         self.location_sequence = location_sequence
         self.suggestions = suggestions if suggestions is not None else []
 
@@ -64,6 +65,11 @@ class Bot_ask_extra_info(BotResponse) :
             info_text = random.choice(self.list_of_responses)
         super().__init__(location_sequence, info_text, suggestions=self.static_suggestions)
     
+=======
+    
+    def process(self):
+        pass
+>>>>>>> phuoc
 
 class CompositeResponse(BotResponse) :
     def __init__(self, responses, location_sequence=None) :
