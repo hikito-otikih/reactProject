@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 from urllib import response
@@ -43,7 +44,8 @@ class ChatBox :
             self._add_response(bot_response)
             return bot_response
         return None
-
+    def get_history(self) :
+        return self.message_history
     def _add_response(self, response: Response) :
         self.response_history.append(response)
         self.message_history.append({
@@ -331,6 +333,6 @@ if __name__ == "__main__" :
             print(f"💡 Suggestions: {bot_response.get_suggestions()}")
 
         save_data = chat_box.save_chatbox()
-        # print (save_data)  # For debugging purposes
-        if save_data.get('responses'):
-            print(f"(Conversation saved with {len(save_data['responses'])} messages.)")
+        print (json.dumps(save_data, indent=2))  # For debugging purposes
+        # if save_data.get('responses'):
+        #     print(f"(Conversation saved with {len(save_data['responses'])} messages.)")
