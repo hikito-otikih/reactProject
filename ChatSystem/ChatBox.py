@@ -5,7 +5,8 @@ from util.Response import (
     Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
     Bot_suggest_categories,
-    Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary, Bot_ask_extra_info
+    Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary, Bot_ask_extra_info,
+    Bot_suggest_from_database
 )
 
 # Add parent directory to Python path
@@ -22,12 +23,9 @@ class ChatBox :
         self.response_history = []
         self.message_history = []  # for process_user_input
         self.collected_information = {
-            'start_location' : None,
+            'destination': None,
             'categories': None,
-            'destinations': None,
-            'budget': None,
-            'duration_days': None,
-            'limit_attractions': 5
+            'limit': 3
         }
         self.conversation_started = False
 
@@ -35,8 +33,8 @@ class ChatBox :
         """Proactively initiate the conversation by asking the first question."""
         if not self.conversation_started:
             self.conversation_started = True
-            # Start by asking for the start location
-            bot_response = Bot_ask_start_location(location_sequence=self.location_sequence)
+            # Start by asking for the destination
+            bot_response = Bot_ask_destination(location_sequence=self.location_sequence)
             # Enhance with alternatives
             bot_response.suggestions = self._enhance_suggestions_with_alternatives(
                 bot_response.suggestions, 
@@ -84,11 +82,9 @@ class ChatBox :
         
         # Map missing fields to question templates
         field_to_question = {
-            'start_location': "Where should I start from?",
+            'destination': "Which city or area do I want to visit?",
             'categories': "What type of places interest me?",
-            'destinations': "Which attractions should I visit?",
-            'budget': "What's my budget?",
-            'duration_days': "How many days do I have?"
+            'limit': "How many attractions should I visit?"
         }
         
         # Find missing fields
@@ -135,6 +131,7 @@ class ChatBox :
         text = outputDict.get('text')
         
         response = None
+        
         # Map function to appropriate Response class
         if function_name == 'ask_clarify':
             # Generate dynamic suggestions for clarification
@@ -149,30 +146,16 @@ class ChatBox :
                 suggestions=suggestions,
                 location_sequence=self.location_sequence
             )
-
-        elif function_name == 'confirm_start_location':
-            # user already provided start location
-            # ask to fill in missing info...
-            # check the outputDict to see what is missing
-            if not self.collected_information.get('categories'):
-                response = Bot_ask_category(location_sequence=self.location_sequence)
-            elif not self.collected_information.get('destinations'):
-                # Pass the start_location to get dynamic suggestions
-                response = Bot_ask_destination(
-                    location_sequence=self.location_sequence
-                )
-            else:
-                # All info collected, suggest extra details
-                response = Bot_ask_extra_info(location_sequence=self.location_sequence)
-        
-        elif function_name == 'confirm_destination':
-            if not self.collected_information.get('start_location'):
-                response = Bot_ask_start_location(location_sequence=self.location_sequence)
-            else:
-                response = CompositeResponse([
-                    Bot_display_attraction_details(self.collected_information.get('destinations'), location_sequence=self.location_sequence), 
-                    Bot_ask_extra_info(location_sequence=self.location_sequence)
-                ], location_sequence=self.location_sequence)
+    
+        elif function_name == 'suggest_from_database':
+            # Database-driven suggestion based on destination and categories
+            destination = params.get('destination')
+            categories = params.get('categories')
+            response = Bot_suggest_from_database(
+                destination=destination,
+                categories=categories,
+                location_sequence=self.location_sequence
+            )
     
         elif function_name == 'suggest_categories':
             response = Bot_suggest_categories(location_sequence=self.location_sequence)
@@ -188,11 +171,11 @@ class ChatBox :
             response = Bot_display_attraction_details(attraction_name, location_sequence=self.location_sequence)
         
         elif function_name == 'itinerary_planning':
-            start_location = params.get('start_location')
+            destination = params.get('destination')
             categories = params.get('categories', [])
-            destinations = params.get('destinations', [])
-            duration_days = params.get('duration_days', 1)
-            response = Bot_create_itinerary(self.message_history, start_location, categories, destinations, duration_days, location_sequence=self.location_sequence, limit = self.collected_information.get('limit_attractions',5))
+            limit = params.get('limit', self.collected_information.get('limit', 3))
+            # Note: start_location is now handled by frontend
+            response = Bot_create_itinerary(self.message_history, None, categories, destination, 1, location_sequence=self.location_sequence, limit=limit)
         
         else:
             # Default fallback with dynamic suggestions
@@ -219,6 +202,7 @@ class ChatBox :
         Extract and update collected_information from user input.
         Merges newly extracted slots into the persistent collected_information dict.
         Uses 'all_slots' for comprehensive extraction from all intents.
+        Note: start_location is now handled by frontend and should be ignored.
         """
         # Extract slots from the result - use all_slots for comprehensive extraction
         
@@ -226,11 +210,18 @@ class ChatBox :
         print(f"\n📝 process_user_input output: {result}\n")
         params = result.get('all_slots', result.get('params', {}))
         
-        # Update collected_information with new data (only non-null values)
-        if params.get('start_location'):
-            self.collected_information['start_location'] = params['start_location']
+        # Update destination (single string value)
+        if params.get('destination'):
+            self.collected_information['destination'] = params['destination']
+        elif params.get('destinations'):
+            # Handle plural form - take first item if it's a list
+            dest = params['destinations']
+            if isinstance(dest, list) and len(dest) > 0:
+                self.collected_information['destination'] = dest[0]
+            elif isinstance(dest, str):
+                self.collected_information['destination'] = dest
         
-        # Handle categories (both plural and singular)
+        # Handle categories (list of strings)
         if params.get('categories'):
             if isinstance(params['categories'], list):
                 self.collected_information['categories'] = params['categories']
@@ -244,43 +235,22 @@ class ChatBox :
             else:
                 self.collected_information['categories'] = [params['category']]
         
-        # Handle destinations (both plural and singular)
-        if params.get('destinations'):
-            if isinstance(params['destinations'], list):
-                self.collected_information['destinations'] = params['destinations']
-            else:
-                self.collected_information['destinations'] = [params['destinations']]
-        elif params.get('destination'):
-            dest = params['destination']
-            if self.collected_information['destinations']:
-                if dest not in self.collected_information['destinations']:
-                    self.collected_information['destinations'].append(dest)
-            else:
-                self.collected_information['destinations'] = [dest]
-        
-        # Update budget
-        if params.get('budget'):
-            self.collected_information['budget'] = params['budget']
-        
-        # Update duration_days (try both field names)
-        if params.get('duration_days'):
-            self.collected_information['duration_days'] = params['duration_days']
-        elif params.get('duration'):
-            self.collected_information['duration_days'] = params['duration']
-        
-        # Update limit_attractions (try multiple field names)
-        if params.get('limit_attractions'):
-            self.collected_information['limit_attractions'] = params['limit_attractions']
-        elif params.get('limit'):
-            self.collected_information['limit_attractions'] = params['limit']
+        # Update limit (integer, try multiple field names)
+        if params.get('limit'):
+            self.collected_information['limit'] = params['limit']
+        elif params.get('limit_attractions'):
+            self.collected_information['limit'] = params['limit_attractions']
         elif params.get('number_of_places'):
-            self.collected_information['limit_attractions'] = params['number_of_places']
+            self.collected_information['limit'] = params['number_of_places']
+        
+        # Explicitly ignore start_location, budget, duration_days, dates
+        # These are either handled by frontend or no longer needed
         
         # Print for debugging (can be removed later)
         print(f"\n📊 Updated collected_information: {self.collected_information}\n")
 
 
-    def process_input(self, user_input: str) -> None :
+    def process_input(self, user_input: str):
         user_response = UserResponse(user_input)
         self._add_response(user_response)
 

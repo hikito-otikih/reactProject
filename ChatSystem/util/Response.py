@@ -311,6 +311,91 @@ class Bot_create_itinerary(BotResponse):
         """Return the complete itinerary"""
         return self.listOfItinerary if self.listOfItinerary else []
 
+class Bot_suggest_from_database(BotResponse):
+    """Suggest a specific attraction from database based on destination and categories"""
+    
+    suggestion_templates = [
+        "I found {place_name}! It's a great {category} in {destination}. Would you like to add it?",
+        "How about {place_name}? It's a popular {category} spot in {destination}.",
+        "I recommend {place_name} in {destination}. It's perfect for {category} lovers!",
+        "Check out {place_name}! This {category} place in {destination} has great reviews.",
+        "{place_name} sounds like a match! It's a nice {category} location in {destination}."
+    ]
+    
+    static_suggestions = [
+        "Yes, add it to my itinerary",
+        "Show me another option",
+        "Tell me more about this place",
+        "What else is there?"
+    ]
+    
+    def __init__(self, destination, categories, location_sequence):
+        """
+        Create a database-driven suggestion
+        Args:
+            destination: The destination name (string)
+            categories: List of category strings
+            location_sequence: LocationSequence instance
+        """
+        self.destination = destination
+        self.categories = categories if isinstance(categories, list) else [categories]
+        self.suggested_ids = []
+        
+        # Get suggestions from database
+        if location_sequence:
+            # Search for the destination to get coordinates
+            dest_ids = location_sequence.search_by_name(destination, exact=False, limit=1)
+            if dest_ids:
+                # Get place info for coordinates
+                db_path = os.path.join(location_sequence.RESULT_DIR, 'places.db')
+                import sqlite3
+                with sqlite3.connect(db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT location_lat, location_lng FROM places WHERE rowid = ?", (dest_ids[0],))
+                    result = cursor.fetchone()
+                    if result:
+                        lat, lon = result
+                        # Try each category to find suggestions
+                        for category in self.categories:
+                            suggestions = location_sequence.suggest_around(lat, lon, limit=3, category=category)
+                            if suggestions:
+                                self.suggested_ids = suggestions
+                                break
+            
+            # Fallback: use suggest_for_position if destination search failed
+            if not self.suggested_ids:
+                for category in self.categories:
+                    suggestions = location_sequence.suggest_for_position(category=category, limit=3)
+                    if suggestions:
+                        self.suggested_ids = suggestions
+                        break
+        
+        # Build message based on whether we found suggestions
+        if self.suggested_ids:
+            place_name = location_sequence.id_to_name(self.suggested_ids[0]) if location_sequence else "a place"
+            category_str = self.categories[0] if self.categories else "attraction"
+            
+            # Use random template for variety
+            message = random.choice(self.suggestion_templates).format(
+                place_name=place_name,
+                category=category_str,
+                destination=destination
+            )
+        else:
+            # More natural fallback messages
+            category_str = self.categories[0] if self.categories else 'attractions'
+            fallback_messages = [
+                f"I'm still searching for {category_str} in {destination}. Could you tell me more about what you're looking for?",
+                f"Hmm, I couldn't find {category_str} in {destination} right away. What specifically interests you?",
+                f"Let me help you discover {category_str} in {destination}. Any specific preferences?"
+            ]
+            message = random.choice(fallback_messages)
+        
+        super().__init__(location_sequence, message, suggestions=self.static_suggestions)
+    
+    def get_database_results(self):
+        """Return the suggested attraction IDs"""
+        return self.suggested_ids if self.suggested_ids else []
 
 
 if __name__ == "__main__":

@@ -14,11 +14,29 @@ from .Response import (
     Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary
 )
 
-def process_user_input(user_input: str, collected_information: list, conversation_history: list) -> dict:    
+def process_user_input(user_input: str, collected_information: dict, conversation_history: list) -> dict:    
     if not user_input or not user_input.strip():
         return {
             'function': 'ask_clarify',
             'text': 'Please provide more information about your travel plans.'
+        }
+    
+    # NEW LOGIC: Check if we have both destination and categories
+    # If yes, suggest making database-driven suggestions
+    if (collected_information.get('destination') and 
+        collected_information.get('categories')):
+        return {
+            'function': 'suggest_from_database',
+            'params': {
+                'destination': collected_information['destination'],
+                'categories': collected_information['categories'],
+                'limit': collected_information.get('limit', 3)
+            },
+            'all_slots': {
+                'destination': collected_information['destination'],
+                'categories': collected_information['categories'],
+                'limit': collected_information.get('limit', 3)
+            }
         }
     
     # Step 1: Language detection and translation

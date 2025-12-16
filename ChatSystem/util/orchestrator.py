@@ -17,28 +17,6 @@ GEMINI_KEY = os.getenv('GEMINI_KEY')
 
 
 def pass1_analyze_query(user_input, collected_information=None, conversation_history=None):
-    """
-    PASS 1: ANALYSIS PHASE
-    
-    Dynamically analyze the user query to determine:
-    - What domains are involved
-    - What specific context is needed
-    - What ambiguities exist
-    - What schemas should be used
-    - What examples would be most relevant
-    
-    This pass DOES NOT attempt to answer the query.
-    It only analyzes what's needed to answer it accurately.
-    
-    Parameters:
-        user_input (str): User's query
-        collected_information (dict): Previously collected slot data
-        conversation_history (list): Recent conversation context
-    
-    Returns:
-        dict: Analysis results with recommendations for Pass 2
-    """
-    # Build collected information context
     collected_info_str = ""
     if collected_information:
         collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
@@ -88,7 +66,7 @@ CRITICAL: Return ONLY the JSON. No additional text."""
                 }]
             }],
             'generationConfig': {
-                'temperature': 0.2,  # Lower temperature for more consistent analysis
+                'temperature': 0.1,  # Lower temperature for more consistent analysis
                 'topP': 0.9,
                 'topK': 40,
                 'maxOutputTokens': 2048,
@@ -208,13 +186,20 @@ EXTRACTION RULES:
 4. Extract all entities mentioned in the query (LOCATION, DATE, MONEY, NUMBER, PREFERENCES).
 5. Set confidence based on completeness and clarity.
 6. Available functions and their purposes:
-   - itinerary_planning: Create complete trip itinerary with locations, timing, routes.
+   - suggest_from_database: Suggest attractions from database when destination and categories are known
+   - itinerary_planning: Create complete trip itinerary with locations and timing
    - suggest_categories: Suggest place categories based on user context 
-   - suggest_attractions: Suggest attractions of given category based on start location
+   - suggest_attractions: Suggest attractions of given category
    - get_attraction_details: Display attraction details (image, description, opening hours, ticket price)
-   - ask_clarify: Ask for clarification when info is missing.
-   - confirm_start_location: Confirm or ask for journey starting point.
-   - confirm_destination: Confirm or ask for destination preferences.
+   - ask_clarify: Ask for clarification when info is missing
+   
+7. IMPORTANT - Collected Information Fields:
+   - destination (string): The city or area to visit
+   - categories (list): Types of attractions (e.g., ['museums', 'nature', 'food'])
+   - limit (integer): Number of attractions to visit (default: 3)
+   
+8. NOTE: start_location, budget, duration_days, and dates are NOT tracked in collected_information
+   as they are handled by the frontend or no longer needed.
 {special_rules}
 
 {examples}
@@ -289,7 +274,7 @@ def _build_slots_from_analysis(analysis):
             merged_slots.update(SCHEMA_SLOTS[domain])
     
     if not merged_slots:
-        merged_slots = SCHEMA_SLOTS.get('general', {'query': 'null'})
+        merged_slots = SCHEMA_SLOTS.get('general', {'destination': 'null', 'categories': '[]', 'limit': 'null'})
     
     slots_str = ', '.join([f'"{key}":{value}' for key, value in merged_slots.items()])
     return slots_str
