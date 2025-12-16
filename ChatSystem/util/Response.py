@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import random
-
+from ChatSystem.location_sequence import LocationSequence
 
 class Response : 
     def __init__(self,message,whom) : 
@@ -55,9 +55,9 @@ class BotResponse(Response) :
             "database_results" : self.get_database_results()
         }
     
-    def _generate_alternative_suggestions(self, collected_information, num_suggestions=2):
+    def _generate_suggestions(self, collected_information, num_suggestions=2):
         """Generate alternative questions based on missing information."""
-        alternatives = []
+        suggestions = []
         
         # Map missing fields to question templates
         field_to_question = {
@@ -77,23 +77,72 @@ class BotResponse(Response) :
             "Tell me about popular attractions",
             "Suggest me some categories",
             "What are the best places to visit?",
-            "Help me plan a complete trip"
+            "Help me plan a complete trip"  
         ]
         
         # Combine missing fields questions with general alternatives
-        all_alternatives = missing_fields + general_alternatives
+        suggestions = missing_fields + general_alternatives
         
         # Select randomly up to num_suggestions
-        if len(all_alternatives) > num_suggestions:
-            alternatives = random.sample(all_alternatives, num_suggestions)
+        if len(suggestions) > num_suggestions:
+            suggestions = random.sample(suggestions, num_suggestions)
         else:
-            alternatives = all_alternatives[:num_suggestions]
+            suggestions = suggestions[:num_suggestions]
         
-        return alternatives
+        return suggestions
     
     def enhance_suggestions(self, collected_information, num_alternatives=1):
-        """Enhance base suggestions by adding alternative topic-switching suggestions."""
-        alternatives = self._generate_alternative_suggestions(collected_information, num_alternatives)
+        """Enhance base suggestions by adding alternative topic-switching suggestions and database-driven suggestions."""
+        alternatives = self._generate_suggestions(collected_information, num_alternatives)
+        
+        # Add database-driven suggestion if we have both destination and categories
+        if (collected_information.get('destination') and 
+            collected_information.get('categories') and 
+            self.location_sequence):
+            
+            destination = collected_information['destination']
+            categories = collected_information['categories']
+            if not isinstance(categories, list):
+                categories = [categories]
+            
+            # Search for the destination to get coordinates (same approach as Bot_suggest_from_database)
+            dest_ids = self.location_sequence.search_by_name(destination, exact=False, limit=1)
+            if dest_ids:
+                # Get place info for coordinates
+                db_path = os.path.join(self.location_sequence.RESULT_DIR, 'places.db')
+                import sqlite3
+                try:
+                    with sqlite3.connect(db_path) as conn:
+                        cursor = conn.cursor()
+                        cursor.execute("SELECT location_lat, location_lng FROM places WHERE rowid = ?", (dest_ids[0],))
+                        result = cursor.fetchone()
+                        if result:
+                            lat, lon = result
+                            # Try each category to find suggestions
+                            for category in categories:
+                                db_ids = self.location_sequence.suggest_around(lat, lon, limit=1, category=category)
+                                if db_ids:
+                                    place_name = self.location_sequence.id_to_name(db_ids[0])
+                                    if place_name:
+                                        db_suggestion = f"{place_name} is interesting, do you want to know more?"
+                                        if db_suggestion not in self.suggestions:
+                                            alternatives.insert(0, db_suggestion)
+                                        break
+                except Exception as e:
+                    print(f"Error adding database suggestion in enhance_suggestions: {e}")
+            
+            # Fallback: use suggest_for_position if destination search failed
+            if not any("is interesting" in alt for alt in alternatives):
+                for category in categories:
+                    db_ids = self.location_sequence.suggest_for_position(category=category, limit=1)
+                    if db_ids:
+                        place_name = self.location_sequence.id_to_name(db_ids[0])
+                        if place_name:
+                            db_suggestion = f"{place_name} is interesting, do you want to know more?"
+                            if db_suggestion not in self.suggestions:
+                                alternatives.insert(0, db_suggestion)
+                            break
+            
         # Combine base suggestions with alternatives, limiting total to avoid overwhelming user
         enhanced = self.suggestions[:3] + alternatives
         self.suggestions = enhanced[:5]  # Max 5 suggestions total
@@ -272,6 +321,9 @@ class Bot_suggest_attractions(BotResponse):
         self.location = location
         self.limit = limit
         print("querying database for suggestions...")
+        if (location_sequence):
+            print("location sequence found")
+        print(f"category: {category}, limit: {limit}")
         self.suggested_attractions = location_sequence.suggest_for_position(category=category, limit=limit) if location_sequence else []
     
     def get_database_results(self):

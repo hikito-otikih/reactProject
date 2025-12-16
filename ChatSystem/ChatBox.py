@@ -41,8 +41,10 @@ class ChatBox :
             self._add_response(bot_response)
             return bot_response
         return None
+    
     def get_history(self) :
         return self.message_history
+    
     def _add_response(self, response: Response) :
         self.response_history.append(response)
         self.message_history.append({
@@ -113,7 +115,9 @@ class ChatBox :
             )
         
         elif function_name == 'suggest_attractions':
-            category = params.get('category', 'attraction')
+            category = params.get('category') or params.get('categories', [None])[0]
+            if not category:
+                category = 'attractions'
             location = params.get('location', 'your area')
             limit = params.get('limit_attractions', 5)
             response = Bot_suggest_attractions(
@@ -203,21 +207,17 @@ class ChatBox :
         # Print for debugging (can be removed later)
         print(f"\n📊 Updated collected_information: {self.collected_information}\n")
 
-
     def process_input(self, user_input: str):
         user_response = UserResponse(user_input)
         self._add_response(user_response)
 
         outputDict = process_user_input(user_input, self.collected_information, self.message_history)
-        
         bot_response = self._computeResponse_from_outputDict(outputDict)
         self._add_response(bot_response)
-
         self._update_collected_information(outputDict)
 
         return bot_response 
     
-
     def save_chatbox(self) -> dict:
         save_data = {
             'responses' : None,

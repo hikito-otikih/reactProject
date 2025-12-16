@@ -413,8 +413,8 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
     print("🔍 Pass 1: Analyzing query...")
     analysis = pass1_analyze_query(user_input, collected_information, conversation_history)
     # print the dictionary analysis
-    print("Analysis Result:")
-    print(json.dumps(analysis, indent=2))
+    # print("Analysis Result:")
+    # print(json.dumps(analysis, indent=2))
     print("✅ Analysis complete\n")
     
     # PASS 2: EXECUTION
@@ -422,8 +422,8 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
     result = pass2_generate_response(user_input, analysis, collected_information, conversation_history)
     print("✅ Extraction complete\n")
     #print the result
-    print("Extraction Result:")
-    print(json.dumps(result, indent=2))
+    # print("Extraction Result:")
+    # print(json.dumps(result, indent=2))
     
     return result
 

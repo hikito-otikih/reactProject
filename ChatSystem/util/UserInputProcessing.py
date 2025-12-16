@@ -21,24 +21,6 @@ def process_user_input(user_input: str, collected_information: dict, conversatio
             'text': 'Please provide more information about your travel plans.'
         }
     
-    # NEW LOGIC: Check if we have both destination and categories
-    # If yes, suggest making database-driven suggestions
-    if (collected_information.get('destination') and 
-        collected_information.get('categories')):
-        return {
-            'function': 'suggest_from_database',
-            'params': {
-                'destination': collected_information['destination'],
-                'categories': collected_information['categories'],
-                'limit': collected_information.get('limit', 3)
-            },
-            'all_slots': {
-                'destination': collected_information['destination'],
-                'categories': collected_information['categories'],
-                'limit': collected_information.get('limit', 3)
-            }
-        }
-    
     # Step 1: Language detection and translation
     source_language = detectLanguage(user_input)
     english_input = translate(user_input, target_language='en') if source_language != 'en' else user_input
