@@ -14,7 +14,6 @@ from util.Response import (
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util.UserInputProcessing import process_user_input
-from util.orchestrator import generate_dynamic_suggestions
 
 from ChatSystem.location_sequence import LocationSequence
 
@@ -35,11 +34,9 @@ class ChatBox :
         if not self.conversation_started:
             self.conversation_started = True
             # Start by asking for the destination
-            bot_response = Bot_ask_destination(location_sequence=self.location_sequence)
-            # Enhance with alternatives
-            bot_response.suggestions = self._enhance_suggestions_with_alternatives(
-                bot_response.suggestions, 
-                num_alternatives=2
+            bot_response = Bot_ask_destination(
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
             )
             self._add_response(bot_response)
             return bot_response
@@ -77,52 +74,8 @@ class ChatBox :
             context_parts.append("Recent conversation: " + " | ".join(msg_strs))
         
         return " // ".join(context_parts) if context_parts else "Starting new conversation"
-    
-    def _generate_alternative_suggestions(self, num_suggestions=2) -> list:
-        """Generate alternative questions based on missing information in collected_information."""
-        alternatives = []
-        
-        # Map missing fields to question templates
-        field_to_question = {
-            'destination': "Which city or area do I want to visit?",
-            'categories': "What type of places interest me?",
-            'limit': "How many attractions should I visit?"
-        }
-        
-        # Find missing fields
-        missing_fields = []
-        for key, value in self.collected_information.items():
-            if value is None and key in field_to_question:
-                missing_fields.append(field_to_question[key])
-        
-        # Add some general alternatives
-        general_alternatives = [
-            "Tell me about popular attractions",
-            "Suggest me some categories",
-            "What are the best places to visit?",
-            "Help me plan a complete trip"
-        ]
-        
-        # Combine missing fields questions with general alternatives
-        all_alternatives = missing_fields + general_alternatives
-        
-        # Select randomly up to num_suggestions
-        import random
-        if len(all_alternatives) > num_suggestions:
-            alternatives = random.sample(all_alternatives, num_suggestions)
-        else:
-            alternatives = all_alternatives[:num_suggestions]
-        
-        return alternatives
 
-    def _enhance_suggestions_with_alternatives(self, base_suggestions: list, num_alternatives=1) -> list:
-        """Enhance base suggestions by adding alternative topic-switching suggestions."""
-        alternatives = self._generate_alternative_suggestions(num_alternatives)
-        # Combine base suggestions with alternatives, limiting total to avoid overwhelming user
-        enhanced = base_suggestions[:3] + alternatives
-        return enhanced[:5]  # Max 5 suggestions total
-
-    def _computeResponse_from_user_input(self, outputDict: dict) -> BotResponse:
+    def _computeResponse_from_outputDict(self, outputDict: dict) -> BotResponse:
         """
         Process user input and return appropriate BotResponse.
         Uses the full pipeline and converts to concrete Response objects.
@@ -136,17 +89,10 @@ class ChatBox :
         
         # Map function to appropriate Response class
         if function_name == 'ask_clarify':
-            # Generate dynamic suggestions for clarification
-            context = self._build_context_string()
-            suggestions = generate_dynamic_suggestions(
-                context=context,
-                question=text or 'Could you provide more details?',
-                num_suggestions=3
-            )
             response = Bot_ask_clarify(
-                text or 'Could you provide more details?', 
-                suggestions=suggestions,
-                location_sequence=self.location_sequence
+                text,
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
             )
     
         elif function_name == 'suggest_from_database':
@@ -156,46 +102,52 @@ class ChatBox :
             response = Bot_suggest_from_database(
                 destination=destination,
                 categories=categories,
-                location_sequence=self.location_sequence
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
             )
     
         elif function_name == 'suggest_categories':
-            response = Bot_suggest_categories(location_sequence=self.location_sequence)
+            response = Bot_suggest_categories(
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
+            )
         
         elif function_name == 'suggest_attractions':
             category = params.get('category', 'attraction')
             location = params.get('location', 'your area')
             limit = params.get('limit_attractions', 5)
-            response = Bot_suggest_attractions(category, location, limit, location_sequence=self.location_sequence)
+            response = Bot_suggest_attractions(
+                category, location, limit,
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
+            )
         
         elif function_name == 'get_attraction_details':
             attraction_name = params.get('attraction_name') or f"Attraction #{params.get('attraction_id')}"
-            response = Bot_display_attraction_details(attraction_name, location_sequence=self.location_sequence)
+            response = Bot_display_attraction_details(
+                attraction_name,
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
+            )
         
         elif function_name == 'itinerary_planning':
             destination = params.get('destination')
             categories = params.get('categories', [])
             limit = params.get('limit', self.collected_information.get('limit', 3))
             # Note: start_location is now handled by frontend
-            response = Bot_create_itinerary(self.message_history, None, categories, destination, 1, location_sequence=self.location_sequence, limit=limit)
+            response = Bot_create_itinerary(
+                self.message_history, None, categories, destination, 1,
+                location_sequence=self.location_sequence, limit=limit,
+                collected_information=self.collected_information
+            )
         
         else:
-            # Default fallback with dynamic suggestions
-            context = self._build_context_string()
-            suggestions = generate_dynamic_suggestions(
-                context=context,
-                question='I\'m processing your request. Could you provide more details?',
-                num_suggestions=3
-            )
+            # Default fallback
             response = Bot_ask_clarify(
                 'I\'m processing your request. Could you provide more details?',
-                suggestions=suggestions,
-                location_sequence=self.location_sequence
+                location_sequence=self.location_sequence,
+                collected_information=self.collected_information
             )
-
-        # Enhance all responses with alternative suggestions
-        if response:
-            response.suggestions = self._enhance_suggestions_with_alternatives(response.suggestions, 2)
         
         return response        
     
@@ -258,7 +210,7 @@ class ChatBox :
 
         outputDict = process_user_input(user_input, self.collected_information, self.message_history)
         
-        bot_response = self._computeResponse_from_user_input(outputDict)
+        bot_response = self._computeResponse_from_outputDict(outputDict)
         self._add_response(bot_response)
 
         self._update_collected_information(outputDict)
@@ -327,12 +279,16 @@ if __name__ == "__main__" :
             
         bot_response = chat_box.process_input(user_input)
         print(f"Bot: {bot_response.get_message()}")
+
         if (bot_response.get_database_results()):
             print(f"📚 Database Results: {bot_response.get_database_results()}")
+        else:   
+            print(f"(No database results.)")
+
         if bot_response.get_suggestions():
             print(f"💡 Suggestions: {bot_response.get_suggestions()}")
 
         save_data = chat_box.save_chatbox()
         print (json.dumps(save_data, indent=2))  # For debugging purposes
         # if save_data.get('responses'):
-        #     print(f"(Conversation saved with {len(save_data['responses'])} messages.)")
+            # print(f"(Conversation saved with {len(save_data['responses'])} messages.)")
