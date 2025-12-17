@@ -244,7 +244,7 @@ class LocationSequence:
             cursor = conn.cursor()
             
             # Query to find places within a certain radius (e.g., 5km)
-            radius_meters = 15000
+            radius_meters = 1500000000
             query = """
             SELECT rowid, rating, 
             (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) * 
@@ -405,7 +405,7 @@ if __name__ == "__main__":
             show(f"suggest_for_position (between) -> {s_between}")
 
         # suggest_around
-        s_around = loc_seq.suggest_around(lat=loc_seq.start_coordinate[0], lon=loc_seq.start_coordinate[1], limit=3)
+        s_around = loc_seq.suggest_around(lat=10, lon=100, limit=3)
         show(f"suggest_around -> {s_around}")
 
         # suggest_itinerary_to_sequence: empty uses start_coordinate, then with anchor

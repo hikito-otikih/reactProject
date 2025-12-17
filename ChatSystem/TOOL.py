@@ -70,9 +70,10 @@ class TOOL:
 if __name__ == "__main__":
     tool = TOOL()
     while True:
-        user_input = input("User: ")
+        user_input = "show me catering in dictric 1"
         response = tool.process_input(user_input)
         print(json.dumps(response, indent=2)) 
+
 """
 {
   "history": {
