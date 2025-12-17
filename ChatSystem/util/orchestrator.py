@@ -1,9 +1,6 @@
 """
-Two-Pass Orchestrator Workflow
-ACCURACY FIRST POLICY - No token optimization, maximum precision
-
-Pass 1: Analysis - Dynamically analyze context and define requirements
-Pass 2: Execution - Generate accurate response based on Pass 1 analysis
+Single-Pass Information Extraction
+Context-aware LLM call with conversation history and collected information
 """
 
 import json
@@ -16,192 +13,93 @@ load_dotenv()
 GEMINI_KEY = os.getenv('GEMINI_KEY')
 
 
-def pass1_analyze_query(user_input, collected_information=None, conversation_history=None):
-    collected_info_str = ""
-    if collected_information:
-        collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
-        collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
-        collected_info_str += "\n\nIMPORTANT: Use this information to better understand what's missing and what's already known.\n"
-    
-    context_str = ""
-    if conversation_history:
-        context_str = "\n\nRecent Conversation:\n"
-        for msg in conversation_history[-5:]:
-            context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
-
-    analysis_prompt = f"""You are a Query Analysis Expert for a Travel Chatbot. Your ONLY job is to analyze the user's query and provide strategic recommendations for how to process it.
-DO NOT attempt to answer the user's query. Only analyze it.
-{collected_info_str}
-{context_str}
-USER QUERY: "{user_input}"
-Provide a detailed analysis in JSON format:
-{{
-  "query_type": "string",  // e.g., "attractions_search", "itinerary_planning", "clarification_needed", "answer_previous_question", "general_inquiry", etc.
-  "complexity": "low|medium|high",
-  "domains_involved": ["domain1", "domain2"],  // e.g., ["accommodation", "transport"]
-  "is_ambiguous": true/false,
-  "ambiguity_reasons": ["reason1", "reason2"],  // What's unclear?
-  "missing_information": ["field1", "field2"],  // What data is missing?
-  "context_dependency": true/false,  // Does this rely on previous messages?
-  "history_traverse_necessary": true/false,  // Should we look through conversation history to answer this?
-  "recommended_schema_fields": ["field1", "field2"],  // Which fields are relevant?
-  "suggested_examples": ["example_id1", "example_id2"],  // Which examples would help?
-  "clarification_needed": true/false,
-  "suggested_clarification": "string or null",  // What to ask user?
-  "special_handling": ["flag1", "flag2"],  // e.g., ["vague_location", "multi_intent"]
-  "reasoning": "string"  // Explain your analysis
-}}
-
-CRITICAL: Return ONLY the JSON. No additional text."""
-
-    try:
-        url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
-        
-        headers = {'Content-Type': 'application/json'}
-        
-        data = {
-            'contents': [{
-                'parts': [{
-                    'text': analysis_prompt
-                }]
-            }],
-            'generationConfig': {
-                'temperature': 0.1,  # Lower temperature for more consistent analysis
-                'topP': 0.9,
-                'topK': 40,
-                'maxOutputTokens': 2048,
-                'responseMimeType': 'application/json'
-            },
-            'systemInstruction': {
-                'parts': [{
-                    'text': 'You are a query analysis expert. Analyze queries and provide strategic recommendations in JSON format. Do not answer queries, only analyze them.'
-                }]
-            }
-        }
-        
-        response = requests.post(url, headers=headers, json=data, timeout=40)
-        
-        if response.status_code == 200:
-            result = response.json()
-            analysis_text = result['candidates'][0]['content']['parts'][0]['text']
-            analysis = json.loads(analysis_text)
-            return analysis
-        else:
-            raise Exception(f"Gemini API error in Pass 1: {response.status_code}")
-    
-    except Exception as e:
-        print(f"Error in Pass 1 Analysis: {e}")
-        # Return minimal safe analysis
-        return {
-            "query_type": "unknown",
-            "complexity": "medium",
-            "domains_involved": ["general"],
-            "is_ambiguous": False,
-            "missing_information": [],
-            "context_dependency": False,
-            "recommended_schema_fields": [],
-            "suggested_examples": [],
-            "clarification_needed": False,
-            "suggested_clarification": None,
-            "special_handling": [],
-            "confidence": 0.3,
-            "reasoning": f"Analysis failed: {str(e)}"
-        }
-
-def pass2_generate_response(user_input, analysis, collected_information=None, conversation_history=None):
+def extract_information_single_pass(user_input, collected_information=None, conversation_history=None):
     """
-    PASS 2: EXECUTION PHASE
-    
-    Generate the accurate response based on Pass 1 analysis.
-    Uses the analysis to build a precision-optimized prompt.
+    Single-pass information extraction from user query.
     
     Parameters:
         user_input (str): User's query
-        analysis (dict): Results from Pass 1
         collected_information (dict): Previously collected slot data
-        conversation_history (list): Recent conversation context
+        conversation_history (list): Recent conversation messages
     
     Returns:
-        dict: Extracted information in precise JSON format
-    """
-    
-    # Build dynamic schema based on analysis
-    schema_fields = analysis.get('recommended_schema_fields', [])
-    domains = analysis.get('domains_involved', ['general'])
-    is_ambiguous = analysis.get('is_ambiguous', False)
-    
-    # Build schema dynamically
-    slots = _build_slots_from_analysis(analysis)
-    
-    # Add special fields for ambiguous cases
-    special_fields = ""
-    if is_ambiguous:
-        special_fields = '"missing_info": [],'
-    
-    schema = f"""
-    {{
-        "intents": [
-            {{
-                "intent": "string",
-                "suggested_function": "string",
-                "confidence": 0.0,
-                "slots": {{{slots}}},
-                {special_fields}
-            }}
-        ],
-        "followup": {str(is_ambiguous).lower()},
-        "clarify_question": null
-    }}
+        dict: Extracted information in JSON format
     """
     
     # Build collected information context
     collected_info_str = ""
     if collected_information:
-        collected_info_str = "\n\nCOLLECTED INFORMATION (already known):\n"
+        collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
         collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
-        collected_info_str += "\n\nIMPORTANT: Do NOT ask for information already present above. Focus on extracting NEW or MISSING information only.\n"
+        collected_info_str += "\n\nIMPORTANT: Use this information to understand what's already known. Do NOT ask for information already present. Focus on extracting NEW or MISSING information only.\n"
     
-    # Build context if needed
+    # Build conversation history context (last 5-10 messages)
     context_str = ""
-    if analysis.get('context_dependency') and conversation_history:
-        context_str = "\n\nRECENT CONVERSATION CONTEXT:\n"
-        for msg in conversation_history[-5:]:
-            context_str += f"{msg.get('role', 'unknown')}: {msg.get('message', '')}\n"
+    if conversation_history:
+        num_messages = min(10, len(conversation_history))
+        context_str = f"\n\nRECENT CONVERSATION HISTORY (last {num_messages} messages):\n"
+        for msg in conversation_history[-num_messages:]:
+            role = msg.get('role', 'unknown')
+            message = msg.get('message', '')
+            context_str += f"{role}: {message}\n"
+        context_str += "\nUse this context to better understand the current query and maintain conversation continuity.\n"
     
-    # Build special rules based on analysis
-    special_rules = _build_special_rules(analysis)
+    # Simplified schema - only essential fields
+    schema = """
+    {
+        "intents": [
+            {
+                "intent": "string",
+                "suggested_function": "string",
+                "confidence": 0.0,
+                "slots": {
+                    "destination": null,
+                    "categories": [],
+                    "limit": null
+                }
+            }
+        ],
+        "followup": false,
+        "clarify_question": null
+    }
+    """
     
-    # Build examples based on analysis
-    examples = _build_examples_from_analysis(analysis)
+    # Build few-shot examples
+    examples = _build_relevant_examples()
     
-    execution_prompt = f"""You are a Travel Information Extraction Expert. Extract structured data from user queries with MAXIMUM ACCURACY.
+    extraction_prompt = f"""You are a Travel Information Extraction Expert. Extract structured data from user queries with MAXIMUM ACCURACY.
 
 REQUIRED JSON SCHEMA:
 {schema}
 
 EXTRACTION RULES:
 1. Return ONLY valid JSON matching the schema above. No additional text.
-2. Use the analysis insights to guide your extraction.
-3. If information is missing (as identified in analysis), set fields to null.
-4. Extract all entities mentioned in the query (LOCATION, DATE, MONEY, NUMBER, PREFERENCES).
-5. Set confidence based on completeness and clarity.
-6. Available functions and their purposes:
+2. Extract all entities mentioned in the query (LOCATION, CATEGORIES, NUMBER).
+3. Set confidence based on completeness and clarity (0.0 to 1.0).
+4. If information is unclear or missing, set followup=true and provide a clarify_question.
+
+5. Available functions and their purposes:
    - suggest_from_database: Suggest attractions from database when destination and categories are known
    - itinerary_planning: Create complete trip itinerary with locations and timing
-   - suggest_categories: Suggest place categories based on user context 
+   - suggest_categories: Suggest place categories based on user context
    - suggest_attractions: Suggest attractions of given category
    - get_attraction_details: Display attraction details (image, description, opening hours, ticket price)
    - ask_clarify: Ask for clarification when info is missing
-   
-7. IMPORTANT - Collected Information Fields:
-   - destination (string): The city or area to visit
-   - categories (list): Types of attractions (e.g., ['museums', 'nature', 'food'])
-   - limit (integer): Number of attractions to visit (default: 3)
-   
-8. NOTE: start_location, budget, duration_days, and dates are NOT tracked in collected_information
-   as they are handled by the frontend or no longer needed.
-{special_rules}
 
+6. SCHEMA FIELDS (only these are tracked):
+   - destination (string): The city or area to visit (e.g., "Ho Chi Minh City", "Hanoi")
+   - categories (list): Types of attractions (e.g., ["museums", "nature", "food"])
+   - limit (integer): Number of attractions to visit (default: 3)
+
+7. CONTEXT AWARENESS:
+   - Pay careful attention to COLLECTED INFORMATION to avoid asking redundant questions
+   - Use CONVERSATION HISTORY to understand references like "there", "it", "that place"
+   - If user mentions "nearby", "around here", set destination to "current_location"
+
+8. AMBIGUITY HANDLING:
+   - If category is vague ("things to do", "fun stuff"), set intent to "ask_clarify"
+   - If destination is missing and not in collected info, ask for it
+   - If user asks general questions without specifics, provide helpful clarification
 {examples}
 {collected_info_str}
 {context_str}
@@ -218,21 +116,29 @@ EXTRACT THE JSON NOW:"""
         data = {
             'contents': [{
                 'parts': [{
-                    'text': execution_prompt
+                    'text': extraction_prompt
                 }]
             }],
             'generationConfig': {
-                'temperature': 0.1,  # Very low for maximum consistency
-                'topP': 0.8,
+                'temperature': 0.0,  # Maximum determinism for accuracy
+                'topP': 0.95,  # Higher nucleus sampling for better quality
                 'topK': 40,
-                'maxOutputTokens': 4096,
-                'responseMimeType': 'application/json'
+                'maxOutputTokens': 3072,  # Increased for complex responses
+                'responseMimeType': 'application/json',
+                'candidateCount': 1,  # Single best response
+                'stopSequences': []  # No stop sequences
             },
             'systemInstruction': {
                 'parts': [{
-                    'text': 'You are a precision JSON extraction expert. Return only valid JSON with maximum accuracy. No explanations.'
+                    'text': 'You are a precision JSON extraction expert. Return only valid JSON with maximum accuracy. No explanations. Pay close attention to collected information and conversation history. Always validate your output against the schema before responding.'
                 }]
-            }
+            },
+            'safetySettings': [
+                {'category': 'HARM_CATEGORY_HARASSMENT', 'threshold': 'BLOCK_NONE'},
+                {'category': 'HARM_CATEGORY_HATE_SPEECH', 'threshold': 'BLOCK_NONE'},
+                {'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold': 'BLOCK_NONE'},
+                {'category': 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold': 'BLOCK_NONE'}
+            ]
         }
         
         response = requests.post(url, headers=headers, json=data, timeout=40)
@@ -241,20 +147,12 @@ EXTRACT THE JSON NOW:"""
             result = response.json()
             extracted_text = result['candidates'][0]['content']['parts'][0]['text']
             extracted_info = json.loads(extracted_text)
-            
-            # Enrich with analysis metadata
-            extracted_info['_analysis'] = {
-                'query_type': analysis.get('query_type'),
-                'complexity': analysis.get('complexity'),
-                'confidence': analysis.get('confidence')
-            }
-            
             return extracted_info
         else:
-            raise Exception(f"Gemini API error in Pass 2: {response.status_code}")
+            raise Exception(f"Gemini API error: {response.status_code}")
     
     except Exception as e:
-        print(f"Error in Pass 2 Execution: {e}")
+        print(f"Error in information extraction: {e}")
         return {
             'intents': [],
             'followup': True,
@@ -262,72 +160,20 @@ EXTRACT THE JSON NOW:"""
             'error': str(e)
         }
 
-def _build_slots_from_analysis(analysis):
-    """Build schema slots based on analysis recommendations."""
-    from .prompt_config import SCHEMA_SLOTS
-    
-    domains = analysis.get('domains_involved', ['general'])
-    merged_slots = {}
-    
-    for domain in domains:
-        if domain in SCHEMA_SLOTS:
-            merged_slots.update(SCHEMA_SLOTS[domain])
-    
-    if not merged_slots:
-        merged_slots = SCHEMA_SLOTS.get('general', {'destination': 'null', 'categories': '[]', 'limit': 'null'})
-    
-    slots_str = ', '.join([f'"{key}":{value}' for key, value in merged_slots.items()])
-    return slots_str
 
-
-def _build_special_rules(analysis):
-    """Build special handling rules based on analysis."""
-    rules = []
-    
-    if analysis.get('is_ambiguous'):
-        rules.append('7. AMBIGUITY DETECTED: If the user asks for general recommendations without specifying a category, set intent to "ask_clarify" and provide a clarification question.')
-    
-    if 'multi_intent' in analysis.get('special_handling', []):
-        rules.append('8. MULTI-INTENT: This query contains multiple requests. Include all intents in the "intents" array.')
-    
-    if 'vague_location' in analysis.get('special_handling', []):
-        rules.append('9. VAGUE LOCATION: The user mentioned their current location. Set destination to "current_location".')
-    
-    if analysis.get('context_dependency'):
-        rules.append('10. CONTEXT DEPENDENT: Reference the recent conversation context to understand this query.')
-    
-    return '\n'.join(rules) if rules else ''
-
-
-
-def _build_examples_from_analysis(analysis):
-    """Build relevant examples based on analysis."""
+def _build_relevant_examples():
+    """Build relevant few-shot examples."""
     from .prompt_config import FEW_SHOT_EXAMPLES
     
-    examples = []
-    suggested = analysis.get('suggested_examples', [])
+    examples_text = "\n\nEXAMPLES:\n"
     
-    # Map query types to example domains
-    query_type = analysis.get('query_type', '')
+    # Include one example from each important category
+    example_types = ['itinerary', 'clarification', 'general']
     
-    if 'clarification' in query_type or analysis.get('is_ambiguous'):
-        examples.extend(FEW_SHOT_EXAMPLES.get('clarification', [])[:1])
-    elif 'accommodation' in query_type:
-        examples.extend(FEW_SHOT_EXAMPLES.get('accommodation', [])[:1])
-    elif 'transport' in query_type or 'flight' in query_type:
-        examples.extend(FEW_SHOT_EXAMPLES.get('transport', [])[:1])
-    elif 'itinerary' in query_type or 'trip' in query_type:
-        examples.extend(FEW_SHOT_EXAMPLES.get('itinerary', [])[:1])
-    
-    if not examples:
-        examples.extend(FEW_SHOT_EXAMPLES.get('general', [])[:1])
-    
-    if not examples:
-        return ""
-    
-    examples_text = "\n\nRELEVANT EXAMPLES:\n"
-    for ex in examples[:2]:  # Max 2 examples
-        examples_text += f"\nInput: \"{ex['input']}\"\nOutput:\n{json.dumps(ex['output'], indent=2)}\n"
+    for ex_type in example_types:
+        if ex_type in FEW_SHOT_EXAMPLES and FEW_SHOT_EXAMPLES[ex_type]:
+            ex = FEW_SHOT_EXAMPLES[ex_type][0]
+            examples_text += f"\nInput: \"{ex['input']}\"\nOutput:\n{json.dumps(ex['output'], indent=2)}\n"
     
     return examples_text
 
@@ -360,9 +206,18 @@ Example format: ["suggestion 1", "suggestion 2", "suggestion 3"]"""
             "parts": [{"text": prompt}]
         }],
         "generationConfig": {
-            "temperature": 0.7,
-            "maxOutputTokens": 200
-        }
+            "temperature": 0.8,  # Slightly higher for diversity in suggestions
+            "topP": 0.95,
+            "topK": 40,
+            "maxOutputTokens": 300,
+            "candidateCount": 1
+        },
+        "safetySettings": [
+            {'category': 'HARM_CATEGORY_HARASSMENT', 'threshold': 'BLOCK_NONE'},
+            {'category': 'HARM_CATEGORY_HATE_SPEECH', 'threshold': 'BLOCK_NONE'},
+            {'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold': 'BLOCK_NONE'},
+            {'category': 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold': 'BLOCK_NONE'}
+        ]
     }
     
     try:
@@ -388,18 +243,15 @@ Example format: ["suggestion 1", "suggestion 2", "suggestion 3"]"""
 
 def extract_info_with_orchestrator(user_input, collected_information, conversation_history=None):
     """
-    Main orchestrator function implementing Two-Pass workflow.
-    
-    ACCURACY FIRST POLICY:
-    - Pass 1: Analyze query context dynamically
-    - Pass 2: Generate precise response based on analysis
+    Main orchestrator function implementing single-pass extraction.
     
     Parameters:
         user_input (str): User's query
+        collected_information (dict): Previously collected slot data
         conversation_history (list): Recent conversation messages
     
     Returns:
-        dict: Extracted information with maximum accuracy
+        dict: Extracted information in JSON format
     """
     
     if not user_input or not user_input.strip():
@@ -409,28 +261,16 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
             'clarify_question': 'Please provide more information about your travel plans.'
         }
     
-    # PASS 1: ANALYSIS
-    print("🔍 Pass 1: Analyzing query...")
-    analysis = pass1_analyze_query(user_input, collected_information, conversation_history)
-    # print the dictionary analysis
-    # print("Analysis Result:")
-    # print(json.dumps(analysis, indent=2))
-    print("✅ Analysis complete\n")
-    
-    # PASS 2: EXECUTION
-    print("⚙️  Pass 2: Generating precise response...")
-    result = pass2_generate_response(user_input, analysis, collected_information, conversation_history)
+    print("🔍 Extracting information...")
+    result = extract_information_single_pass(user_input, collected_information, conversation_history)
     print("✅ Extraction complete\n")
-    #print the result
-    # print("Extraction Result:")
-    # print(json.dumps(result, indent=2))
     
     return result
 
 
 # Example usage
 if __name__ == "__main__":
-    print("=== Two-Pass Orchestrator Testing (ACCURACY FIRST) ===\n")
+    print("=== Single-Pass Information Extraction Testing ===\n")
     
     test_cases = [
         "Tôi muốn tham gia buổi hoà nhạc?",
@@ -438,15 +278,26 @@ if __name__ == "__main__":
         "Đi vòng quanh thành phố Hồ Chí Minh, lai rai mấy quán cà phê đẹp và các điểm tham quan lịch sử.",
     ]
     
+    # Simulate conversation with collected info
+    collected_info = {}
+    conversation_history = []
+    
     for i, test_input in enumerate(test_cases, 1):
         srcLanguage = detectLanguage(test_input)
-        test_input = translate(test_input, target_language='en')
-        print(f"Test {i}: {test_input}")
-        result = extract_info_with_orchestrator(test_input)
-        # translate the location names back to Vietnamese for display
+        english_input = translate(test_input, target_language='en')
+        print(f"Test {i}: {english_input}")
+        
+        result = extract_info_with_orchestrator(english_input, collected_info, conversation_history)
+        
+        # Translate location names back to Vietnamese for display
         if 'intents' in result:
             for intent in result['intents']:
                 if 'slots' in intent and 'destination' in intent['slots'] and intent['slots']['destination']:
                     intent['slots']['destination'] = translate(intent['slots']['destination'], target_language=srcLanguage)
+        
         print(json.dumps(result, indent=2))
         print("\n" + "="*70 + "\n")
+        
+        # Update conversation history
+        conversation_history.append({'role': 'user', 'message': english_input})
+        conversation_history.append({'role': 'assistant', 'message': result.get('clarify_question', 'Processed')})
