@@ -45,12 +45,9 @@ def process_user_input(user_input: str, collected_information: dict, conversatio
     # Can be removed with better orchestrator output
     result = _format_llm_response(extracted_data)
     
-    # Translate all text fields back to source language if needed
-    if source_language and source_language != 'en':
-        if 'params' in result:
-            _translate_all_text_back(result['params'], source_language)
-        if 'all_slots' in result:
-            _translate_all_text_back(result['all_slots'], source_language)
+    # DO NOT translate back - keep everything in English for internal processing
+    # Translation should only be done for user-facing messages, not for data structures
+    # that will be stored and reused in collected_information
     
     return result
 
