@@ -67,10 +67,11 @@ class TOOL:
         return self.chatbox.process_input(user_input=user_input).get_json_serializable()
     def clear_conversation(self) :
         pass 
+
 if __name__ == "__main__":
     tool = TOOL()
     while True:
-        user_input = "show me catering in dictric 1"
+        user_input = "give me the best catering places in ho chi minh"
         response = tool.process_input(user_input)
         print(json.dumps(response, indent=2)) 
 
