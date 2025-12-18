@@ -11,7 +11,9 @@ class LocationSequence:
     def __init__(self):
         self.start_coordinate = [10.7628356, 106.6824824]  # lat , lon  of hcmus by default
         self.sequence = []
-
+    def load_sequence(self, start_coordinate, sequence):
+        self.start_coordinate = start_coordinate
+        self.sequence = sequence
     def append(self, position , ID ):
         if position < 0 or position > len(self.sequence):
             raise IndexError("Location out of bounds")
@@ -22,7 +24,8 @@ class LocationSequence:
 
     def input_start_coordinate(self, lat: float, lon: float):
         self.start_coordinate = [lat, lon]
-    
+    def get_start_coordinate(self):
+        return self.start_coordinate
     def __str__(self):
         """Return a string representation of the sequence with place names from database"""
         if not self.sequence:
@@ -109,9 +112,8 @@ class LocationSequence:
 
         return results[:limit]
     def get_suggest_category(self) :
-        #categories = ['restaurant', 'cafe', 'bar', 'museum', 'park', 'shopping', 'theater', 'gallery']
-        category = random.choice(['catering', 'commercial', 'service', 'entertainment', 'leisure','tourism','heritage'])
-        return [category]
+        categories = ['catering', 'commercial', 'service', 'entertainment', 'leisure','tourism','heritage']
+        return random.choice(categories)
     def suggest_for_position(self, pos=-1, category=None, limit=5):
         """
         Suggest IDs to place at insertion position `pos` (no insertion performed).
@@ -233,9 +235,8 @@ class LocationSequence:
         return _between_coords(a_lat, a_lon, b_lat, b_lon)
     def suggest_around(self, lat, lon, limit=5, category=None):
         if category is None:
-            #category = random.choice(['restaurant', 'cafe', 'bar', 'museum', 'park'])
             category = random.choice(['catering', 'commercial', 'service', 'entertainment', 'leisure','tourism','heritage'])
-        print(f"Using category filter: {category}")
+        
         # Connect to the database
         db_path = os.path.join(self.RESULT_DIR, 'places.db')
         with sqlite3.connect(db_path) as conn:  

@@ -65,7 +65,6 @@ def start_conversation(self) -> BotResponse:
         self.conversation_started = True
         bot_response = Bot_ask_start_location(location_sequence=self.location_sequence)
         self._add_response(bot_response)
-        bot_response.process()
         return bot_response
     return None
 ```
