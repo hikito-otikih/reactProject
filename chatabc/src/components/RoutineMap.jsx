@@ -20,6 +20,7 @@ const RoutineMap = ({ showItinerary }) => {
   // Refs for State Synchronization (Fix Stale Closures)
   const selectedChatRef = useRef(null);
   const schedulePlacesRef = useRef([]); // <--- THÊM REF NÀY
+  const routeModeRef = useRef('driving'); // <--- THÊM REF CHO ROUTE MODE
   
   const [libLoaded, setLibLoaded] = useState(false);
   const [mapReady, setMapReady] = useState(false);
@@ -57,6 +58,11 @@ const RoutineMap = ({ showItinerary }) => {
     // console.log('RoutineMap - schedulePlaces changed:', schedulePlaces);
     schedulePlacesRef.current = schedulePlaces;
   }, [schedulePlaces]);
+  
+  // Keep routeModeRef in sync with routeMode
+  useEffect(() => {
+    routeModeRef.current = routeMode;
+  }, [routeMode]);
 
   // --- Load Leaflet ---
   useEffect(() => {
@@ -102,33 +108,31 @@ const RoutineMap = ({ showItinerary }) => {
     }
   };
 
-  // --- Fetch route polyline from LocationIQ ---
+  // --- Fetch route polyline from OpenStreetMap ---
   const fetchRoutePolyline = async (fromLat, fromLon, toLat, toLon, mode = 'driving') => {
     try {
-      const apiKeys = [
-        import.meta.env.VITE_LOCATIONIQ_API_KEY,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY2,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY3,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY4
-      ].filter(Boolean);
+      // Map mode to OSM routing profile
+      const profileMap = {
+        'driving': 'routed-car',
+        'walking': 'routed-foot',
+        'cycling': 'routed-bike'
+      };
       
-      if (apiKeys.length === 0) return null;
-      
-      const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
+      const profile = profileMap[mode] || 'routed-car';
       
       const response = await fetch(
-        `https://us1.locationiq.com/v1/directions/${mode}/${fromLon},${fromLat};${toLon},${toLat}?key=${apiKey}&overview=full&geometries=geojson`
+        `https://routing.openstreetmap.de/${profile}/route/v1/driving/${fromLon},${fromLat};${toLon},${toLat}?overview=full&geometries=geojson`
       );
       
       if (!response.ok) {
-        console.warn(`LocationIQ ${mode} route failed:`, response.status);
+        console.warn(`OpenStreetMap ${mode} route failed:`, response.status);
         return null;
       }
       
       const data = await response.json();
       if (data && data.routes && data.routes.length > 0) {
         const coordinates = data.routes[0].geometry.coordinates;
-        // LocationIQ returns [lon, lat], Leaflet needs [lat, lon]
+        // OpenStreetMap returns [lon, lat], Leaflet needs [lat, lon]
         return coordinates.map(coord => [coord[1], coord[0]]);
       }
       
@@ -139,26 +143,15 @@ const RoutineMap = ({ showItinerary }) => {
     }
   };
 
-  // --- Calculate driving distance using LocationIQ ---
+  // --- Calculate driving distance using OpenStreetMap ---
   const calculateDrivingDistance = async (fromLat, fromLon, toLat, toLon) => {
     try {
-      const apiKeys = [
-        import.meta.env.VITE_LOCATIONIQ_API_KEY,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY2,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY3,
-        import.meta.env.VITE_LOCATIONIQ_API_KEY4
-      ].filter(Boolean);
-      
-      if (apiKeys.length === 0) return '0 km';
-      
-      const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
-      
       const response = await fetch(
-        `https://us1.locationiq.com/v1/directions/driving/${fromLon},${fromLat};${toLon},${toLat}?key=${apiKey}&overview=false&steps=false`
+        `https://routing.openstreetmap.de/routed-car/route/v1/driving/${fromLon},${fromLat};${toLon},${toLat}?overview=false`
       );
       
       if (!response.ok) {
-        console.warn('LocationIQ directions failed:', response.status);
+        console.warn('OpenStreetMap directions failed:', response.status);
         return '0 km';
       }
       
@@ -622,16 +615,26 @@ const RoutineMap = ({ showItinerary }) => {
     
     const map = mapInstanceRef.current;
     
-    // Clear existing itinerary markers and polyline
-    itineraryMarkersRef.current.forEach(marker => map.removeLayer(marker));
+    // ALWAYS clear existing itinerary markers and polylines first
+    itineraryMarkersRef.current.forEach(marker => {
+      try {
+        map.removeLayer(marker);
+      } catch (e) {
+        // Marker might already be removed
+      }
+    });
     itineraryMarkersRef.current = [];
     
     if (itineraryPolylineRef.current) {
-      map.removeLayer(itineraryPolylineRef.current);
+      try {
+        map.removeLayer(itineraryPolylineRef.current);
+      } catch (e) {
+        // Polyline might already be removed
+      }
       itineraryPolylineRef.current = null;
     }
     
-    // If showItinerary is false or no places, just return
+    // If showItinerary is false or no places, STOP HERE (cleanup done)
     if (!showItinerary || !schedulePlaces || schedulePlaces.length === 0) {
       return;
     }
@@ -787,16 +790,25 @@ const RoutineMap = ({ showItinerary }) => {
     });
     
     // Draw polyline connecting all points using LocationIQ routes
+    let isCancelled = false;
+    
     const drawRoutes = async () => {
       if (allCoordinates.length > 1) {
         const allRoutePoints = [];
+        const currentRouteMode = routeModeRef.current;
         
         // Fetch routes sequentially between each pair of points
         for (let i = 0; i < allCoordinates.length - 1; i++) {
+          // Check if effect was cancelled or route mode changed
+          if (isCancelled || currentRouteMode !== routeModeRef.current) {
+            console.log('Route drawing cancelled or mode changed');
+            return;
+          }
+          
           const [fromLat, fromLon] = allCoordinates[i];
           const [toLat, toLon] = allCoordinates[i + 1];
           
-          const routePoints = await fetchRoutePolyline(fromLat, fromLon, toLat, toLon, routeMode);
+          const routePoints = await fetchRoutePolyline(fromLat, fromLon, toLat, toLon, currentRouteMode);
           
           if (routePoints && routePoints.length > 0) {
             // Add route points (avoid duplicating connection points)
@@ -818,10 +830,16 @@ const RoutineMap = ({ showItinerary }) => {
           await new Promise(resolve => setTimeout(resolve, 300));
         }
         
+        // Check one more time before drawing
+        if (isCancelled || currentRouteMode !== routeModeRef.current) {
+          console.log('Route drawing cancelled before polyline creation');
+          return;
+        }
+        
         // Draw the complete route
         if (allRoutePoints.length > 0) {
           const polyline = window.L.polyline(allRoutePoints, {
-            color: routeMode === 'driving' ? 'blue' : routeMode === 'walking' ? 'green' : '#yellow',
+            color: currentRouteMode === 'driving' ? 'blue' : currentRouteMode === 'walking' ? 'green' : 'orange',
             weight: 4,
             opacity: 0.7,
             smoothFactor: 1
@@ -837,6 +855,25 @@ const RoutineMap = ({ showItinerary }) => {
     
     // Call async function
     drawRoutes();
+    
+    // Cleanup function to cancel ongoing route drawing
+    return () => {
+      isCancelled = true;
+      // Clear any routes that might be in progress
+      itineraryMarkersRef.current.forEach(marker => {
+        try {
+          map.removeLayer(marker);
+        } catch (e) {}
+      });
+      itineraryMarkersRef.current = [];
+      
+      if (itineraryPolylineRef.current) {
+        try {
+          map.removeLayer(itineraryPolylineRef.current);
+        } catch (e) {}
+        itineraryPolylineRef.current = null;
+      }
+    };
     
   }, [mapReady, showItinerary, schedulePlaces, startPosition, routeMode]);
 
