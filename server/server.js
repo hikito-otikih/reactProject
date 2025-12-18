@@ -5,6 +5,7 @@ import connectDB from './configs/db.js';
 import userRoutes from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import queryStaticDBRoutes from './routes/query_static_db_Routes.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/api/static_db', queryStaticDBRoutes);
 
 const PORT = process.env.PORT || 3000;
 

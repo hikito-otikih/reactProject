@@ -20,6 +20,7 @@ const App = () => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(true);
   const [activeRoutine, setActiveRoutine] = useState(null); 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [showItinerary, setShowItinerary] = useState(false);
   
   const ChevronLeft = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -61,6 +62,21 @@ const App = () => {
                     </button>
                 )}
 
+                  {isWidgetOpen && !isMenuOpen && (
+                    <button
+                      onClick={() => setShowItinerary(prev => !prev)}
+                      title={showItinerary ? 'Hide Itinerary' : 'Show Itinerary on Map'}
+                      className={`absolute top-3 left-[320px] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg shadow-sm border z-50 hover:opacity-90 transition-all ${
+                        showItinerary 
+                          ? 'bg-blue-600 text-white border-blue-500' 
+                          : 'bg-white text-black dark:bg-[#2d2d2d] dark:text-white border-gray-200 dark:border-gray-700'
+                      }`}
+                      style={{ transition: 'left 0.5s ease-in-out' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                    </button>
+                )}
+
                 <div className='flex h-full w-full relative'>
                   <SideBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
                   <div className={`flex-1 w-full h-full ${isMenuOpen ? 'hidden md:block' : 'block'}`}>
@@ -80,7 +96,8 @@ const App = () => {
              <div className="absolute inset-0 w-full h-full z-0">
                <RoutineMap 
                   routineData={activeRoutine} 
-                  onClose={() => setActiveRoutine(null)} 
+                  //onClose={() => setActiveRoutine(null)}
+                  showItinerary={showItinerary}
                />
              </div>
 
@@ -111,7 +128,7 @@ const App = () => {
               className={`
                 absolute top-0 right-0 h-full z-20 
                 transition-all duration-500 ease-in-out
-                ${isScheduleOpen ? 'w-[350px] translate-x-0' : 'w-0 translate-x-full opacity-0'}
+                ${isScheduleOpen ? 'w-[380px] translate-x-0' : 'w-0 translate-x-full opacity-0'}
               `}
             >
               {/* Container: bg-transparent để nhìn thấu Map */}
