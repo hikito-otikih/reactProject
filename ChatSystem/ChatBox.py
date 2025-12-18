@@ -245,11 +245,13 @@ class ChatBox :
         for response_dict in json_data.get('responses', []) :
             if response_dict['whom'] == 'bot' :
                 response = BotResponse(
-                    message=response_dict['message'],
-                    suggestions=response_dict.get('suggestions', []),
-                    database_results=response_dict.get('database_results', []),
-                    location_sequence=self.location_sequence
+                    location_sequence=self.location_sequence,
+                    bot_message=response_dict['message'],
+                    collected_information=self.collected_information
                 )
+                # Manually set suggestions if they exist in saved data
+                if response_dict.get('suggestions'):
+                    response.suggestions = response_dict['suggestions']
             else :
                 response = UserResponse(response_dict['message'])
             
@@ -290,5 +292,8 @@ if __name__ == "__main__" :
 
         save_data = chat_box.save_chatbox()
         print (json.dumps(save_data, indent=2))  # For debugging purposes
+
+        ChatBox.load_chatbox(chat_box, save_data)  # Test loading functionality
+
         # if save_data.get('responses'):
             # print(f"(Conversation saved with {len(save_data['responses'])} messages.)")
