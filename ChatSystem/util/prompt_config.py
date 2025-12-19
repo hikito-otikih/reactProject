@@ -58,123 +58,39 @@ VAGUE_CATEGORY_KEYWORDS = {
 # FEW-SHOT EXAMPLES BY DOMAIN
 # ============================================================================
 FEW_SHOT_EXAMPLES = {
-    'accommodation': [
+    'itinerary': [
         {
-            'input': 'Book a 5-star hotel in Paris for 3 nights',
+            'input': 'Create an itinerary through 6 locations',
             'output': {
                 'intents': [{
-                    'intent': 'book_hotel',
-                    'suggested_function': 'book_hotel',
-                    'confidence': 0.5,
-                    'slots': {
-                        'destination': 'Paris',
-                        'accommodation_type': '5-star hotel',
-                        'duration_nights': 3,
-                        'budget': None,
-                        'preferences': []
-                    },
-                    'entities': [
-                        {'type': 'LOCATION', 'text': 'Paris'},
-                        {'type': 'NUMBER', 'text': '5-star'},
-                        {'type': 'NUMBER', 'text': '3 nights'}
-                    ],
-                    'keywords': ['book', 'hotel', 'Paris', '5-star', 'nights']
-                }],
-                'followup': False,
-                'clarify_text': None
-            }
-        },
-        {
-            'input': 'Need a cheap hostel near the beach',
-            'output': {
-                'intents': [{
-                    'intent': 'search_accommodation',
-                    'suggested_function': 'search_hotels',
-                    'confidence': 0.5,
+                    'intent': 'itinerary_planning',
+                    'suggested_function': 'itinerary_planning',
+                    'confidence': 0.95,
                     'slots': {
                         'destination': None,
-                        'accommodation_type': 'hostel',
-                        'budget': 'cheap',
-                        'preferences': ['near beach']
-                    },
-                    'entities': [
-                        {'type': 'PREFERENCES', 'text': 'cheap'},
-                        {'type': 'PREFERENCES', 'text': 'near beach'}
-                    ],
-                    'keywords': ['cheap', 'hostel', 'beach', 'accommodation']
-                }],
-                'followup': True,
-                'clarify_text': 'Which city or destination are you looking for?'
-            }
-        }
-    ],
-    'transport': [
-        {
-            'input': 'Book a business class flight to Tokyo on June 15th',
-            'output': {
-                'intents': [{
-                    'intent': 'book_flight',
-                    'suggested_function': 'book_flight',
-                    'confidence': 0.5,
-                    'slots': {
-                        'destination': 'Tokyo',
-                        'departure_date': '2025-06-15',
-                        'seat_class': 'business',
-                        'travelers': {'adults': 1, 'children': None, 'infants': None}
-                    },
-                    'entities': [
-                        {'type': 'LOCATION', 'text': 'Tokyo'},
-                        {'type': 'DATE', 'text': 'June 15th'},
-                        {'type': 'PREFERENCES', 'text': 'business class'}
-                    ],
-                    'keywords': ['flight', 'Tokyo', 'business', 'June']
+                        'categories': [],
+                        'limit': 6
+                    }
                 }],
                 'followup': False,
-                'clarify_text': None
+                'clarify_question': None
             }
-        }
-    ],
-    'itinerary': [
+        },
         {
             'input': 'Plan a 3-day trip to Rome with museums and good restaurants',
             'output': {
                 'intents': [{
-                    'intent': 'create_itinerary',
-                    'suggested_function': 'suggest_itinerary',
-                    'confidence': 0.50,
+                    'intent': 'itinerary_planning',
+                    'suggested_function': 'itinerary_planning',
+                    'confidence': 0.90,
                     'slots': {
                         'destination': 'Rome',
-                        'duration_days': 3,
                         'categories': ['museum', 'restaurant'],
-                        'preferences': ['museums', 'good restaurants']
-                    },
-                    'entities': [
-                        {'type': 'LOCATION', 'text': 'Rome'},
-                        {'type': 'NUMBER', 'text': '3-day'},
-                        {'type': 'PREFERENCES', 'text': 'museums'},
-                        {'type': 'PREFERENCES', 'text': 'good restaurants'}
-                    ],
-                    'keywords': ['trip', 'Rome', 'museums', 'restaurants', 'itinerary']
+                        'limit': 3
+                    }
                 }],
                 'followup': False,
-                'clarify_text': None
-            }
-        }
-    ],
-    'general': [
-        {
-            'input': 'Hello',
-            'output': {
-                'intents': [{
-                    'intent': 'greeting',
-                    'suggested_function': 'greet',
-                    'confidence': 0.50,
-                    'slots': {},
-                    'entities': [],
-                    'keywords': ['hello', 'greeting']
-                }],
-                'followup': False,
-                'clarify_text': None
+                'clarify_question': None
             }
         }
     ],
@@ -214,6 +130,42 @@ FEW_SHOT_EXAMPLES = {
                 }],
                 'followup': True,
                 'clarify_question': 'What type of places are you interested in? For example: restaurants, museums, parks, shopping, or entertainment?'
+            }
+        }
+    ],
+    'general': [
+        {
+            'input': 'Show me museums',
+            'output': {
+                'intents': [{
+                    'intent': 'suggest_attractions',
+                    'suggested_function': 'suggest_attractions',
+                    'confidence': 0.90,
+                    'slots': {
+                        'destination': None,
+                        'categories': ['museum'],
+                        'limit': 5
+                    }
+                }],
+                'followup': False,
+                'clarify_question': None
+            }
+        },
+        {
+            'input': 'Tell me about Bến Thành Market',
+            'output': {
+                'intents': [{
+                    'intent': 'search_by_name',
+                    'suggested_function': 'search_by_name',
+                    'confidence': 0.95,
+                    'slots': {
+                        'destination': 'Bến Thành Market',
+                        'categories': [],
+                        'limit': None
+                    }
+                }],
+                'followup': False,
+                'clarify_question': None
             }
         }
     ]

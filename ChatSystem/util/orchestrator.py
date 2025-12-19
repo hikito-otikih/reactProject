@@ -26,24 +26,23 @@ def extract_information_single_pass(user_input, collected_information=None, conv
         dict: Extracted information in JSON format
     """
     
-    # Build collected information context
+    # Build collected information context (compact format)
     collected_info_str = ""
     if collected_information:
-        collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
-        collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
-        collected_info_str += "\n\nIMPORTANT: Use this information to understand what's already known. Do NOT ask for information already present. Focus on extracting NEW or MISSING information only.\n"
+        collected_info_str = "\n\nCOLLECTED INFO:\n"
+        collected_info_str += json.dumps(collected_information, ensure_ascii=False)
     
-    # Build conversation history context (last 5-10 messages)
+    # Build conversation history context (last 5 messages only to reduce prompt length)
     context_str = ""
     if conversation_history:
-        num_messages = min(10, len(conversation_history))
-        context_str = f"\n\nRECENT CONVERSATION HISTORY (last {num_messages} messages):\n"
+        num_messages = min(5, len(conversation_history))  # Reduced from 10 to 5
+        context_str = f"\n\nRECENT CONVERSATION (last {num_messages} messages):\n"
         for msg in conversation_history[-num_messages:]:
             role = msg.get('role', 'unknown')
             message = msg.get('message', '')
             context_str += f"{role}: {message}\n"
-        context_str += "\nUse this context to better understand the current query and maintain conversation continuity.\n"
     
+    print("user input for extraction:", user_input)
     # Simplified schema - only essential fields
     schema = """
     {
@@ -51,7 +50,6 @@ def extract_information_single_pass(user_input, collected_information=None, conv
             {
                 "intent": "string",
                 "suggested_function": "string",
-                "confidence": 0.0,
                 "slots": {
                     "destination": null,
                     "categories": [],
@@ -77,13 +75,13 @@ EXTRACTION RULES:
 2. Extract all entities mentioned in the query (LOCATION, CATEGORIES, NUMBER).
 3. Set confidence based on completeness and clarity (0.0 to 1.0).
 4. If information is unclear or missing, set followup=true and provide a clarify_question.
+5. CRITICAL: Ensure all JSON strings are properly escaped. Use double quotes for strings.
 
 5. Available functions and their purposes:
-   - suggest_from_database: Suggest attractions from database when destination and categories are known
-   - itinerary_planning: Create complete trip itinerary with locations and timing
+   - itinerary_planning: Create complete trip itinerary. Does NOT require destination. Only needs limit (number of places) and optionally categories.
    - suggest_categories: Suggest place categories based on user context
-   - suggest_attractions: Suggest attractions of given category
-   - get_attraction_details: Display attraction details (image, description, opening hours, ticket price)
+   - suggest_attractions: Suggest attractions (with or without category)
+   - search_by_name: Search for places by name
    - ask_clarify: Ask for clarification when info is missing
 
 6. SCHEMA FIELDS (only these are tracked):
@@ -98,7 +96,7 @@ EXTRACTION RULES:
 
 8. AMBIGUITY HANDLING:
    - If category is vague ("things to do", "fun stuff"), set intent to "ask_clarify"
-   - If destination is missing and not in collected info, ask for it
+   - For itinerary_planning: destination and categories are OPTIONAL, only limit is needed
    - If user asks general questions without specifics, provide helpful clarification
 {examples}
 {collected_info_str}
@@ -123,7 +121,7 @@ EXTRACT THE JSON NOW:"""
                 'temperature': 0.0,  # Maximum determinism for accuracy
                 'topP': 0.95,  # Higher nucleus sampling for better quality
                 'topK': 40,
-                'maxOutputTokens': 3072,  # Increased for complex responses
+                'maxOutputTokens': 2048,  # Increased for complex responses
                 'responseMimeType': 'application/json',
                 'candidateCount': 1,  # Single best response
                 'stopSequences': []  # No stop sequences
@@ -146,14 +144,43 @@ EXTRACT THE JSON NOW:"""
         if response.status_code == 200:
             result = response.json()
             extracted_text = result['candidates'][0]['content']['parts'][0]['text']
-            extracted_info = json.loads(extracted_text)
+            
+            # Try to parse JSON, handle potential formatting issues
+            try:
+                extracted_info = json.loads(extracted_text)
+            except json.JSONDecodeError as json_err:
+                print(f"⚠️ JSON parsing failed. Raw response:\n{extracted_text[:500]}")
+                print(f"JSON Error: {json_err}")
+                
+                # Return a safe fallback with the user's query
+                return {
+                    'intents': [{
+                        'intent': 'search_by_name',
+                        'suggested_function': 'search_by_name',
+                        'confidence': 0.7,
+                        'slots': {
+                            'destination': user_input,
+                            'categories': None,
+                            'limit': None
+                        }
+                    }],
+                    'followup': False,
+                    'clarify_question': None
+                }
+            
             return extracted_info
         else:
             raise Exception(f"Gemini API error: {response.status_code}")
     
     except Exception as e:
-        #print(GEMINI_KEY)
-        print(f"Error in information extraction: {e}")
+        print(f"❌ Error in information extraction: {e}")
+        print(f"Error type: {type(e).__name__}")
+        
+        # Log more details for debugging
+        if hasattr(e, 'response'):
+            print(f"Response status: {e.response.status_code if hasattr(e.response, 'status_code') else 'N/A'}")
+            print(f"Response text: {e.response.text[:500] if hasattr(e.response, 'text') else 'N/A'}")
+        
         return {
             'intents': [],
             'followup': True,
@@ -266,7 +293,234 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
     result = extract_information_single_pass(user_input, collected_information, conversation_history)
     print("✅ Extraction complete\n")
     
+    # Normalize field names from LLM output
+    result = _normalize_field_names(result)
+    
+    # Load valid categories from categories.txt
+    categories_file_path = os.path.join(os.path.dirname(__file__), 'categories.txt')
+    valid_categories = []
+    try:
+        with open(categories_file_path, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+            valid_categories = [cat.strip() for cat in content.split(',')]
+    except Exception as e:
+        print(f"⚠️ Could not load categories.txt: {e}")
+    
+    # Match and replace categories in the result
+    if valid_categories and 'intents' in result:
+        for intent in result['intents']:
+            if 'slots' in intent and 'categories' in intent['slots']:
+                categories = intent['slots']['categories']
+                if categories and isinstance(categories, list):
+                    matched_categories = []
+                    for cat in categories:
+                        if cat:
+                            # Find the best match from valid_categories
+                            best_match = _find_best_category_match(cat, valid_categories)
+                            if best_match:
+                                matched_categories.append(best_match)
+                                print(f"📝 Matched '{cat}' -> '{best_match}'")
+                            else:
+                                matched_categories.append(cat)  # Keep original if no match found
+                    intent['slots']['categories'] = matched_categories
+    
     return result
+
+
+def _normalize_field_names(result):
+    """
+    Normalize field names from LLM output to standard format.
+    Maps various field name aliases to standard names:
+    - destination: place_name, location, place, attraction_name, name
+    - categories: category, types, place_types
+    - limit: number, count, num_places, number_of_places
+    
+    Parameters:
+        result (dict): Raw result from LLM
+    
+    Returns:
+        dict: Result with normalized field names
+    """
+    if not isinstance(result, dict) or 'intents' not in result:
+        return result
+    
+    # Field name mappings
+    destination_aliases = ['place_name', 'location', 'place', 'attraction_name', 'name', 'destination_name']
+    categories_aliases = ['category', 'types', 'place_types', 'type', 'place_type']
+    limit_aliases = ['number', 'count', 'num_places', 'number_of_places', 'num']
+    
+    for intent in result['intents']:
+        if 'slots' not in intent:
+            continue
+            
+        slots = intent['slots']
+        
+        # Normalize destination
+        if 'destination' not in slots or not slots['destination']:
+            for alias in destination_aliases:
+                if alias in slots and slots[alias]:
+                    slots['destination'] = slots[alias]
+                    print(f"🔄 Normalized '{alias}' -> 'destination': {slots[alias]}")
+                    break
+        
+        # Normalize categories
+        if 'categories' not in slots or not slots['categories']:
+            for alias in categories_aliases:
+                if alias in slots and slots[alias]:
+                    # Convert single value to list
+                    if isinstance(slots[alias], str):
+                        slots['categories'] = [slots[alias]]
+                    elif isinstance(slots[alias], list):
+                        slots['categories'] = slots[alias]
+                    print(f"🔄 Normalized '{alias}' -> 'categories': {slots['categories']}")
+                    break
+        
+        # Normalize limit
+        if 'limit' not in slots or not slots['limit']:
+            for alias in limit_aliases:
+                if alias in slots and slots[alias]:
+                    try:
+                        slots['limit'] = int(slots[alias])
+                        print(f"🔄 Normalized '{alias}' -> 'limit': {slots['limit']}")
+                        break
+                    except (ValueError, TypeError):
+                        pass
+    
+    return result
+
+
+def _find_best_category_match(input_category, valid_categories):
+    """
+    Find the best matching category from the valid categories list.
+    Enhanced with translation and plural/singular handling.
+    
+    Parameters:
+        input_category (str): Category extracted from user input
+        valid_categories (list): List of valid categories from categories.txt
+    
+    Returns:
+        str: Best matching category or None if no good match found
+    """
+    if not input_category or not valid_categories:
+        return None
+    
+    input_lower = input_category.lower().strip()
+    
+    # Generate variants of the input category
+    variants = _generate_category_variants(input_lower)
+    
+    # Try exact match with all variants
+    for variant in variants:
+        if variant in valid_categories:
+            return variant
+    
+    # Partial match - check if any variant is contained in valid category or vice versa
+    for variant in variants:
+        for valid_cat in valid_categories:
+            if variant in valid_cat or valid_cat in variant:
+                return valid_cat
+    
+    # Use difflib for fuzzy matching with all variants
+    from difflib import get_close_matches
+    for variant in variants:
+        matches = get_close_matches(variant, valid_categories, n=1, cutoff=0.6)
+        if matches:
+            return matches[0]
+    
+    return None
+
+
+def _generate_category_variants(input_category):
+    """
+    Generate variants of input category including:
+    - Original
+    - Translated (Vietnamese <-> English)
+    - Plural/Singular forms
+    
+    Parameters:
+        input_category (str): Original category string
+    
+    Returns:
+        list: List of category variants
+    """
+    variants = set()
+    input_lower = input_category.lower().strip()
+    variants.add(input_lower)
+    
+    # Add plural/singular variants
+    variants.update(_get_plural_singular_variants(input_lower))
+    
+    # Try translation Vietnamese -> English
+    try:
+        translated_en = translate(input_category, target_language='en')
+        if translated_en and translated_en.lower() != input_lower:
+            translated_en_lower = translated_en.lower().strip()
+            variants.add(translated_en_lower)
+            # Add plural/singular of translated English
+            variants.update(_get_plural_singular_variants(translated_en_lower))
+    except Exception as e:
+        print(f"⚠️ Translation to English failed: {e}")
+    
+    # Try translation English -> Vietnamese
+    try:
+        translated_vi = translate(input_category, target_language='vi')
+        if translated_vi and translated_vi.lower() != input_lower:
+            translated_vi_lower = translated_vi.lower().strip()
+            variants.add(translated_vi_lower)
+            # Translate Vietnamese back to English for more variants
+            try:
+                back_translated = translate(translated_vi, target_language='en')
+                if back_translated:
+                    back_translated_lower = back_translated.lower().strip()
+                    variants.add(back_translated_lower)
+                    variants.update(_get_plural_singular_variants(back_translated_lower))
+            except:
+                pass
+    except Exception as e:
+        print(f"⚠️ Translation to Vietnamese failed: {e}")
+    
+    return list(variants)
+
+
+def _get_plural_singular_variants(word):
+    """
+    Generate plural and singular variants of an English word.
+    
+    Parameters:
+        word (str): Input word
+    
+    Returns:
+        set: Set of variants (plural and singular forms)
+    """
+    variants = set()
+    word_lower = word.lower().strip()
+    
+    # Rules for plural -> singular
+    if word_lower.endswith('ies'):
+        # galleries -> gallery, bakeries -> bakery
+        variants.add(word_lower[:-3] + 'y')
+    elif word_lower.endswith('ses'):
+        # churches -> church, boxes -> box
+        variants.add(word_lower[:-2])
+    elif word_lower.endswith('shes') or word_lower.endswith('ches'):
+        # dishes -> dish, churches -> church
+        variants.add(word_lower[:-2])
+    elif word_lower.endswith('s') and not word_lower.endswith('ss'):
+        # museums -> museum, cafes -> cafe
+        variants.add(word_lower[:-1])
+    
+    # Rules for singular -> plural
+    if word_lower.endswith('y') and len(word_lower) > 1 and word_lower[-2] not in 'aeiou':
+        # gallery -> galleries, bakery -> bakeries
+        variants.add(word_lower[:-1] + 'ies')
+    elif word_lower.endswith(('s', 'x', 'z', 'ch', 'sh')):
+        # church -> churches, box -> boxes
+        variants.add(word_lower + 'es')
+    elif not word_lower.endswith('s'):
+        # museum -> museums, cafe -> cafes
+        variants.add(word_lower + 's')
+    
+    return variants
 
 
 # Example usage

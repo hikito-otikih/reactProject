@@ -11,7 +11,7 @@ from .Response import (
     Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
     Bot_suggest_categories,
-    Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary
+    Bot_suggest_attractions, Bot_search_by_name, Bot_create_itinerary
 )
 
 def process_user_input(user_input: str, collected_information: dict, conversation_history: list) -> dict:    
@@ -39,6 +39,7 @@ def process_user_input(user_input: str, collected_information: dict, conversatio
             english_history.append(message)
             
     # Step 2: Extract intent using 2-pass orchestrator
+    print("english input:", english_input)
     extracted_data = extract_info_with_orchestrator(english_input, collected_information, english_history)
     
     # Step 3: Format to clean structure
