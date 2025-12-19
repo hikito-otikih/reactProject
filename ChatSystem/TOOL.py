@@ -68,11 +68,14 @@ class TOOL:
     def clear_conversation(self) :
         pass 
 if __name__ == "__main__":
+    example = {"history":{"responses":[{"whom":"user","message":"hello","suggestions":[],"database_results":[]}]},"start_coordinate":[],"sequence":[]}
     tool = TOOL()
+    tool.load(example)
     while True:
         user_input = input("User: ")
         response = tool.process_input(user_input)
-        print(json.dumps(response, indent=2)) 
+        print(json.dumps(response, indent=2, ensure_ascii=False)) 
+        print(json.dumps(tool.save(), indent=2, ensure_ascii=False))
 """
 {
   "history": {

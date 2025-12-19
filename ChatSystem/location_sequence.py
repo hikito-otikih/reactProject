@@ -32,6 +32,8 @@ class LocationSequence:
         self.sequence = []
     def load_sequence(self, start_coordinate, sequence):
         self.start_coordinate = start_coordinate
+        if self.start_coordinate == [] : 
+            self.start_coordinate = [10.7628356, 106.6824824]
         self.sequence = sequence
     def append(self, position , ID ):
         if position < 0 or position > len(self.sequence):
