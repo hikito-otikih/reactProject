@@ -5,7 +5,7 @@ import Markdown from 'react-markdown'
 import Prism from 'prismjs'
 
 // Thêm onSave và onSaveAndDisplay vào props
-const Message = ({ message, onDisplay, onSuggestionClick, onShowPlaceDetails, onPreviewOnMap, placeDetails }) => {
+const Message = ({ message, onDisplay, onSuggestionClick, onShowPlaceDetails, onPreviewOnMap, onAddToSchedule, placeDetails }) => {
   
   useEffect(() => {
     Prism.highlightAll();
@@ -106,7 +106,11 @@ const Message = ({ message, onDisplay, onSuggestionClick, onShowPlaceDetails, on
                         key={idx}
                         className='flex items-center justify-between p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200'
                       >
-                        <div className='flex items-start gap-3 flex-1 min-w-0'>
+                        {/* Clickable Place Details Panel */}
+                        <div 
+                          onClick={() => onShowPlaceDetails && onShowPlaceDetails(placeId, place)}
+                          className='flex items-start gap-3 flex-1 min-w-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 -m-3 p-3 rounded-lg transition-colors'
+                        >
                           {/* Place Image/Icon */}
                           <div className='flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg overflow-hidden shadow-sm'>
                             {(place?.Image_URLs?.[0] || place?.images?.[0]) ? (
@@ -150,28 +154,33 @@ const Message = ({ message, onDisplay, onSuggestionClick, onShowPlaceDetails, on
                         </div>
 
                         {/* Action Buttons */}
-                        <div className='flex-shrink-0 ml-2 flex gap-1'>
+                        <div className='flex-shrink-0 ml-2 flex flex-col gap-1'>
                           {/* Preview on Map Button */}
                           <button
-                            onClick={() => onPreviewOnMap && onPreviewOnMap(placeId, place)}
-                            className='px-2 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xs font-medium rounded-md transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1'
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onPreviewOnMap && onPreviewOnMap(placeId, place);
+                            }}
+                            className='p-1.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-md transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center'
                             title='Preview on Map'
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                             </svg>
                           </button>
 
-                          {/* Show Details Button */}
+                          {/* Add to Schedule Button */}
                           <button
-                            onClick={() => onShowPlaceDetails && onShowPlaceDetails(placeId, place)}
-                            className='px-2 py-1.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-medium rounded-md transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1'
-                            title='Show Details'
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAddToSchedule && onAddToSchedule(placeId, place);
+                            }}
+                            className='p-1.5 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white rounded-md transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center'
+                            title='Add to Schedule'
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                           </button>
                         </div>

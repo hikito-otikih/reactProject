@@ -210,10 +210,19 @@ const ChatBox = ({ onShowMap }) => {
         setSelectedPlace(detailedPlace);
         setShowPlaceModal(true);
         
-        // Update placeDetails cache
+        // Update placeDetails cache with consistent structure
         setPlaceDetails(prev => ({
           ...prev,
-          [placeId]: detailedPlace
+          [placeId]: {
+            ...detailedPlace,
+            // Ensure both formats are available for compatibility
+            name: detailedPlace.Name,
+            address: detailedPlace.Address,
+            rating: detailedPlace.Rating,
+            images: detailedPlace.Image_URLs,
+            lat: detailedPlace.Lat,
+            lon: detailedPlace.Lon
+          }
         }));
       } else {
         toast.error('Place details not found');
@@ -243,6 +252,97 @@ const ChatBox = ({ onShowMap }) => {
 
     setShowPreviewLocation([previewLocation]);
     toast.success('Location previewed on map!');
+  };
+
+  // Handle adding place to schedule directly from suggested locations
+  const handleAddToSchedule = async (placeId, place) => {
+    try {
+      if (!selectedChat) {
+        toast.error('No chat selected');
+        return;
+      }
+
+      // If place doesn't have complete info, fetch it
+      let placeToAdd = place;
+      if (!place || !place.Name) {
+        toast.loading('Loading place details...');
+        const response = await axios.post(
+          '/api/static_db/query',
+          { list_id: [placeId] },
+          { headers: { Authorization: token } }
+        );
+        toast.dismiss();
+
+        if (response.data && response.data.data && response.data.data.length > 0) {
+          const item = response.data.data[0];
+          
+          const safeParseList = (str) => {
+            if (!str) return [];
+            try {
+              const parsed = JSON.parse(str);
+              return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+              return [];
+            }
+          };
+
+          let parsedCategories = safeParseList(item.categories);
+          if (parsedCategories.length === 0) parsedCategories = ["Place"];
+
+          let parsedImages = safeParseList(item.images);
+
+          placeToAdd = {
+            rowid: item.rowid,
+            id: item.id || placeId,
+            Name: item.name || item.title || item.address?.split(',')[0] || "Unknown",
+            Address: item.address || "",
+            Categories: parsedCategories,
+            Image_URLs: parsedImages,
+            Rating: item.rating || 0,
+            Lat: item.location_lat || item.lat,
+            Lon: item.location_lon || item.lon
+          };
+        } else {
+          toast.error('Place not found');
+          return;
+        }
+      }
+
+      toast.loading('Adding to schedule...');
+
+      // Get current schedule places (or empty array if none)
+      const currentPlaces = schedulePlaces || [];
+      
+      // Check if place already exists in schedule
+      const alreadyExists = currentPlaces.some(p => p.rowid === placeToAdd.rowid || p.id === placeToAdd.id);
+      if (alreadyExists) {
+        toast.dismiss();
+        toast.error('This place is already in your schedule');
+        return;
+      }
+      
+      // Add selected place to the end
+      const newPlaces = [...currentPlaces, placeToAdd];
+      
+      // Update context to sync with Schedule and RoutineMap
+      setSchedulePlaces(newPlaces);
+      
+      // Update database
+      const sortedRowIds = newPlaces.map((item) => item.rowid).filter(Boolean);
+      if (sortedRowIds.length) {
+        await axios.post('/api/message/newSequence', {
+          chatID: selectedChat._id,
+          sequence: sortedRowIds
+        }, { headers: { Authorization: token } });
+      }
+
+      toast.dismiss();
+      toast.success(`${placeToAdd.Name} added to schedule!`);
+    } catch (error) {
+      console.error('Error adding to schedule:', error);
+      toast.dismiss();
+      toast.error('Failed to add to schedule');
+    }
   };
 
   // Fetch place details when database_results are present
@@ -382,6 +482,7 @@ const ChatBox = ({ onShowMap }) => {
                         onSuggestionClick={handleSuggestionClick}
                         onShowPlaceDetails={handleShowPlaceDetails}
                         onPreviewOnMap={handlePreviewOnMap}
+                        onAddToSchedule={handleAddToSchedule}
                         placeDetails={placeDetails}
                     />
                 ))}
