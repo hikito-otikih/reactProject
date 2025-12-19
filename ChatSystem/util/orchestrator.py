@@ -62,6 +62,9 @@ def extract_information_single_pass(user_input, collected_information=None, conv
     }
     """
     
+    # Build few-shot examples
+    examples = _build_relevant_examples()
+    
     extraction_prompt = f"""You are a Travel Information Extraction Expert. Extract structured data from user queries with MAXIMUM ACCURACY.
 
 REQUIRED JSON SCHEMA:
@@ -75,7 +78,7 @@ EXTRACTION RULES:
 5. CRITICAL: Ensure all JSON strings are properly escaped. Use double quotes for strings.
 
 5. Available functions and their purposes:
-   - itinerary_planning: Create complete trip itinerary, do not require any information but can use destination, categories, limit
+   - itinerary_planning: Create complete trip itinerary. Does NOT require destination. Only needs limit (number of places) and optionally categories.
    - suggest_categories: Suggest place categories based on user context
    - suggest_attractions: Suggest attractions (with or without category)
    - search_by_name: Search for places by name
@@ -93,8 +96,9 @@ EXTRACTION RULES:
 
 8. AMBIGUITY HANDLING:
    - If category is vague ("things to do", "fun stuff"), set intent to "ask_clarify"
-   - If destination is missing and not in collected info, ask for it
+   - For itinerary_planning: destination and categories are OPTIONAL, only limit is needed
    - If user asks general questions without specifics, provide helpful clarification
+{examples}
 {collected_info_str}
 {context_str}
 
@@ -185,6 +189,21 @@ EXTRACT THE JSON NOW:"""
         }
 
 
+def _build_relevant_examples():
+    """Build relevant few-shot examples."""
+    from .prompt_config import FEW_SHOT_EXAMPLES
+    
+    examples_text = "\n\nEXAMPLES:\n"
+    
+    # Include one example from each important category
+    example_types = ['itinerary', 'clarification', 'general']
+    
+    for ex_type in example_types:
+        if ex_type in FEW_SHOT_EXAMPLES and FEW_SHOT_EXAMPLES[ex_type]:
+            ex = FEW_SHOT_EXAMPLES[ex_type][0]
+            examples_text += f"\nInput: \"{ex['input']}\"\nOutput:\n{json.dumps(ex['output'], indent=2)}\n"
+    
+    return examples_text
 
 
 def generate_dynamic_suggestions(context, question, num_suggestions=3):
