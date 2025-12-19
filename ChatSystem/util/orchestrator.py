@@ -293,6 +293,9 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
     result = extract_information_single_pass(user_input, collected_information, conversation_history)
     print("✅ Extraction complete\n")
     
+    # Normalize field names from LLM output
+    result = _normalize_field_names(result)
+    
     # Load valid categories from categories.txt
     categories_file_path = os.path.join(os.path.dirname(__file__), 'categories.txt')
     valid_categories = []
@@ -320,6 +323,68 @@ def extract_info_with_orchestrator(user_input, collected_information, conversati
                             else:
                                 matched_categories.append(cat)  # Keep original if no match found
                     intent['slots']['categories'] = matched_categories
+    
+    return result
+
+
+def _normalize_field_names(result):
+    """
+    Normalize field names from LLM output to standard format.
+    Maps various field name aliases to standard names:
+    - destination: place_name, location, place, attraction_name, name
+    - categories: category, types, place_types
+    - limit: number, count, num_places, number_of_places
+    
+    Parameters:
+        result (dict): Raw result from LLM
+    
+    Returns:
+        dict: Result with normalized field names
+    """
+    if not isinstance(result, dict) or 'intents' not in result:
+        return result
+    
+    # Field name mappings
+    destination_aliases = ['place_name', 'location', 'place', 'attraction_name', 'name', 'destination_name']
+    categories_aliases = ['category', 'types', 'place_types', 'type', 'place_type']
+    limit_aliases = ['number', 'count', 'num_places', 'number_of_places', 'num']
+    
+    for intent in result['intents']:
+        if 'slots' not in intent:
+            continue
+            
+        slots = intent['slots']
+        
+        # Normalize destination
+        if 'destination' not in slots or not slots['destination']:
+            for alias in destination_aliases:
+                if alias in slots and slots[alias]:
+                    slots['destination'] = slots[alias]
+                    print(f"🔄 Normalized '{alias}' -> 'destination': {slots[alias]}")
+                    break
+        
+        # Normalize categories
+        if 'categories' not in slots or not slots['categories']:
+            for alias in categories_aliases:
+                if alias in slots and slots[alias]:
+                    # Convert single value to list
+                    if isinstance(slots[alias], str):
+                        slots['categories'] = [slots[alias]]
+                    elif isinstance(slots[alias], list):
+                        slots['categories'] = slots[alias]
+                    print(f"🔄 Normalized '{alias}' -> 'categories': {slots['categories']}")
+                    break
+        
+        # Normalize limit
+        if 'limit' not in slots or not slots['limit']:
+            for alias in limit_aliases:
+                if alias in slots and slots[alias]:
+                    try:
+                        slots['limit'] = int(slots[alias])
+                        print(f"🔄 Normalized '{alias}' -> 'limit': {slots['limit']}")
+                        break
+                    except (ValueError, TypeError):
+                        pass
     
     return result
 
