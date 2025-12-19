@@ -5,6 +5,25 @@ import json
 import numpy as np
 from sentence_transformers import util as TransformerUtil
 import time
+from sentence_transformers import SentenceTransformer
+
+def printPlaceList(place_ids: List[int]):
+    """
+    print place information
+    """
+    conn = sqlite3.connect(constant.original_DB_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT title, address, description, images FROM {constant.places_table_name} WHERE rowid IN ({','.join(str(place_id) for place_id in place_ids)})")
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    ## print title, address, description, images
+    for item in result:
+        print("Title: ", item[0])
+        print("Address: ", item[1])
+        print("Description: ", item[2])
+        print("Images: ", item[3])
+        print("-"*100)
 
 def batchIterator(iterable, batch_size: int = 16):
     """
@@ -89,3 +108,11 @@ def timing(func):
         print(f"Time taken: {end_time - start_time} seconds")
         return result
     return wrapper
+
+    
+def load_CLIP_model():
+    """
+    load_CLIP_model is a function that loads the CLIP model.
+    """
+    model = SentenceTransformer(constant.CLIP_MODEL_NAME)
+    return model

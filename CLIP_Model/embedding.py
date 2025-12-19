@@ -1,12 +1,3 @@
-## fetch dữ liệu về
-## for qua
-## sparse cái string đó ra
-## xong lại for qua từng url
-## model.encode(image)
-
-## thực ra cũng không cần lưu vào database cái embedding kia luôn
-## mỗi lần for qua 1 ảnh, làm 2 việc: thêm nó vào database và thêm nó vào faiss index
-
 from sentence_transformers import SentenceTransformer
 from constant import original_DB_path, images_embedding_DB_path, places_table_name, images_table_name
 import sqlite3
