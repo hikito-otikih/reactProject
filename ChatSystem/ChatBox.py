@@ -127,18 +127,14 @@ class ChatBox :
         
         elif function_name == 'itinerary_planning':
             # Use collected_information as fallback
-            categories = params.get('categories') or self.collected_information.get('categories', [])
+            categories = params.get('categories') or self.collected_information.get('categories')
+            if (not categories) or (isinstance(categories, list) and len(categories) == 0):
+                categories = None  # Make it explicit None if empty
             limit = params.get('limit') or self.collected_information.get('limit', 3)
             
-            if not categories:
-                return Bot_ask_clarify(
-                    "What type of places would you like to include in your itinerary?",
-                    location_sequence=self.location_sequence,
-                    collected_information=self.collected_information
-                )
-            
+            # Categories are now optional - Bot_create_itinerary will handle None/empty categories
             return Bot_create_itinerary(
-                categories=categories,
+                categories=categories,  # Can be None or []
                 location_sequence=self.location_sequence,
                 limit=limit,
                 collected_information=self.collected_information
