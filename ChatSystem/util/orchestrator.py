@@ -26,24 +26,23 @@ def extract_information_single_pass(user_input, collected_information=None, conv
         dict: Extracted information in JSON format
     """
     
-    # Build collected information context
+    # Build collected information context (compact format)
     collected_info_str = ""
     if collected_information:
-        collected_info_str = "\n\nCOLLECTED INFORMATION (from previous interactions):\n"
-        collected_info_str += json.dumps(collected_information, indent=2, ensure_ascii=False)
-        collected_info_str += "\n\nIMPORTANT: Use this information to understand what's already known. Do NOT ask for information already present. Focus on extracting NEW or MISSING information only.\n"
+        collected_info_str = "\n\nCOLLECTED INFO:\n"
+        collected_info_str += json.dumps(collected_information, ensure_ascii=False)
     
-    # Build conversation history context (last 5-10 messages)
+    # Build conversation history context (last 5 messages only to reduce prompt length)
     context_str = ""
     if conversation_history:
-        num_messages = min(10, len(conversation_history))
-        context_str = f"\n\nRECENT CONVERSATION HISTORY (last {num_messages} messages):\n"
+        num_messages = min(5, len(conversation_history))  # Reduced from 10 to 5
+        context_str = f"\n\nRECENT CONVERSATION (last {num_messages} messages):\n"
         for msg in conversation_history[-num_messages:]:
             role = msg.get('role', 'unknown')
             message = msg.get('message', '')
             context_str += f"{role}: {message}\n"
-        context_str += "\nUse this context to better understand the current query and maintain conversation continuity.\n"
     
+    print("user input for extraction:", user_input)
     # Simplified schema - only essential fields
     schema = """
     {
@@ -51,7 +50,6 @@ def extract_information_single_pass(user_input, collected_information=None, conv
             {
                 "intent": "string",
                 "suggested_function": "string",
-                "confidence": 0.0,
                 "slots": {
                     "destination": null,
                     "categories": [],
@@ -64,9 +62,6 @@ def extract_information_single_pass(user_input, collected_information=None, conv
     }
     """
     
-    # Build few-shot examples
-    examples = _build_relevant_examples()
-    
     extraction_prompt = f"""You are a Travel Information Extraction Expert. Extract structured data from user queries with MAXIMUM ACCURACY.
 
 REQUIRED JSON SCHEMA:
@@ -77,13 +72,13 @@ EXTRACTION RULES:
 2. Extract all entities mentioned in the query (LOCATION, CATEGORIES, NUMBER).
 3. Set confidence based on completeness and clarity (0.0 to 1.0).
 4. If information is unclear or missing, set followup=true and provide a clarify_question.
+5. CRITICAL: Ensure all JSON strings are properly escaped. Use double quotes for strings.
 
 5. Available functions and their purposes:
-   - suggest_from_database: Suggest attractions from database when destination and categories are known
-   - itinerary_planning: Create complete trip itinerary with locations and timing
+   - itinerary_planning: Create complete trip itinerary, do not require any information but can use destination, categories, limit
    - suggest_categories: Suggest place categories based on user context
-   - suggest_attractions: Suggest attractions of given category
-   - get_attraction_details: Display attraction details (image, description, opening hours, ticket price)
+   - suggest_attractions: Suggest attractions (with or without category)
+   - search_by_name: Search for places by name
    - ask_clarify: Ask for clarification when info is missing
 
 6. SCHEMA FIELDS (only these are tracked):
@@ -100,7 +95,6 @@ EXTRACTION RULES:
    - If category is vague ("things to do", "fun stuff"), set intent to "ask_clarify"
    - If destination is missing and not in collected info, ask for it
    - If user asks general questions without specifics, provide helpful clarification
-{examples}
 {collected_info_str}
 {context_str}
 
@@ -123,7 +117,7 @@ EXTRACT THE JSON NOW:"""
                 'temperature': 0.0,  # Maximum determinism for accuracy
                 'topP': 0.95,  # Higher nucleus sampling for better quality
                 'topK': 40,
-                'maxOutputTokens': 3072,  # Increased for complex responses
+                'maxOutputTokens': 2048,  # Increased for complex responses
                 'responseMimeType': 'application/json',
                 'candidateCount': 1,  # Single best response
                 'stopSequences': []  # No stop sequences
@@ -146,13 +140,43 @@ EXTRACT THE JSON NOW:"""
         if response.status_code == 200:
             result = response.json()
             extracted_text = result['candidates'][0]['content']['parts'][0]['text']
-            extracted_info = json.loads(extracted_text)
+            
+            # Try to parse JSON, handle potential formatting issues
+            try:
+                extracted_info = json.loads(extracted_text)
+            except json.JSONDecodeError as json_err:
+                print(f"⚠️ JSON parsing failed. Raw response:\n{extracted_text[:500]}")
+                print(f"JSON Error: {json_err}")
+                
+                # Return a safe fallback with the user's query
+                return {
+                    'intents': [{
+                        'intent': 'search_by_name',
+                        'suggested_function': 'search_by_name',
+                        'confidence': 0.7,
+                        'slots': {
+                            'destination': user_input,
+                            'categories': None,
+                            'limit': None
+                        }
+                    }],
+                    'followup': False,
+                    'clarify_question': None
+                }
+            
             return extracted_info
         else:
             raise Exception(f"Gemini API error: {response.status_code}")
     
     except Exception as e:
-        print(f"Error in information extraction: {e}")
+        print(f"❌ Error in information extraction: {e}")
+        print(f"Error type: {type(e).__name__}")
+        
+        # Log more details for debugging
+        if hasattr(e, 'response'):
+            print(f"Response status: {e.response.status_code if hasattr(e.response, 'status_code') else 'N/A'}")
+            print(f"Response text: {e.response.text[:500] if hasattr(e.response, 'text') else 'N/A'}")
+        
         return {
             'intents': [],
             'followup': True,
@@ -161,21 +185,6 @@ EXTRACT THE JSON NOW:"""
         }
 
 
-def _build_relevant_examples():
-    """Build relevant few-shot examples."""
-    from .prompt_config import FEW_SHOT_EXAMPLES
-    
-    examples_text = "\n\nEXAMPLES:\n"
-    
-    # Include one example from each important category
-    example_types = ['itinerary', 'clarification', 'general']
-    
-    for ex_type in example_types:
-        if ex_type in FEW_SHOT_EXAMPLES and FEW_SHOT_EXAMPLES[ex_type]:
-            ex = FEW_SHOT_EXAMPLES[ex_type][0]
-            examples_text += f"\nInput: \"{ex['input']}\"\nOutput:\n{json.dumps(ex['output'], indent=2)}\n"
-    
-    return examples_text
 
 
 def generate_dynamic_suggestions(context, question, num_suggestions=3):

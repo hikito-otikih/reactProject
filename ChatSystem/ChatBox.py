@@ -3,11 +3,10 @@ import sys
 import os
 from urllib import response
 from util.Response import (
-    Bot_ask_destination, Response, BotResponse, UserResponse, CompositeResponse,
-    Bot_ask_clarify, Bot_ask_start_location, Bot_ask_category,
+    Response, BotResponse, UserResponse, CompositeResponse,
+    Bot_ask_clarify, Bot_ask_category,
     Bot_suggest_categories,
-    Bot_suggest_attractions, Bot_display_attraction_details, Bot_create_itinerary, Bot_ask_extra_info,
-    Bot_suggest_from_database
+    Bot_suggest_attractions, Bot_search_by_name, Bot_create_itinerary, Bot_ask_extra_info,
 )
 
 # Add parent directory to Python path
@@ -33,8 +32,8 @@ class ChatBox :
         """Proactively initiate the conversation by asking the first question."""
         if not self.conversation_started:
             self.conversation_started = True
-            # Start by asking for the destination
-            bot_response = Bot_ask_destination(
+            # Start by asking for categories
+            bot_response = Bot_suggest_categories(
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
             )
@@ -87,73 +86,71 @@ class ChatBox :
         params = outputDict.get('params', {})
         text = outputDict.get('text')
         
-        response = None
-        
         # Map function to appropriate Response class
         if function_name == 'ask_clarify':
-            response = Bot_ask_clarify(
+            return Bot_ask_clarify(
                 text,
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
             )
     
-        elif function_name == 'suggest_from_database':
-            # Database-driven suggestion based on destination and categories
-            destination = params.get('destination')
-            categories = params.get('categories')
-            response = Bot_suggest_from_database(
-                destination=destination,
-                categories=categories,
-                location_sequence=self.location_sequence,
-                collected_information=self.collected_information
-            )
-    
+
         elif function_name == 'suggest_categories':
-            response = Bot_suggest_categories(
+            return Bot_suggest_categories(
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
             )
         
         elif function_name == 'suggest_attractions':
-            category = params.get('category') or params.get('categories', [None])[0]
+            # Handle both single category and list of categories
+            category = params.get('category')
             if not category:
-                category = 'attractions'
-            location = params.get('location', 'your area')
-            limit = params.get('limit_attractions', 5)
-            response = Bot_suggest_attractions(
+                categories = params.get('categories', [])
+                category = categories[0] if categories else 'attractions'
+            
+            location = params.get('location') or 'nearby'
+            limit = params.get('limit') or params.get('limit_attractions') or self.collected_information.get('limit', 5)
+            
+            return Bot_suggest_attractions(
                 category, location, limit,
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
             )
         
-        elif function_name == 'get_attraction_details':
-            attraction_name = params.get('attraction_name') or f"Attraction #{params.get('attraction_id')}"
-            response = Bot_display_attraction_details(
+        elif function_name == 'search_by_name':
+            attraction_name = params.get('attraction_name') or params.get('destination') or params.get('name') or 'unknown place'
+            return Bot_search_by_name(
                 attraction_name,
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
             )
         
         elif function_name == 'itinerary_planning':
-            destination = params.get('destination')
-            categories = params.get('categories', [])
-            limit = params.get('limit', self.collected_information.get('limit', 3))
-            # Note: start_location is now handled by frontend
-            response = Bot_create_itinerary(
-                self.message_history, None, categories, destination, 1,
-                location_sequence=self.location_sequence, limit=limit,
+            # Use collected_information as fallback
+            categories = params.get('categories') or self.collected_information.get('categories', [])
+            limit = params.get('limit') or self.collected_information.get('limit', 3)
+            
+            if not categories:
+                return Bot_ask_clarify(
+                    "What type of places would you like to include in your itinerary?",
+                    location_sequence=self.location_sequence,
+                    collected_information=self.collected_information
+                )
+            
+            return Bot_create_itinerary(
+                categories=categories,
+                location_sequence=self.location_sequence,
+                limit=limit,
                 collected_information=self.collected_information
             )
         
         else:
-            # Default fallback
-            response = Bot_ask_clarify(
-                'I\'m processing your request. Could you provide more details?',
+            # Default fallback for unknown functions
+            return Bot_ask_clarify(
+                text or 'I\'m not sure how to help with that. Could you provide more details?',
                 location_sequence=self.location_sequence,
                 collected_information=self.collected_information
-            )
-        
-        return response        
+            )        
     
     def _update_collected_information(self, result: dict) -> None :
         """
@@ -168,7 +165,7 @@ class ChatBox :
         print(f"\n📝 process_user_input output: {result}\n")
         params = result.get('all_slots', result.get('params', {}))
         
-        # Update destination (single string value)
+        # Update destination (single string value) - kept for Bot_display_attraction_details
         if params.get('destination'):
             self.collected_information['destination'] = params['destination']
         elif params.get('destinations'):
@@ -201,8 +198,7 @@ class ChatBox :
         elif params.get('number_of_places'):
             self.collected_information['limit'] = params['number_of_places']
         
-        # Explicitly ignore start_location, budget, duration_days, dates
-        # These are either handled by frontend or no longer needed
+        # Ignore budget, duration_days, dates as they are no longer tracked
         
         # Print for debugging (can be removed later)
         print(f"\n📊 Updated collected_information: {self.collected_information}\n")
@@ -291,7 +287,7 @@ if __name__ == "__main__" :
             print(f"💡 Suggestions: {bot_response.get_suggestions()}")
 
         save_data = chat_box.save_chatbox()
-        print (json.dumps(save_data, indent=2))  # For debugging purposes
+        # print (json.dumps(save_data, indent=2))  # For debugging purposes
 
         ChatBox.load_chatbox(chat_box, save_data)  # Test loading functionality
 
