@@ -390,8 +390,11 @@ if __name__ == "__main__":
         if seed_ids:
             name = loc_seq.id_to_name(seed_ids[0])
             show(f"id_to_name({seed_ids[0]}) -> {name}")
-        ids = loc_seq.search_by_name("Quán ăn", exact=False, limit=5)
-        show(f"search_by_name('Quán ăn') -> {ids}")
+        ids = loc_seq.search_by_name("Vincom Plaza", exact=False, limit=5)
+        show(f"search_by_name('Vincom Plaza') -> {ids}")
+        for x in ids : 
+            n = loc_seq.id_to_name(525)
+            show(f"  id_to_name({525}) -> {n}")
 
         # suggest_for_position: empty sequence uses start_coordinate
         loc_seq.clear_sequence()

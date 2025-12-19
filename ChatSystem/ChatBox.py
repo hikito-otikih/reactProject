@@ -276,6 +276,8 @@ if __name__ == "__main__" :
 
         if (bot_response.get_database_results()):
             print(f"📚 Database Results: {bot_response.get_database_results()}")
+            for  x in bot_response.get_database_results() :
+                print(f"  - {x} {LocationSequence().id_to_name(x)}")
         else:   
             print(f"(No database results.)")
 
