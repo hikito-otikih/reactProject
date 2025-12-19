@@ -180,6 +180,6 @@ def refactor_and_fill(db_name, table_name='places'):
 
 # --- RUN THE FUNCTION ---
 # REPLACE 'places' BELOW WITH YOUR ACTUAL TABLE NAME IF IT IS DIFFERENT
-clean_database(db_name='result/places.db', table_name='places')
+# clean_database(db_name='result/places.db', table_name='places')
 # delete_category_columns(db_name='result/places.db', table_name='places')
 refactor_and_fill(db_name='result/places.db', table_name='places')
