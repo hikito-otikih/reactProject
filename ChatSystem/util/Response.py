@@ -285,7 +285,7 @@ class Bot_ask_clarify(BotResponse) :
     
     def get_database_results(self):
         """No database results for this response type"""
-        return {}
+        return []
 
 class Bot_display_attraction_details(BotResponse) :
     # attributes: id of place in database
