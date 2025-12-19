@@ -56,40 +56,51 @@ class BotResponse(Response) :
         }
     
     def _generate_suggestions(self, collected_information, num_suggestions=2):
-        """Generate alternative questions based on missing information."""
+        """Generate natural, conversational suggestions that users might want to say or select."""
         suggestions = []
         
-        # Map missing fields to question templates
-        field_to_question = {
-            'destination': "Which city or area do you want to visit?",
-            'categories': "What type of places interest you?",
-            'limit': "How many attractions should you visit?"
+        # Map missing fields to natural user responses/questions
+        field_to_suggestions = {
+            'destination': [
+                "Ho Chi Minh City",
+                "Hanoi",
+                "Da Nang",
+                "I want to explore local areas"
+            ],
+            'categories': [
+                "Show me museums and art galleries",
+                "I'm interested in food and restaurants",
+                "Parks and outdoor activities",
+                "Historical and cultural sites"
+            ],
+            'limit': [
+                "Just 3 places is enough",
+                "Show me 5 attractions",
+                "I have time for many places"
+            ]
         }
         
-        # Find missing fields
-        missing_fields = []
+        # Find missing fields and add corresponding suggestions
         for key, value in collected_information.items():
-            if value is None and key in field_to_question:
-                missing_fields.append(field_to_question[key])
+            if value is None and key in field_to_suggestions:
+                suggestions.extend(field_to_suggestions[key][:2])  # Add up to 2 per missing field
         
-        # Add some general alternatives
+        # Add general conversation starters if we have space
         general_alternatives = [
-            "Tell me about popular attractions",
-            "Suggest me some categories",
-            "What are the best places to visit?",
-            "Help me plan a complete trip"  
+            "What's popular around here?",
+            "Help me plan my trip",
+            "Tell me about top attractions",
+            "I need travel recommendations"
         ]
         
-        # Combine missing fields questions with general alternatives
-        suggestions = missing_fields + general_alternatives
+        # Combine and limit total suggestions
+        all_suggestions = suggestions + general_alternatives
         
         # Select randomly up to num_suggestions
-        if len(suggestions) > num_suggestions:
-            suggestions = random.sample(suggestions, num_suggestions)
+        if len(all_suggestions) > num_suggestions:
+            return random.sample(all_suggestions, num_suggestions)
         else:
-            suggestions = suggestions[:num_suggestions]
-        
-        return suggestions
+            return all_suggestions[:num_suggestions]
     
     def enhance_suggestions(self, collected_information, num_alternatives=1):
         """Enhance base suggestions by adding alternative topic-switching suggestions and database-driven suggestions."""
@@ -124,7 +135,7 @@ class BotResponse(Response) :
                                 if db_ids:
                                     place_name = self.location_sequence.id_to_name(db_ids[0])
                                     if place_name:
-                                        db_suggestion = f"{place_name} is interesting, do you want to know more?"
+                                        db_suggestion = f"Tell me about {place_name}"
                                         if db_suggestion not in self.suggestions:
                                             alternatives.insert(0, db_suggestion)
                                         break
@@ -132,13 +143,13 @@ class BotResponse(Response) :
                     print(f"Error adding database suggestion in enhance_suggestions: {e}")
             
             # Fallback: use suggest_for_position if destination search failed
-            if not any("is interesting" in alt for alt in alternatives):
+            if not any("Tell me about" in alt for alt in alternatives):
                 for category in categories:
                     db_ids = self.location_sequence.suggest_for_position(category=category, limit=1)
                     if db_ids:
                         place_name = self.location_sequence.id_to_name(db_ids[0])
                         if place_name:
-                            db_suggestion = f"{place_name} is interesting, do you want to know more?"
+                            db_suggestion = f"Tell me about {place_name}"
                             if db_suggestion not in self.suggestions:
                                 alternatives.insert(0, db_suggestion)
                             break
