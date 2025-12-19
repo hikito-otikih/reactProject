@@ -13,7 +13,20 @@ class LocationSequence:
     # Define the path to the database at class level
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     RESULT_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), 'DataCollector', 'result')
-
+    categories  =  [
+                    "amusement", "antique", "art", "asian", "attraction", "bakery",
+                    "bar", "barbecue", "bistro", "buddhist", "buffet", "cafe",
+                    "catholic", "church", "cocktail", "coffee", "dessert", "drink",
+                    "entertainment", "gallery", "gift", "gourmet", "grill", "halal",
+                    "hawker", "heritage", "historical", "history", "hot", "ice",
+                    "landmark", "leisure", "local", "lounge", "memorial", "museum",
+                    "natural", "noodle", "observation", "outdoor", "pancake", "park",
+                    "patisserie", "pho", "porridge", "pot", "protestant", "pub",
+                    "religion", "religious", "restaurant", "rice", "sandwich", "sauna",
+                    "seafood", "spa", "stall", "sweets", "temple", "tour",
+                    "tourism", "tourist", "travel", "vietnamese",
+                    "war", "wine", "zoo"
+                ]
     def __init__(self):
         self.start_coordinate = [10.7628356, 106.6824824]  # lat , lon  of hcmus by default
         self.sequence = []
@@ -51,6 +64,47 @@ class LocationSequence:
                     place_names.append(f"{place_id}: [Not Found]")
         
         return f"LocationSequence: [{', '.join(place_names)}]"
+
+    # --- shared helpers ---
+    @staticmethod
+    def _normalize_text(s) -> str:
+        if s is None:
+            return ""
+        s = str(s).lower()
+        s = re.sub(r"[^0-9a-z]+", " ", s)
+        parts = [p for p in s.split() if p and not p.isdigit()]
+        return " ".join(parts)
+
+    @staticmethod
+    def _title_similarity(query, title) -> float:
+        """Return similarity in [0, 1] using RapidFuzz when available."""
+        q = LocationSequence._normalize_text(query)
+        t = LocationSequence._normalize_text(title)
+        if not q or not t:
+            return 0.0
+        if fuzz is None:
+            import difflib
+            return difflib.SequenceMatcher(None, q, t).ratio()
+        return fuzz.token_set_ratio(q, t) / 100.0
+
+    def _allowed_category_set(self):
+        return {c.strip().lower() for c in getattr(self, "categories", []) if c}
+
+    @staticmethod
+    def _parse_category_tags(cat_value):
+        if not cat_value:
+            return []
+        parts = [p.strip().lower() for p in str(cat_value).split(",")]
+        return [p for p in parts if p]
+
+    @staticmethod
+    def _has_any_allowed_tag(cat_value, allowed_set) -> bool:
+        tags = LocationSequence._parse_category_tags(cat_value)
+        if not tags:
+            return False
+        if not allowed_set:
+            return True
+        return any(t in allowed_set for t in tags)
     
     def clear_sequence(self):
         self.sequence = []
@@ -88,25 +142,6 @@ class LocationSequence:
         results = []
         seen = set()
 
-        def _normalize_text(s: str) -> str:
-            if s is None:
-                return ""
-            s = str(s).lower()
-            s = re.sub(r"[^0-9a-z]+", " ", s)
-            parts = [p for p in s.split() if p and not p.isdigit()]
-            return " ".join(parts)
-
-        def _title_similarity(q: str, t: str) -> float:
-            qn = _normalize_text(q)
-            tn = _normalize_text(t)
-            if not qn or not tn:
-                return 0.0
-            if fuzz is None:
-                import difflib
-                return difflib.SequenceMatcher(None, qn, tn).ratio()
-            # token_set_ratio works well for partial/extra tokens
-            return fuzz.token_set_ratio(qn, tn) / 100.0
-
         with sqlite3.connect(db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -134,7 +169,7 @@ class LocationSequence:
                 if rid in exclude_ids or rid in seen:
                     continue
                 title = row["title"]
-                sim = _title_similarity(query_text, title)
+                sim = self._title_similarity(query_text, title)
                 scored.append((sim, len(title) if title else 10**9, rid))
 
             # Highest similarity first; tie-break by shorter title.
@@ -149,39 +184,7 @@ class LocationSequence:
 
         return results[:limit]
     def get_suggest_category(self) :
-        categories = [
-                    "accessories", "accommodation", "activity", "agency", "alcohol", "alteration",
-                    "amusement", "antique", "apartment", "art", "asian", "attraction",
-                    "bakery", "bank", "bar", "barbecue", "barber", "bean",
-                    "bistro", "bookstore", "breakfast", "brunch", "buddhist", "buffet",
-                    "builder", "cafe", "cake", "car", "care", "caterer",
-                    "catering", "catholic", "center", "chicken", "chinese", "church",
-                    "clinic", "clothing", "cocktail", "coffee", "commercial", "company",
-                    "complex", "consultant", "convenience", "corporate", "cosmetics", "country",
-                    "court", "cream", "curry", "deck", "department", "dessert",
-                    "drink", "electronics", "entertainment", "equipment", "estate", "european",
-                    "fabrication", "facial", "family", "fashion", "fast", "food",
-                    "gallery", "german", "gift", "gourmet", "grill", "grocery",
-                    "gym", "halal", "hawker", "health", "heritage", "historical",
-                    "history", "home", "hospitality", "hot", "ice", "improvement",
-                    "indian", "industrial", "information", "institution", "italian", "izakaya",
-                    "japanese", "kitchen", "korean", "landmark", "laundromat", "laundry",
-                    "leisure", "local", "log", "lounge", "machine", "mall",
-                    "manufacturer", "manufacturing", "media", "memorial", "mobile", "modern",
-                    "monopoly", "mung", "museum", "natural", "noodle", "observation",
-                    "office", "operator", "organizer", "outdoor", "packaging", "paint",
-                    "pancake", "park", "patisserie", "pharmaceutical", "pho", "pickleball",
-                    "pizza", "plastic", "porridge", "pot", "products", "protestant",
-                    "pub", "real", "religion", "religious", "rental", "restaurant",
-                    "retail", "rice", "sandwich", "sauna", "school", "scooter",
-                    "seafood", "service", "services", "shared", "shop", "shopping",
-                    "showroom", "skin", "spa", "sports", "stall", "store",
-                    "supermarket", "supplier", "sushi", "sweets", "taco", "takeout",
-                    "temple", "tiffin", "tour", "tourism", "tourist", "toy",
-                    "trade", "travel", "udon", "vegan", "vegetarian", "vietnamese",
-                    "war", "western", "wine", "womens", "yakiniku", "yakitori", "zoo"
-                    ]
-        return random.choice(categories)
+        return random.choice(self.categories)
     def suggest_for_position(self, pos=-1, category=None, limit=5):
         """
         Suggest IDs to place at insertion position `pos` (no insertion performed).
@@ -202,26 +205,7 @@ class LocationSequence:
         exclude_ids = set(self.sequence)
         db_path = os.path.join(self.RESULT_DIR, 'places.db')
 
-        def _normalize_text(s: str) -> str:
-            if s is None:
-                return ""
-            s = str(s).lower()
-            # Replace non-alphanumerics with space
-            s = re.sub(r"[^0-9a-z]+", " ", s)
-            parts = [p for p in s.split() if p and not p.isdigit()]
-            return " ".join(parts)
-
-        def _title_similarity(query: str, title: str) -> float:
-            """Return similarity in [0, 1]. Uses RapidFuzz when available."""
-            q = _normalize_text(query)
-            t = _normalize_text(title)
-            if not q or not t:
-                return 0.0
-            if fuzz is None:
-                # Safe fallback (lower quality) if rapidfuzz isn't available
-                import difflib
-                return difflib.SequenceMatcher(None, q, t).ratio()
-            return fuzz.token_set_ratio(q, t) / 100.0
+        allowed_set = self._allowed_category_set()
 
         def _dist(lat1, lon1, lat2, lon2):
             return 6371000 * (math.acos(math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
@@ -252,7 +236,7 @@ class LocationSequence:
             params.append(base_limit)
 
             query = f"""
-                SELECT rowid, rating, title,
+                SELECT rowid, rating, title, categories,
                 (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
                 cos(radians(location_lng) - radians(?)) +
                 sin(radians(?)) * sin(radians(location_lat)))) AS dist_prev
@@ -278,6 +262,8 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
+                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                        continue
                     rating = row["rating"] if row["rating"] not in (None, 0) else 1
                     score = row["dist_prev"] / rating
                     scored.append((score, rid))
@@ -291,7 +277,9 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    sim = _title_similarity(category, row["title"])
+                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                        continue
+                    sim = self._title_similarity(category, row["title"])
                     if sim < sim_threshold:
                         continue
                     rating = row["rating"] if row["rating"] not in (None, 0) else 1
@@ -343,6 +331,8 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
+                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                        continue
                     coords = _coords_rating(rid)
                     if not coords:
                         continue
@@ -359,7 +349,9 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    sim = _title_similarity(category, row["title"])
+                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                        continue
+                    sim = self._title_similarity(category, row["title"])
                     if sim < sim_threshold:
                         continue
                     coords = _coords_rating(rid)
@@ -434,34 +426,56 @@ class LocationSequence:
         b_lat, b_lon, _ = next_coords
         return _between_coords(a_lat, a_lon, b_lat, b_lon)
     def suggest_around(self, lat, lon, limit=5, category=None):
-        if category is None:
-            category = random.choice(['catering', 'commercial', 'service', 'entertainment', 'leisure','tourism','heritage'])
-        
         # Connect to the database
         db_path = os.path.join(self.RESULT_DIR, 'places.db')
+
+        allowed_set = self._allowed_category_set()
         with sqlite3.connect(db_path) as conn:  
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
             # Query to find places within a certain radius (e.g., 5km)
             radius_meters = 15000
-            query = """
-            SELECT rowid, rating, 
-            (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) * 
-            cos(radians(location_lng) - radians(?)) + 
-            sin(radians(?)) * sin(radians(location_lat)))) AS distance 
-            FROM places 
-            WHERE categories LIKE ? 
-            AND (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) * 
-                cos(radians(location_lng) - radians(?)) + 
-                sin(radians(?)) * sin(radians(location_lat)))) < ?
-            ORDER BY distance 
-            LIMIT ?
-            """
-            cursor.execute(query, (lat, lon, lat, f"%{category}%", lat, lon, lat, radius_meters, limit))
+            pool = max(200, limit * 50)
+
+            if category is None:
+                # No category requested: just return best nearby places that pass allow-list.
+                query = """
+                SELECT rowid, rating, categories,
+                (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                cos(radians(location_lng) - radians(?)) +
+                sin(radians(?)) * sin(radians(location_lat)))) AS distance
+                FROM places
+                WHERE (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                    cos(radians(location_lng) - radians(?)) +
+                    sin(radians(?)) * sin(radians(location_lat)))) < ?
+                ORDER BY distance
+                LIMIT ?
+                """
+                cursor.execute(query, (lat, lon, lat, lat, lon, lat, radius_meters, pool))
+            else:
+                # Category requested: prefilter by substring match, then apply allow-list.
+                query = """
+                SELECT rowid, rating, categories,
+                (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                cos(radians(location_lng) - radians(?)) +
+                sin(radians(?)) * sin(radians(location_lat)))) AS distance
+                FROM places
+                WHERE categories LIKE ?
+                AND (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
+                    cos(radians(location_lng) - radians(?)) +
+                    sin(radians(?)) * sin(radians(location_lat)))) < ?
+                ORDER BY distance
+                LIMIT ?
+                """
+                cursor.execute(query, (lat, lon, lat, f"%{category}%", lat, lon, lat, radius_meters, pool))
+
             results = cursor.fetchall()
             scored = []
             for row in results:
+                # Only apply allow-list when no category is specified.
+                if category is None and (not self._has_any_allowed_tag(row["categories"], allowed_set)):
+                    continue
                 rating = row["rating"] if row["rating"] not in (None, 0) else 1
                 score = row["distance"] / rating
                 scored.append((score, row["rowid"]))
@@ -487,6 +501,8 @@ class LocationSequence:
         with sqlite3.connect(db_path) as conn:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
+
+            allowed_set = self._allowed_category_set()
 
             # --- INITIALIZATION ---
             current_coords = None
@@ -525,7 +541,7 @@ class LocationSequence:
 
                 # 2. Fetch Candidates (Top 30 nearest)
                 query = f"""
-                    SELECT rowid, rating, location_lat, location_lng,
+                    SELECT rowid, rating, location_lat, location_lng, categories,
                     (6371000 * acos(cos(radians(?)) * cos(radians(location_lat)) *
                     cos(radians(location_lng) - radians(?)) +
                     sin(radians(?)) * sin(radians(location_lat)))) AS distance
@@ -555,6 +571,8 @@ class LocationSequence:
                         vec_prev = None
 
                 for row in candidates:
+                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                        continue
                     # --- SCORING FORMULA ---
                     # Cost = Distance * RatingPenalty * DirectionPenalty
                     
@@ -661,12 +679,15 @@ if __name__ == "__main__":
 
         # suggest_itinerary_to_sequence: empty uses start_coordinate, then with anchor
         loc_seq.clear_sequence()
-        itin_cold = loc_seq.suggest_itinerary_to_sequence(limit=3)
+        itin_cold = loc_seq.suggest_itinerary_to_sequence(limit=10)
         show(f"suggest_itinerary_to_sequence (cold start) -> {itin_cold}")
         if seed_ids:
             loc_seq.sequence = [seed_ids[0]]
-            itin_anchor = loc_seq.suggest_itinerary_to_sequence(limit=3)
-            show(f"suggest_itinerary_to_sequence (with anchor) -> {itin_anchor}")
+            itin_anchor = loc_seq.suggest_itinerary_to_sequence(limit=10)
+            # show(f"suggest_itinerary_to_sequence (with anchor) -> {itin_anchor}")
+            for x in itin_anchor :
+                n = loc_seq.id_to_name(x)
+                show(f"  id_to_name({x}) -> {n}")
 
         print("=== Tests finished ===\n")
 
