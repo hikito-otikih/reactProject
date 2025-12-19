@@ -37,12 +37,14 @@ Pygments==2.19.2
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 pyzmq==27.1.0
+rapidfuzz==3.10.1
 regex==2025.11.3
 requests==2.32.5
 safetensors==0.7.0
 scikit-learn==1.8.0
 scipy==1.16.3
 sentence-transformers==5.2.0
+spacy==3.7.5
 six==1.17.0
 stack-data==0.6.3
 sympy==1.14.0
