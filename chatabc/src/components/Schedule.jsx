@@ -336,20 +336,20 @@ const Schedule = () => {
   const loadDemoCategories = async () => {
     console.log('Loading categories for chat:', selectedChat?._id);
     try {
-      console.log('Loading categories for chat:', selectedChat?._id);
       const response = await axios.get('/api/message/getSuggestCategory', {
         params: { chatID: selectedChat._id },
         headers: { Authorization: token }
       });
       console.log('Category response:', response.data);
       
-      // Handle different response structures
-      const categories = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.categories || response.data?.data || []);
+      // Parse categories from API response: {data: ['leisure'], success: true}
+      let categories = [];
+      if (Array.isArray(response.data.categories.data)) {
+        categories = response.data.categories.data;
+      } 
       
-      console.log('Parsed categories:', categories);
-      setCategoryOptions(categories.data);
+      console.log('Parsed categories array:', categories);
+      setCategoryOptions(categories);
     } catch (error) {
       console.error("Error loading categories:", error.response?.data || error.message);
       toast.error('Không thể tải danh mục gợi ý');
@@ -412,11 +412,17 @@ const Schedule = () => {
         params: { name: searchName, exact: true, limit: 10 },
         headers: { Authorization: token }
       });
-      console.log('Search response:', response.data.results.data);
+      console.log('Search response:', response.data);
       
-      // Demo backend result, replace with real call
-      //const demoIds = [410, 413, 273, 252, 307, 87, 85, 105, 214, 515];
-      const demoIds = response.data.results.data;
+      // Safely access nested data
+      const demoIds = response.data?.results?.data || response.data?.data || [];
+      
+      if (!demoIds.length) {
+        toast.error('No results found');
+        setSuggestLoading(false);
+        return;
+      }
+      
       demoSetResultIds(demoIds);
       //console.log("Setting result IDs from search:", resultIds);
       setSuggestLoading(false);
@@ -436,8 +442,17 @@ const Schedule = () => {
         headers: { Authorization: token }
       });
       console.log(`category selected: ${selectedCategories?.[0]}, position: ${insertIndex}`);
-      console.log('Suggest by position response:', response.data.suggestions);
-      const demoIds = [417, 107, 9, 10];
+      console.log('Suggest by position response:', response.data);
+      
+      // Safely access nested data
+      const demoIds = response.data?.suggestions?.data || response.data?.data || [];
+      
+      if (!demoIds.length) {
+        toast.error('No suggestions found');
+        setSuggestLoading(false);
+        return;
+      }
+      
       demoSetResultIds(demoIds);
       setSuggestLoading(false);
     } catch (error) {
@@ -460,9 +475,16 @@ const Schedule = () => {
         headers: { Authorization: token }
       });
       console.log(`Adding ${k} places to the end of schedule`);
-      console.log('Add K places response:', response.data.suggestions.data);
+      console.log('Add K places response:', response.data);
       
-      const demoIds = response.data.suggestions.data;
+      // Safely access nested data
+      const demoIds = response.data?.suggestions?.data || response.data?.data || [];
+      
+      if (!demoIds.length) {
+        toast.error('No places found');
+        setSuggestLoading(false);
+        return;
+      }
       
       // Fetch full place details
       const data = await fetchPlacesByIds(demoIds);
@@ -932,7 +954,7 @@ const Schedule = () => {
                           </div>
                           <div className="overflow-x-auto pb-2 custom-scrollbar">
                             <div className="flex gap-2 min-w-full">
-                              {categoryOptions.map((cat) => (
+                              {Array.isArray(categoryOptions) && categoryOptions.map((cat) => (
                                 <label
                                   key={cat}
                                   className={`flex items-center gap-2 px-3 py-2 rounded-full border text-sm whitespace-nowrap cursor-pointer ${selectedCategories.includes(cat) ? 'border-blue-500 bg-blue-50 dark:bg-slate-800' : (theme === 'dark' ? 'border-slate-700 bg-slate-900' : 'border-gray-200 bg-white')}`}
@@ -945,7 +967,7 @@ const Schedule = () => {
                                   <span className="font-semibold">{cat}</span>
                                 </label>
                               ))}
-                              {!categoryOptions.length && (
+                              {(!categoryOptions || !categoryOptions.length) && (
                                 <span className="text-xs text-gray-500">Loading suggestions...</span>
                               )}
                             </div>
