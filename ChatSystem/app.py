@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 from TOOL import TOOL
 import logging
+from deepdiff import DeepDiff
+import pprint
+import json
 
 # Chat Scheme Example:
 # {
@@ -110,9 +113,12 @@ def get_suggest_category():
     """Get available suggestion categories"""
     try:
         history = request.args.get('history', {})
-        
+        if isinstance(history, str):
+            history = json.loads(history)
+        tool = TOOL()
+        tool.load(history)
         # tool = TOOL("hisory"=history)
-        tool = chat_demo
+        # tool = chat_demo
         categories = tool.get_suggest_category()
         
         return response_template(True, data=categories, 
@@ -136,10 +142,21 @@ def suggest_for_position():
         except (ValueError, TypeError):
             limit = 5
         history = data.get('history', {})
-        
-        
-        # tool = TOOL("hisory"=history)
-        tool = chat_demo
+        if isinstance(history, str):
+            history = json.loads(history)
+        # # Thay thế dòng assert cũ bằng đoạn này:
+        # diff = DeepDiff(history, history_example, ignore_order=True)
+
+        # if diff:
+        #     print("⚠️ PHÁT HIỆN KHÁC BIỆT:")
+        #     pprint.pprint(diff, indent=2)
+        #     # Dừng chương trình nếu muốn giống assert
+        #     raise AssertionError("history does not match example")
+        # else:
+        #     print("✅ Hai object giống hệt nhau!")
+        tool = TOOL()
+        tool.load(history)
+        #tool = chat_demo
         suggestions = tool.suggest_for_position(position=position, category=category, limit=limit)
         
         return response_template(True, data=suggestions, 
@@ -167,8 +184,12 @@ def suggest_around():
             limit = 10
         category = data.get('category')
         history = data.get('history', {})
+        if isinstance(history, str):
+            history = json.loads(history)
         
-        suggestions = chat_demo.suggest_around(lat=lat, lon=lon, limit=limit, category=category)
+        tool = TOOL()
+        tool.load(history)
+        suggestions = tool.suggest_around(lat=lat, lon=lon, limit=limit, category=category)
         
         return response_template(True, data=suggestions, 
                                message="Suggestions retrieved")
@@ -186,9 +207,11 @@ def suggest_itinerary_to_sequence():
         except (ValueError, TypeError):
             limit = 5
         history = data.get('history', {})
-        
+        if isinstance(history, str):
+            history = json.loads(history)
         # tool = TOOL("hisory"=history)
-        tool = chat_demo
+        tool = TOOL()
+        tool.load(history)
         suggestions = tool.suggest_itinerary_to_sequence(limit)
         
         return response_template(True, data=suggestions, 
@@ -206,23 +229,27 @@ def process_input():
         data = request.get_json()
         user_input = data.get('input')
         history = data.get('history', {})
-        
+        if isinstance(history, str):
+            history = json.loads(history)
+        tool = TOOL()
+        tool.load(history)
         #tool = TOOL("hisory"=history)
         #response = tool.process_input(user_input)
         
-        response = {
-            "message": "Here are 3 catering recommendations in your area area.",
-            "suggestions": [
-                "Help me plan a complete trip",
-                "Which attractions should I visit?"
-            ],
-            "database_results": [
-                337,
-                252,
-                325
-            ]
-        }
+        # response = {
+        #     "message": "Here are 3 catering recommendations in your area area.",
+        #     "suggestions": [
+        #         "Help me plan a complete trip",
+        #         "Which attractions should I visit?"
+        #     ],
+        #     "database_results": [
+        #         337,
+        #         252,
+        #         325
+        #     ]
+        # }
         
+        response = tool.process_input(user_input)
         
         return response_template(True, data=response, 
                                message="Input processed successfully")
@@ -250,6 +277,282 @@ def internal_error(error):
     return response_template(False, message="Internal server error"), 500
 
 
+history_example = {
+  "history": {
+    "responses": [
+      {
+        "whom": "user",
+        "message": "hello",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Input processed successfully",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "user",
+        "message": "hello",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "hello",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "ahihi",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "hello",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Help me plan a complete trip",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Which attractions should I visit?",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Which attractions should I visit?",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Which attractions should I visit?",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "hello",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Help me plan a complete trip",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "Which attractions should I visit?",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "hello world",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      },
+      {
+        "whom": "user",
+        "message": "hello quang",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      }
+    ]
+  },
+  "start_coordinate": [
+    10.766289296847185,
+    106.66789054870605
+  ],
+  "sequence": [
+    410,
+    10,
+    472,
+    471
+  ]
+}
+
 if __name__ == '__main__':
     chat_demo = TOOL()
     chat_demo.append(0, 1)
@@ -257,4 +560,6 @@ if __name__ == '__main__':
     chat_demo.append(2, 3)    
     chat_demo.append(3, 4)    
     chat_demo.append(4, 5)    
+    test = TOOL()
+    test.load(history_example)
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -206,9 +206,10 @@ FEW_SHOT_EXAMPLES = {
                     'confidence': 1.0,
                     'slots': {
                         'destination': 'current_location',
-                        'category': None
+                        'categories': None,
+                        'limit': None
                     },
-                    'missing_info': ['category'],
+                    'missing_info': ['categories'],
                     'keywords': ['things to do', 'nearby']
                 }],
                 'followup': True,
@@ -245,14 +246,11 @@ SCHEMA_SLOTS = {
     'itinerary': {
         'destination': 'null',
         'categories': '[]',
-        'start_location': 'null',
-        'duration_days': 'null',
-        'start_time': 'null',
-        'budget': 'null',
-        'preferences': '[]',
-        'limit_attractions': 'null'
+        'limit': 'null'
     },
     'general': {
-        'query': 'null'
+        'destination': 'null',
+        'categories': '[]',
+        'limit': 'null'
     }
 }

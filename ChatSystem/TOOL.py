@@ -1,3 +1,5 @@
+import json
+import os
 from location_sequence import LocationSequence
 from ChatBox import ChatBox
 
@@ -6,10 +8,19 @@ class TOOL:
     def __init__(self): 
         self.sequence =  LocationSequence() 
         self.chatbox = ChatBox(self.sequence)
-    
+        
     def load(self, history) : 
-        pass 
-
+        self.chatbox.load_chatbox(history["history"])
+        self.sequence.load_sequence(history["start_coordinate"], history["sequence"])
+    def save(self) : 
+        history = self.chatbox.save_chatbox()
+        sequence = self.sequence.get_sequence()  
+        return {
+            "history" : history,
+            "start coordinate" : self.sequence.get_start_coordinate(),
+            "sequence" : sequence
+        }
+    
     # location sequence related
     def append(self , position , ID ) : 
         self.sequence.append(position,ID) 
@@ -50,24 +61,56 @@ class TOOL:
         return self.sequence.suggest_itinerary_to_sequence(limit)
     
     # chatbox related  
-    def process_input(self, user_input : str):
-        response = self.chatbox.process_input(user_input)
-        id = response.get
-        return self.chatbox.process_input(user_input)
-    
+    def process_input(self, user_input : str): 
+        if user_input == "" :
+            return self.chatbox.start_conversation().get_json_serializable()
+        return self.chatbox.process_input(user_input=user_input).get_json_serializable()
     def clear_conversation(self) :
         pass 
-        
 if __name__ == "__main__":
     tool = TOOL()
-    print(tool.search_by_name("three oclock",exact=True,limit=5))
-    tool.append(0,1) 
-    tool.append(1,2)
-    tool.append(2,3)
-    # print(tool.get_suggest_category())
-    print(tool.suggest_for_position(position=1,limit=3,category=None))
-    print(tool.get_suggest_category())
-    # print(tool.id_to_name(1)) 
-    print(tool.get_sequence())
-    print(tool.search_by_name("three oclock",exact=True,limit=5))
-    print(tool.suggest_around(lat=10.7721,lon=106.6983,limit=3,category=None))
+    while True:
+        user_input = input("User: ")
+        response = tool.process_input(user_input)
+        print(json.dumps(response, indent=2)) 
+"""
+{
+  "history": {
+    "responses": [
+      {
+        "whom": "bot",
+        "message": "Where does the fun begin today?",
+        "suggestions": [
+          "What type of places interest me?",
+          "Which attractions should I visit?"
+        ],
+        "database_results": []
+      },
+      {
+        "whom": "user",
+        "message": "ho chi minh ",
+        "suggestions": [],
+        "database_results": []
+      },
+      {
+        "whom": "bot",
+        "message": "Here are 3 catering recommendations in your area area.",
+        "suggestions": [
+          "Help me plan a complete trip",
+          "Which attractions should I visit?"
+        ],
+        "database_results": [
+          337,
+          252,
+          325
+        ]
+      }
+    ]
+  },
+  "start_coordinate": [
+    10.7628356,
+    106.6824824
+  ],
+  "sequence": [1,2,3]
+}
+"""

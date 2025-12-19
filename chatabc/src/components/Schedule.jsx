@@ -340,13 +340,16 @@ const Schedule = () => {
         params: { chatID: selectedChat._id },
         headers: { Authorization: token }
       });
-      console.log('Category response:', response.data);
+      console.log('Category response:', response.data.categories.data);
       
       // Parse categories from API response: {data: ['leisure'], success: true}
       let categories = [];
       if (Array.isArray(response.data.categories.data)) {
         categories = response.data.categories.data;
-      } 
+      } else {
+        // convert to array if it's a single element
+        categories = [response.data.categories.data];
+      }
       
       console.log('Parsed categories array:', categories);
       setCategoryOptions(categories);
