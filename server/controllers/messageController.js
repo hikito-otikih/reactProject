@@ -118,7 +118,8 @@ export const getSuggestForPosition = async (req, res) => {
                 limit
             }
         });
-        console.log("Suggest for position response:", pythonRes.data);
+        //console.log("history for suggest for position:", JSON.stringify(convertChatSchemaToJson(chat), null, 2));
+        //console.log("Suggest for position response:", pythonRes.data);
         res.json({ "success": true , "suggestions": pythonRes.data });
     } catch (error) {
         return res.json({ "success": false, "message": error.message});

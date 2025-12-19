@@ -25,9 +25,9 @@ export default Chat;
 const convertChatSchemaToJson = (chatData) => {
     const data = chatData.toObject ? chatData.toObject() : chatData;
 
-    return {
+    return JSON.stringify({
         history: {
-            responses: data.messages.map(({ role, content, timestamp, ...rest }) => ({
+            responses: data.messages.map(({ role, content, timestamp, _id, ...rest }) => ({
                 whom: role,       
                 message: content, 
                 ...rest           
@@ -35,6 +35,6 @@ const convertChatSchemaToJson = (chatData) => {
         },
         start_coordinate: data.start_coordinate,
         sequence: data.sequence
-    };
+    });
 };
 export { convertChatSchemaToJson };
