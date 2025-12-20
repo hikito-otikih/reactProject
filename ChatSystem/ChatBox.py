@@ -27,6 +27,7 @@ class ChatBox :
             'limit': 3
         }
         self.conversation_started = False
+        self.start_conversation()
 
     def start_conversation(self) -> BotResponse:
         """Proactively initiate the conversation by asking the first question."""
