@@ -264,7 +264,10 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                    # Only apply allow-list filtering when no explicit category/query is provided.
+                    # When `category` is specified, we already prefilter by SQL (categories LIKE)
+                    # or by title-fuzzy, so rejecting by allow-list parsing can incorrectly drop matches.
+                    if category is None and (not self._has_any_allowed_tag(row["categories"], allowed_set)):
                         continue
                     rating = row["rating"] if row["rating"] not in (None, 0) else 1
                     score = row["dist_prev"] / rating
@@ -279,7 +282,7 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                    if category is None and (not self._has_any_allowed_tag(row["categories"], allowed_set)):
                         continue
                     sim = self._title_similarity(category, row["title"])
                     if sim < sim_threshold:
@@ -333,7 +336,7 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                    if category is None and (not self._has_any_allowed_tag(row["categories"], allowed_set)):
                         continue
                     coords = _coords_rating(rid)
                     if not coords:
@@ -351,7 +354,7 @@ class LocationSequence:
                     rid = row["rowid"]
                     if rid in seen:
                         continue
-                    if not self._has_any_allowed_tag(row["categories"], allowed_set):
+                    if category is None and (not self._has_any_allowed_tag(row["categories"], allowed_set)):
                         continue
                     sim = self._title_similarity(category, row["title"])
                     if sim < sim_threshold:
