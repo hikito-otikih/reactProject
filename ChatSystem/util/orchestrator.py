@@ -57,6 +57,7 @@ def extract_information_single_pass(user_input, collected_information=None, conv
                 }
             }
         ],
+        "context_action": "merge",
         "followup": false,
         "clarify_question": null
     }
@@ -65,46 +66,40 @@ def extract_information_single_pass(user_input, collected_information=None, conv
     # Build few-shot examples
     examples = _build_relevant_examples()
     
-    extraction_prompt = f"""You are a Travel Information Extraction Expert. Extract structured data from user queries with MAXIMUM ACCURACY.
+    extraction_prompt = f"""Extract travel information from user query into JSON format.
 
-REQUIRED JSON SCHEMA:
+SCHEMA:
 {schema}
 
-EXTRACTION RULES:
-1. Return ONLY valid JSON matching the schema above. No additional text.
-2. Extract all entities mentioned in the query (LOCATION, CATEGORIES, NUMBER).
-3. Set confidence based on completeness and clarity (0.0 to 1.0).
-4. If information is unclear or missing, set followup=true and provide a clarify_question.
-5. CRITICAL: Ensure all JSON strings are properly escaped. Use double quotes for strings.
+FUNCTIONS:
+- itinerary_planning: Plan trip itinerary (needs limit, categories optional)
+- suggest_categories: Suggest place categories
+- suggest_attractions: Suggest specific attractions
+- search_by_name: Search place by name
+- ask_clarify: Ask for clarification
 
-5. Available functions and their purposes:
-   - itinerary_planning: Create complete trip itinerary. Does NOT require destination. Only needs limit (number of places) and optionally categories.
-   - suggest_categories: Suggest place categories based on user context
-   - suggest_attractions: Suggest attractions (with or without category)
-   - search_by_name: Search for places by name
-   - ask_clarify: Ask for clarification when info is missing
+FIELDS:
+- destination: City/area (e.g., "Hanoi", "Ho Chi Minh City")
+- categories: List of place types (e.g., ["museum", "cafe", "park"])
+- limit: Number of places (integer)
+- context_action: How to handle collected info
+  * "merge": Add to existing collected info (default)
+  * "reset": Clear all collected info and start fresh
+  * "replace": Replace specific fields only
 
-6. SCHEMA FIELDS (only these are tracked):
-   - destination (string): The city or area to visit (e.g., "Ho Chi Minh City", "Hanoi")
-   - categories (list): Types of attractions (e.g., ["museums", "nature", "food"])
-   - limit (integer): Number of attractions to visit (default: 3)
-
-7. CONTEXT AWARENESS:
-   - Pay careful attention to COLLECTED INFORMATION to avoid asking redundant questions
-   - Use CONVERSATION HISTORY to understand references like "there", "it", "that place"
-   - If user mentions "nearby", "around here", set destination to "current_location"
-
-8. AMBIGUITY HANDLING:
-   - If category is vague ("things to do", "fun stuff"), set intent to "ask_clarify"
-   - For itinerary_planning: destination and categories are OPTIONAL, only limit is needed
-   - If user asks general questions without specifics, provide helpful clarification
+RULES:
+- Extract destination, categories, limit from query
+- Set followup=true if info is missing
+- Use COLLECTED INFO and HISTORY to avoid redundant questions
+- Set context_action="reset" if user changes topic completely (e.g., "actually, let's go somewhere else" or "never mind, I want to visit a different place")
+- Set context_action="merge" for adding/refining current context
+- Set context_action="replace" when user corrects previous information
 {examples}
 {collected_info_str}
 {context_str}
 
 USER QUERY: "{user_input}"
-
-EXTRACT THE JSON NOW:"""
+"""
 
     try:
         url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
@@ -118,17 +113,16 @@ EXTRACT THE JSON NOW:"""
                 }]
             }],
             'generationConfig': {
-                'temperature': 0.0,  # Maximum determinism for accuracy
-                'topP': 0.95,  # Higher nucleus sampling for better quality
+                'temperature': 0.1,
+                'topP': 0.95,
                 'topK': 40,
-                'maxOutputTokens': 2048,  # Increased for complex responses
+                'maxOutputTokens': 2500,  # Increased to prevent truncation
                 'responseMimeType': 'application/json',
-                'candidateCount': 1,  # Single best response
-                'stopSequences': []  # No stop sequences
+                'candidateCount': 1
             },
             'systemInstruction': {
                 'parts': [{
-                    'text': 'You are a precision JSON extraction expert. Return only valid JSON with maximum accuracy. No explanations. Pay close attention to collected information and conversation history. Always validate your output against the schema before responding.'
+                    'text': 'You are a JSON extraction expert. Return only valid JSON. No explanations.'
                 }]
             },
             'safetySettings': [
@@ -143,31 +137,25 @@ EXTRACT THE JSON NOW:"""
         
         if response.status_code == 200:
             result = response.json()
-            extracted_text = result['candidates'][0]['content']['parts'][0]['text']
             
-            # Try to parse JSON, handle potential formatting issues
-            try:
-                extracted_info = json.loads(extracted_text)
-            except json.JSONDecodeError as json_err:
-                print(f"⚠️ JSON parsing failed. Raw response:\n{extracted_text[:500]}")
-                print(f"JSON Error: {json_err}")
-                
-                # Return a safe fallback with the user's query
+            # Enhanced logging to debug JSON parsing issues
+            print(f"📡 Gemini API Response Status: 200")
+            print(f"🔍 Full API response structure: {json.dumps(result, indent=2, ensure_ascii=False)[:1000]}")
+            
+            # Check if response has expected structure
+            if 'candidates' not in result or not result['candidates']:
+                print(f"⚠️ No candidates in response - likely blocked by safety filters")
                 return {
-                    'intents': [{
-                        'intent': 'search_by_name',
-                        'suggested_function': 'search_by_name',
-                        'confidence': 0.7,
-                        'slots': {
-                            'destination': user_input,
-                            'categories': None,
-                            'limit': None
-                        }
-                    }],
-                    'followup': False,
-                    'clarify_question': None
+                    'intents': [],
+                    'followup': True,
+                    'clarify_question': 'I had trouble processing that. Could you rephrase?'
                 }
             
+            extracted_text = result['candidates'][0]['content']['parts'][0]['text']
+            print(f"📄 Raw extracted text:\n{extracted_text}\n")
+            
+            # Clean and extract JSON from response
+            extracted_info = _parse_json_response(extracted_text, user_input)
             return extracted_info
         else:
             raise Exception(f"Gemini API error: {response.status_code}")
@@ -187,6 +175,78 @@ EXTRACT THE JSON NOW:"""
             'clarify_question': 'I encountered an error processing your request. Could you please rephrase?',
             'error': str(e)
         }
+
+
+def _parse_json_response(text, user_input):
+    """
+    Parse JSON from LLM response with robust error handling.
+    Handles markdown code blocks, extra text, and malformed JSON.
+    
+    Parameters:
+        text (str): Raw text response from LLM
+        user_input (str): Original user input for fallback
+    
+    Returns:
+        dict: Parsed JSON or fallback response
+    """
+    import re
+    
+    # Strategy 1: Try direct JSON parse
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    
+    # Strategy 2: Extract JSON from markdown code blocks
+    # Match ```json\n{...}\n``` or ```\n{...}\n```
+    code_block_pattern = r'```(?:json)?\s*(\{.*?\})\s*```'
+    match = re.search(code_block_pattern, text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    # Strategy 3: Find JSON object using regex (find first { to last })
+    json_pattern = r'\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\})*)*\}))*\}'
+    matches = re.findall(json_pattern, text, re.DOTALL)
+    if matches:
+        # Try the longest match first (likely the complete JSON)
+        for match in sorted(matches, key=len, reverse=True):
+            try:
+                return json.loads(match)
+            except json.JSONDecodeError:
+                continue
+    
+    # Strategy 4: Clean common issues and retry
+    cleaned = text.strip()
+    # Remove common prefixes
+    for prefix in ['json\n', 'JSON\n', 'Here is the JSON:\n', 'Output:\n']:
+        if cleaned.startswith(prefix):
+            cleaned = cleaned[len(prefix):].strip()
+    
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError as e:
+        print(f"⚠️ JSON parsing failed after all strategies")
+        print(f"Raw response (first 500 chars):\n{text[:500]}")
+        print(f"JSON Error: {e}")
+    
+    # Final fallback: Return safe default
+    return {
+        'intents': [{
+            'intent': 'search_by_name',
+            'suggested_function': 'search_by_name',
+            'confidence': 0.5,
+            'slots': {
+                'destination': user_input,
+                'categories': None,
+                'limit': None
+            }
+        }],
+        'followup': False,
+        'clarify_question': None
+    }
 
 
 def _build_relevant_examples():
@@ -344,8 +404,8 @@ def _normalize_field_names(result):
     if not isinstance(result, dict) or 'intents' not in result:
         return result
     
-    # Field name mappings
-    destination_aliases = ['place_name', 'location', 'place', 'attraction_name', 'name', 'destination_name']
+    # Field name mappings - order matters: higher priority first
+    destination_aliases = ['place_name', 'attraction_name', 'name', 'location', 'place', 'destination_name']
     categories_aliases = ['category', 'types', 'place_types', 'type', 'place_type']
     limit_aliases = ['number', 'count', 'num_places', 'number_of_places', 'num']
     
@@ -355,8 +415,12 @@ def _normalize_field_names(result):
             
         slots = intent['slots']
         
-        # Normalize destination
-        if 'destination' not in slots or not slots['destination']:
+        # Normalize destination - prioritize place_name over destination
+        # If both exist, place_name takes precedence
+        if 'place_name' in slots and slots['place_name']:
+            slots['destination'] = slots['place_name']
+            print(f"🔄 Prioritized 'place_name' -> 'destination': {slots['place_name']}")
+        elif 'destination' not in slots or not slots['destination']:
             for alias in destination_aliases:
                 if alias in slots and slots[alias]:
                     slots['destination'] = slots[alias]

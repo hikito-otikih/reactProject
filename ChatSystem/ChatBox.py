@@ -2,19 +2,20 @@ import json
 import sys
 import os
 from urllib import response
-from ChatSystem.util.Response import (
+
+# Add parent directory to Python path FIRST
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from util.Response import (
     Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_category,
     Bot_suggest_categories,
     Bot_suggest_attractions, Bot_search_by_name, Bot_create_itinerary, Bot_ask_extra_info,
 )
 
-# Add parent directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from util.UserInputProcessing import process_user_input
 
-from ChatSystem.util.UserInputProcessing import process_user_input
-
-from ChatSystem.location_sequence import LocationSequence
+from location_sequence import LocationSequence
 
 class ChatBox :
     def __init__(self,location_sequence: LocationSequence) :
@@ -27,6 +28,8 @@ class ChatBox :
             'limit': 3
         }
         self.conversation_started = False
+        
+        # Auto-start conversation on init
         self.start_conversation()
 
     def start_conversation(self) -> BotResponse:
@@ -154,6 +157,7 @@ class ChatBox :
         Extract and update collected_information from user input.
         Merges newly extracted slots into the persistent collected_information dict.
         Uses 'all_slots' for comprehensive extraction from all intents.
+        Supports context_action for smart updates (merge/reset/replace).
         Note: start_location is now handled by frontend and should be ignored.
         """
         # Extract slots from the result - use all_slots for comprehensive extraction
@@ -161,6 +165,28 @@ class ChatBox :
         # print result for debugging
         print(f"\n📝 process_user_input output: {result}\n")
         params = result.get('all_slots', result.get('params', {}))
+        context_action = result.get('context_action', 'merge')
+        
+        print(f"🔄 Context action: {context_action}")
+        
+        # Handle context action
+        if context_action == 'reset':
+            print("🔄 Resetting collected_information")
+            self.collected_information = {
+                'destination': None,
+                'categories': None,
+                'limit': 3
+            }
+        elif context_action == 'replace':
+            print("🔄 Replacing specific fields in collected_information")
+            # Only update fields that are explicitly provided
+            if params.get('destination') or params.get('destinations'):
+                self.collected_information['destination'] = None  # Clear before updating
+            if params.get('categories') or params.get('category'):
+                self.collected_information['categories'] = None  # Clear before updating
+            if params.get('limit') or params.get('limit_attractions') or params.get('number_of_places'):
+                self.collected_information['limit'] = 3  # Reset to default before updating
+        # else: merge (default behavior - no clearing)
         
         # Update destination (single string value) - kept for Bot_display_attraction_details
         if params.get('destination'):
@@ -176,12 +202,22 @@ class ChatBox :
         # Handle categories (list of strings)
         if params.get('categories'):
             if isinstance(params['categories'], list):
-                self.collected_information['categories'] = params['categories']
+                if context_action == 'merge' and self.collected_information['categories']:
+                    # Merge with existing categories (avoid duplicates)
+                    existing = set(self.collected_information['categories'])
+                    new_cats = set(params['categories'])
+                    self.collected_information['categories'] = list(existing.union(new_cats))
+                else:
+                    self.collected_information['categories'] = params['categories']
             else:
-                self.collected_information['categories'] = [params['categories']]
+                if context_action == 'merge' and self.collected_information['categories']:
+                    if params['categories'] not in self.collected_information['categories']:
+                        self.collected_information['categories'].append(params['categories'])
+                else:
+                    self.collected_information['categories'] = [params['categories']]
         elif params.get('category'):
-            # Handle single category - append to existing list or create new
-            if self.collected_information['categories']:
+            # Handle single category
+            if context_action == 'merge' and self.collected_information['categories']:
                 if params['category'] not in self.collected_information['categories']:
                     self.collected_information['categories'].append(params['category'])
             else:

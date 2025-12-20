@@ -1,7 +1,12 @@
 import json
 import os
-from ChatSystem.location_sequence import LocationSequence
-from ChatSystem.ChatBox import ChatBox
+import sys
+
+# Add parent directory to Python path FIRST
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from location_sequence import LocationSequence
+from ChatBox import ChatBox
 
 
 class TOOL: 
@@ -68,17 +73,30 @@ class TOOL:
     def clear_conversation(self) :
         pass 
   
+    def run_conversation(self) :
+        self.chatbox.start_conversation()
+        print(self.chatbox.message_history[-1])
+        while True : 
+            user_input = input("User: ")
+            bot_response = self.chatbox.process_input(user_input=user_input)
+            for id in bot_response.get_database_results() :
+                place_name = self.sequence.id_to_name(id)
+                print(f"(Database Result) ID: {id}, Name: {place_name}")
+            print("Bot: ", bot_response.message)
+            print("Suggestions: ", bot_response.suggestions)
+  
 import os
 import dotenv
 if __name__ == "__main__":
-    example = {"history":{"responses":[{"whom":"user","message":"hello","suggestions":[],"database_results":[]}]},"start_coordinate":[],"sequence":[]}
+    # example = {"history":{"responses":[{"whom":"user","message":"hello","suggestions":[],"database_results":[]}]},"start_coordinate":[],"sequence":[]}
     tool = TOOL()
-    tool.load(example)
-    while True:
-        user_input = input("User: ")
-        response = tool.process_input(user_input)
-        print(json.dumps(response, indent=2, ensure_ascii=False)) 
-        print(json.dumps(tool.save(), indent=2, ensure_ascii=False))
+    # tool.load(example)
+    tool.run_conversation()
+    # while True:
+    #     user_input = input("User: ")
+    #     response = tool.process_input(user_input)
+    #     print(json.dumps(response, indent=2, ensure_ascii=False)) 
+    #     print(json.dumps(tool.save(), indent=2, ensure_ascii=False))
 """
 {
   "history": {
