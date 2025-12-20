@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react' // SỬA LẠI: import { useState }
-import Community from './pages/Community'
+import React, { useState, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import SideBar from './components/SideBar'
-import Credits from './pages/Credits'
 import ChatBox from './components/ChatBox'
 import { assets } from './assets/assets'
 import './assets/prism.css'
@@ -10,28 +8,25 @@ import Loading from './pages/Loading'
 import { useAppContext } from './context/AppContext'
 import Login from './pages/Login'
 import { Toaster } from 'react-hot-toast';
-// Đảm bảo đường dẫn import đúng
 import RoutineMap from './components/RoutineMap.jsx'; 
+import Schedule from './components/Schedule.jsx';
+import ShowImage from './components/showImage.jsx';
 
 const App = () => {
   const {user, loadingUser} = useAppContext();
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Dùng useState trực tiếp cho ngắn gọn
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {pathname} = useLocation();
-  const [isWidgetOpen, setIsWidgetOpen] = useState(false);
-
-  // State này quyết định việc hiển thị Map
+  
+  const [isWidgetOpen, setIsWidgetOpen] = useState(true);
   const [activeRoutine, setActiveRoutine] = useState(null); 
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [showItinerary, setShowItinerary] = useState(false);
   
-  useEffect(() => {
-    // Đóng menu khi thay đổi route
-    console.log("activeRoutine changed:", activeRoutine);
-  }, [activeRoutine]);
-  
-  const ChatIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  const ChevronLeft = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
   );
-  const CloseIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  const ChevronRight = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
   );
 
   if (pathname === '/loading' || loadingUser) return <Loading />;
@@ -39,59 +34,129 @@ const App = () => {
   return (
     <>
       <Toaster />
-        
-        {user ? (
-          <>
-            {/* Map luôn được render ở background */}
-            {/* Khi activeRoutine = null, nó chỉ hiện bản đồ trống */}
-            <RoutineMap 
-               routineData={activeRoutine} 
-               onClose={() => setActiveRoutine(null)} 
-            />
-
-            {/* Nút mở Widget chat */}
-            <div className="fixed bottom-5 right-6 z-50 flex-col items-end"> 
-              <button onClick={() => setIsWidgetOpen(!isWidgetOpen)} className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center" > 
-                {isWidgetOpen ? <CloseIcon /> : <ChatIcon />} 
-              </button> 
-            </div>
-
-            {/* Khung Chat Widget */}
-            <div
+      
+      {user ? (
+        <div className="flex h-screen w-screen overflow-hidden bg-gray-50 dark:bg-[#1a1a1a]">
+          
+          {/* --- 2. CỘT TRÁI: CHAT BOX --- (Giữ nguyên) */}
+          <div 
             className={`
-              fixed z-40 overflow-hidden shadow-2xl
-              transition-all duration-300 ease-in-out
-              
-              inset-0 w-full h-full rounded-none
-              
-              md:inset-auto md:bottom-24 md:right-6
-              md:w-[400px] md:h-[600px]
-              md:rounded-2xl md:border md:border-gray-800
-              
-              ${!isWidgetOpen
-                ? 'opacity-0 pointer-events-none translate-y-10 scale-95'
-                : 'opacity-100 pointer-events-auto translate-y-0 scale-100'
-              }`}>
-              {!isMenuOpen && <img src={assets.menu_icon} className='absolute top-3 left-3 w-8 h-8 cursor-pointer not-dark:invert z-50' onClick={() => setIsMenuOpen(true)} alt="menu"/>}
-              <div className='dark:bg-[#1a1a1a] bg-white h-full w-full flex flex-col rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800'>
+              flex-shrink-0 h-full bg-white dark:bg-[#1a1a1a] border-r border-gray-200 dark:border-gray-800
+              transition-[width,transform] duration-500 ease-in-out z-20 overflow-hidden relative
+              ${isWidgetOpen ? 'w-full md:w-[420px]' : 'w-0 border-none'}
+            `}
+          >
+            <div className="w-screen md:w-[420px] md:min-w-[420px] h-full flex flex-col relative">
+                {!isMenuOpen && (
+                   <img src={assets.menu_icon} className='absolute top-3 left-3 w-8 h-8 cursor-pointer not-dark:invert z-50' onClick={() => setIsMenuOpen(true)} alt="menu"/>
+                )}
+
+                  {isWidgetOpen && !isMenuOpen && (
+                    <button
+                      onClick={() => setIsScheduleOpen(prev => !prev)}
+                      title={isScheduleOpen ? 'Close Schedule' : 'Open Schedule'}
+                      className="absolute top-3 left-[370px] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white text-black dark:bg-[#2d2d2d] dark:text-white rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 z-50 hover:opacity-90 transition-opacity"
+                      style={{ transition: 'left 0.5s ease-in-out' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </button>
+                )}
+
+                  {isWidgetOpen && !isMenuOpen && (
+                    <button
+                      onClick={() => setShowItinerary(prev => !prev)}
+                      title={showItinerary ? 'Hide Itinerary' : 'Show Itinerary on Map'}
+                      className={`absolute top-3 left-[320px] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg shadow-sm border z-50 hover:opacity-90 transition-all ${
+                        showItinerary 
+                          ? 'bg-blue-600 text-white border-blue-500' 
+                          : 'bg-white text-black dark:bg-[#2d2d2d] dark:text-white border-gray-200 dark:border-gray-700'
+                      }`}
+                      style={{ transition: 'left 0.5s ease-in-out' }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+                    </button>
+                )}
+
                 <div className='flex h-full w-full relative'>
                   <SideBar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
-                  
                   <div className={`flex-1 w-full h-full ${isMenuOpen ? 'hidden md:block' : 'block'}`}>
                     <Routes>
-                      {/* Truyền hàm setActiveRoutine xuống để ChatBox gọi khi bấm nút */}
                       <Route path="/" element={<ChatBox onShowMap={setActiveRoutine}/>} />
                     </Routes>
                   </div>
                 </div>
+            </div>
+          </div>
+
+          {/* --- 3. CỘT PHẢI: MAP & SCHEDULE --- */}
+          {/* Thay đổi: Bỏ 'flex', giữ 'relative' để làm mốc tọa độ */}
+          <div className="flex-1 h-full relative z-10 bg-gray-100 overflow-hidden">
+
+             {/* LAYER 1: MAP (Nằm dưới cùng, chiếm toàn màn hình) */}
+             <div className="absolute inset-0 w-full h-full z-0">
+               <RoutineMap 
+                  routineData={activeRoutine} 
+                  //onClose={() => setActiveRoutine(null)}
+                  showItinerary={showItinerary}
+               />
+             </div>
+
+             {/* LAYER 2: NÚT TOGGLE CHAT (Nổi lên trên Map) */}
+             <div className="absolute top-1/2 -translate-y-1/2 left-0 z-30">
+                <button 
+                  onClick={() => {
+                    setIsWidgetOpen(!isWidgetOpen);
+                    setIsScheduleOpen(false); // Đóng schedule khi mở rộng map để tránh rối
+                  }}
+                  className="
+                    flex items-center justify-center
+                    bg-white dark:bg-[#2d2d2d] 
+                    text-gray-700 dark:text-white 
+                    w-6 h-12 md:w-8 md:h-16
+                    rounded-r-xl 
+                    shadow-lg border border-l-0 border-gray-200 dark:border-gray-700 
+                    hover:bg-gray-50 dark:hover:bg-[#3d3d3d]
+                    transition-colors cursor-pointer
+                  "
+                > 
+                  {isWidgetOpen ? <ChevronLeft /> : <ChevronRight />} 
+                </button> 
+             </div>
+
+            {/* LAYER 3: SCHEDULE PANEL (Trong suốt hoàn toàn) */}
+            <div 
+              className={`
+                absolute top-0 right-0 h-full z-20 
+                transition-all duration-500 ease-in-out
+                ${isScheduleOpen ? 'w-[380px] translate-x-0' : 'w-0 translate-x-full opacity-0'}
+              `}
+            >
+              {/* Container: bg-transparent để nhìn thấu Map */}
+              <div className="w-[350px] min-w-[350px] h-full flex flex-col relative bg-transparent">
+                
+                {/* Nút đóng Schedule: Làm nổi bật hơn chút vì nền trong suốt */}
+                <div className="absolute top-3 right-3 z-50">
+                  <button
+                    onClick={() => setIsScheduleOpen(false)}
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-red-50 hover:text-red-500 transition-all active:scale-95"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+
+                <Schedule />
               </div>
             </div>
-          </>
-        ) : (
-          <div className='bg-gradient-to-b from-[#242124] to-[#000000] h-screen w-screen flex items-center justify-center'>
-            <Login />
+
           </div>
-        )}
+          
+          <ShowImage />
+        </div>
+      ) : (
+        <div className='bg-gradient-to-b from-[#242124] to-[#000000] h-screen w-screen flex items-center justify-center'>
+          <Login />
+        </div>
+      )}
     </>
   )
 }

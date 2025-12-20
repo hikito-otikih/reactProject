@@ -27,6 +27,7 @@ import ai_image9 from "./ai_image9.jpg";
 import ai_image10 from "./ai_image10.jpg";
 import ai_image11 from "./ai_image11.jpg";
 import ai_image12 from "./ai_image12.jpg";
+import gemini_icon from "./gemini_icon.svg";
 
 export const assets = {
     logo,
@@ -45,6 +46,7 @@ export const assets = {
     diamond_icon,
     gallery_icon,
     logo_icon,
+    gemini_icon,
 };
 
 export const dummyUserData = {

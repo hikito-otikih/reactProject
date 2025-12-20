@@ -1,7 +1,7 @@
 import json
 import os
-from location_sequence import LocationSequence
-from ChatBox import ChatBox
+from ChatSystem.location_sequence import LocationSequence
+from ChatSystem.ChatBox import ChatBox
 
 
 class TOOL: 
@@ -67,6 +67,9 @@ class TOOL:
         return self.chatbox.process_input(user_input=user_input).get_json_serializable()
     def clear_conversation(self) :
         pass 
+  
+import os
+import dotenv
 if __name__ == "__main__":
     example = {"history":{"responses":[{"whom":"user","message":"hello","suggestions":[],"database_results":[]}]},"start_coordinate":[],"sequence":[]}
     tool = TOOL()

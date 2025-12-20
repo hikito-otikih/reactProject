@@ -22,25 +22,56 @@ GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 # ============================================================================
 
 def geocode_location(location_name):
-    """Convert location name to coordinates using Geoapify"""
+    """Convert location name to coordinates using OpenStreetMap Nominatim API with Geoapify fallback"""
     if not location_name:
         return None
+        
+    # 1. Try OpenStreetMap Nominatim first
     try:
+        # Nominatim requires a User-Agent header
+        headers = {
+            'User-Agent': 'JourneyPlannerApp/1.0'
+        }
         response = requests.get(
-            'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name + ", VN", 'apiKey': GEOAPIFY_API_KEY},
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': location_name + ", Viet Nam", 
+                'format': 'json', 
+                'limit': 1
+            },
+            headers=headers,
             timeout=6
         )
         if response.status_code == 200:
             data = response.json()
-            if data.get('features'):
-                coords = data['features'][0].get('geometry', {}).get('coordinates', [])
-                if len(coords) >= 2:
-                    return {'lat': coords[1], 'lon': coords[0]}
-        return None
+            if data:
+                # Nominatim returns lat/lon as strings, convert to float
+                return {'lat': float(data[0]['lat']), 'lon': float(data[0]['lon'])}
     except Exception as e:
-        print(f"Geocoding error: {e}")
-        return None
+        print(f"OSM Geocoding error: {e}")
+        
+    # 2. Fallback to Geoapify if OSM fails or returns no results
+    try:
+        response = requests.get(
+            'https://api.geoapify.com/v1/geocode/search',
+            params={
+                'text': location_name, 
+                'apiKey': GEOAPIFY_API_KEY,
+                'filter': 'countrycode:vn'
+            },
+            timeout=6
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data['features']:
+                coords = data['features'][0]['geometry']['coordinates']
+                # Geoapify returns [lon, lat]
+                return {'lat': coords[1], 'lon': coords[0]}
+    except Exception as e:
+        print(f"Geoapify Geocoding error: {e}")
+        
+    return None
 
 
 def search_candidates_near_location(category, location_name, lat, lon, limit=10):
@@ -224,7 +255,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "go to airport"
+        "journey to Da Lat "
     ]
     
     for i, test_text in enumerate(test_cases, 1):

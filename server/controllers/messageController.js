@@ -1,6 +1,7 @@
 import Chat from "../models/Chat.js";
 import { openai } from "../configs/openai.js";
 import axios from "axios";
+import { convertChatSchemaToJson } from "../models/Chat.js";
 
 export const textMessageController = async (req, res) => {
     try {
@@ -11,58 +12,26 @@ export const textMessageController = async (req, res) => {
 
         let aiResponseContent = "";
         let isScheduleResponse = false;
-
-        // 2. Gọi qua Python Service (Scheduling Service)
         try {
             const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
             
-            // Gửi request POST sang Python
-            const pythonRes = await axios.post(`${pythonServiceUrl}/analyze`, {
+            const pythonRes = await axios.post(`${pythonServiceUrl}/api/process-input`, {
+                history: convertChatSchemaToJson(chat),
                 input: prompt
             });
-
-            // Kiểm tra xem Python có trả về lịch trình hợp lệ không
-            // (Giả sử Python trả về JSON, nếu có key 'error' nghĩa là thất bại)
+            if (pythonRes.success === false) {
+                throw new Error(pythonRes.message || "Python service returned an error");
+            }
             if (pythonRes.data && !pythonRes.data.error) {
-                // Thành công! Lấy kết quả từ Python
-                // Chúng ta chuyển JSON thành string để lưu vào MongoDB (vì field content thường là string)
-                // Hoặc bạn có thể lưu raw JSON nếu schema DB cho phép.
                 aiResponseContent = JSON.stringify(pythonRes.data); 
+                aiResponseContent = JSON.parse(aiResponseContent).data;
                 isScheduleResponse = true;
             }
         } catch (pythonError) {
-            // Nếu Python service chưa bật hoặc lỗi kết nối, chỉ cần log ra và fallback về Gemini
             console.log("Python service skipped or error:", pythonError.message);
         }
         console.log("schedule response:", aiResponseContent);
-        let newPromt = prompt;
-        if (isScheduleResponse) {
-            newPromt = `You are a travel assistant. 
-            I will give you a trip schedule in JSON format. 
-            Your task is to convert it into a clear, friendly, human-readable trip description. 
-            Preserve all information from the JSON. 
-            Organize the text by day, in chronological order.
-            Write in a concise, easy-to-understand style.
-            Expand short labels into natural sentences (e.g., “check_in”: “Check in at the hotel”).
-            If times exist, include them naturally in the text.
-            If locations or activities are missing details, still render them gracefully.
-            Do not include any JSON or code in your output—only the formatted text.
-            Here is the JSON trip schedule: ${aiResponseContent}`;
-        } else {
-            newPromt = `You are a travel assistant.
-            Tell the client about the error in their trip request, suggest they try again, and provide helpful guidance.
-            Here is the user's original request: ${prompt}`;
-        }
-        const {choices} = await openai.chat.completions.create({
-            model: "gemini-2.0-flash",
-            messages: [
-                {
-                    role: "user",
-                    content: newPromt,
-                },
-            ],
-        });
-        const reply = {...choices[0].message, timestamp: Date.now(), originJson: isScheduleResponse ? aiResponseContent : null};
+        const reply = {content: aiResponseContent.message, timestamp: Date.now(), role: "bot", suggestions: aiResponseContent.suggestions || [], database_results: aiResponseContent.database_results || []};
         chat.messages.push(reply);
         await chat.save();
         res.json({ "success": true, "reply": reply });
@@ -70,3 +39,149 @@ export const textMessageController = async (req, res) => {
         return res.json({ "success": false, "message": error.message, prompt: req.body.prompt });
     }
 };
+
+export const newSequenceMessageController = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, sequence} = req.body;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        chat.sequence = sequence;
+        await chat.save();
+        res.json({ "success": true , "sequence": chat.sequence });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+};
+
+export const newStartPositionController = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, start_coordinate, start_coordinate_name} = req.body;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        chat.start_coordinate = start_coordinate;
+        chat.start_coordinate_name = start_coordinate_name;
+        await chat.save();
+        res.json({ "success": true , "startPosition": chat.start_coordinate, "startPositionName": chat.start_coordinate_name });
+    }
+    catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+};
+
+export const get_suggest_category = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID} = req.query;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/get-suggest-category`, {
+            params: {
+                history: convertChatSchemaToJson(chat)
+            }
+        });
+        console.log("Suggest categories response:", pythonRes.data);
+        res.json({ "success": true , "categories": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+}
+
+export const getSearchByName = async (req, res) => {
+    try {
+        const {name, exact = true, limit = 10} = req.query;
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/search-by-name`, {
+            params: {
+                name,
+                exact,
+                limit
+            }
+        });
+        console.log("Search by name response:", pythonRes.data);
+        res.json({ "success": true , "results": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+};
+
+export const getSuggestForPosition = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, position, category, limit} = req.query;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/suggest-for-position`, {
+            params: {
+                history: convertChatSchemaToJson(chat),
+                position,
+                category,
+                limit
+            }
+        });
+        //console.log("history for suggest for position:", JSON.stringify(convertChatSchemaToJson(chat), null, 2));
+        //console.log("Suggest for position response:", pythonRes.data);
+        res.json({ "success": true , "suggestions": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+};
+
+export const getSuggestItineraryToSequence = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, limit} = req.query;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/suggest-itinerary-to-sequence`, {
+            params: {
+                history: convertChatSchemaToJson(chat),
+                limit
+            }
+        });
+        console.log("Suggest itinerary to sequence response:", pythonRes.data);
+        res.json({ "success": true , "suggestions": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }   
+};
+
+export const getSuggestAround = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, lat, lon, limit, category} = req.query;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/suggest-around`, {
+            params: {
+                history: convertChatSchemaToJson(chat),
+                lat,
+                lon,
+                limit,
+                category
+            }
+        });
+        console.log("Suggest around response:", pythonRes.data);
+        res.json({ "success": true , "suggestions": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+};
+
+export const addKPlaces = async (req, res) => {
+    try {
+        const userID = req.user._id;
+        const {chatID, limit} = req.query;
+        const chat = await Chat.findOne({ _id: chatID, userID });
+        const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
+        const pythonRes = await axios.get(`${pythonServiceUrl}/api/suggest-itinerary-to-sequence`, {
+            params: {
+                history: convertChatSchemaToJson(chat),
+                limit
+            }
+        });
+        console.log("Add K places response:", pythonRes.data);
+        res.json({ "success": true , "suggestions": pythonRes.data });
+    } catch (error) {
+        return res.json({ "success": false, "message": error.message});
+    }
+}

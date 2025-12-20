@@ -23,13 +23,43 @@ GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 # ============================================================================
 
 def geocode_location(location_name):
-    """Convert location name to coordinates using Geoapify"""
+    """Convert location name to coordinates using OpenStreetMap Nominatim API with Geoapify fallback"""
     if not location_name:
         return None
+        
+    # 1. Try OpenStreetMap Nominatim first
+    try:
+        # Nominatim requires a User-Agent header
+        headers = {
+            'User-Agent': 'JourneyPlannerApp/1.0'
+        }
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': location_name + ", Viet Nam", 
+                'format': 'json', 
+                'limit': 1
+            },
+            headers=headers,
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data:
+                # Nominatim returns lat/lon as strings, convert to float
+                return {'lat': float(data[0]['lat']), 'lon': float(data[0]['lon'])}
+    except Exception as e:
+        print(f"OSM Geocoding error: {e}")
+        
+    # 2. Fallback to Geoapify if OSM fails or returns no results
     try:
         response = requests.get(
             'https://api.geoapify.com/v1/geocode/search',
-            params={'text': location_name , 'apiKey': GEOAPIFY_API_KEY},
+            params={
+                'text': location_name, 
+                'apiKey': GEOAPIFY_API_KEY,
+                'filter': 'countrycode:vn'
+            },
             timeout=5
         )
         if response.status_code == 200:
@@ -39,7 +69,8 @@ def geocode_location(location_name):
                 if len(coords) >= 2:
                     return {'lat': coords[1], 'lon': coords[0]}
         return None
-    except Exception:
+    except Exception as e:
+        print(f"Geoapify Geocoding error: {e}")
         return None
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -200,7 +231,7 @@ def extract_info(text):
                 "must_go_categories":[{"category":"restaurant","order":1,"count":1}],
                 "must_go_destinations":[{"name":"starting point","order":0}],
                 "journey_sequence":[{"type":"destination","value":"starting point","order":0},{"type":"category","value":"airport","order":1}],"number_of_destinations":4,"journey_date":"2025-11-20","start_time":"09:00"}}
-            Rules: First destination (order:0) is starting location, if not written , set HCMUS to be default of starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified."""
+            Rules: First destination (order:0) is starting location, if user do not specify their starting location set HCMUS to be starting location. If quantity specified (e.g. "3 museums"), add "count" field and repeat in journey_sequence. Extract journey_date from phrases like "tomorrow", "Monday", "next Friday", "on 2025-12-25" (use YYYY-MM-DD format, default "{current_date}" if not mentioned). Extract start_time from phrases like "7am", "at 9:30", "starting 14:00" (use HH:MM 24-hour format, default "{default_time}" if not mentioned). Normalize categories: restaurant,cafe,museum,park,beach,shopping_mall,market,temple,church,bar,hotel,spa,landmark,etc. Preserve exact order. Default number_of_destinations=4 if not specified."""
 
         # Call Gemini API
         url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}'
@@ -229,7 +260,7 @@ def extract_info(text):
             }
         }
         
-        response = requests.post(url, headers=headers, json=data, timeout=15)
+        response = requests.post(url, headers=headers, json=data, timeout=40)
         
         if response.status_code == 200:
             result = response.json()
@@ -359,7 +390,7 @@ if __name__ == "__main__":
     
     # Test cases
     test_cases = [
-        "go to landmark 81"
+        "journey to Da Lat",
     ]
     
     for i, test_text in enumerate(test_cases, 1):

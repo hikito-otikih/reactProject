@@ -2,7 +2,7 @@ import json
 import sys
 import os
 from urllib import response
-from util.Response import (
+from ChatSystem.util.Response import (
     Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_category,
     Bot_suggest_categories,
@@ -12,7 +12,7 @@ from util.Response import (
 # Add parent directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from util.UserInputProcessing import process_user_input
+from ChatSystem.util.UserInputProcessing import process_user_input
 
 from ChatSystem.location_sequence import LocationSequence
 
@@ -27,6 +27,7 @@ class ChatBox :
             'limit': 3
         }
         self.conversation_started = False
+        self.start_conversation()
 
     def start_conversation(self) -> BotResponse:
         """Proactively initiate the conversation by asking the first question."""
@@ -204,10 +205,13 @@ class ChatBox :
         self._add_response(user_response)
 
         outputDict = process_user_input(user_input, self.collected_information, self.message_history)
+        print("concak0")
         bot_response = self._computeResponse_from_outputDict(outputDict)
+        print("concak1")
         self._add_response(bot_response)
         self._update_collected_information(outputDict)
-
+        
+        print(f"\n🤖 Bot Response complete\n")
         return bot_response 
     
     def save_chatbox(self) -> dict:
