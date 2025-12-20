@@ -6,7 +6,7 @@ from urllib import response
 # Add parent directory to Python path FIRST
 # sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from util.Response import (
+from ChatSystem.util.Response import (
     Response, BotResponse, UserResponse, CompositeResponse,
     Bot_ask_clarify, Bot_ask_category,
     Bot_suggest_categories,

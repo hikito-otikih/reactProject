@@ -8,6 +8,8 @@ export const textMessageController = async (req, res) => {
         const userID = req.user._id;
         const {chatID, prompt} = req.body;
         const chat = await Chat.findOne({ _id: chatID, userID });
+        const historyForAI = convertChatSchemaToJson(chat);
+        console.log("History for AI:", JSON.stringify(historyForAI, null, 2));
         chat.messages.push({ role: "user", content: prompt, timestamp: Date.now()});
 
         let aiResponseContent = "";
@@ -16,7 +18,7 @@ export const textMessageController = async (req, res) => {
             const pythonServiceUrl = process.env.SCHEDULING_SERVICE || "http://127.0.0.1:5000";
             
             const pythonRes = await axios.post(`${pythonServiceUrl}/api/process-input`, {
-                history: convertChatSchemaToJson(chat),
+                history: historyForAI,
                 input: prompt
             });
             if (pythonRes.success === false) {
