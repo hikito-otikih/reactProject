@@ -4,7 +4,7 @@ import os
 from urllib import response
 
 # Add parent directory to Python path FIRST
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util.Response import (
     Response, BotResponse, UserResponse, CompositeResponse,
@@ -13,9 +13,16 @@ from util.Response import (
     Bot_suggest_attractions, Bot_search_by_name, Bot_create_itinerary, Bot_ask_extra_info,
 )
 
-from util.UserInputProcessing import process_user_input
+# from util.UserInputProcessing import process_user_input
 
-from location_sequence import LocationSequence
+# from location_sequence import LocationSequence
+# Add parent directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ChatSystem.util.UserInputProcessing import process_user_input
+
+from ChatSystem.location_sequence import LocationSequence
+
 
 class ChatBox :
     def __init__(self,location_sequence: LocationSequence) :

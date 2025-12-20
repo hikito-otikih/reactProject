@@ -1,12 +1,15 @@
 import json
 import os
-import sys
+# import sys
 
-# Add parent directory to Python path FIRST
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# # Add parent directory to Python path FIRST
+# sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from location_sequence import LocationSequence
-from ChatBox import ChatBox
+# from location_sequence import LocationSequence
+# from ChatBox import ChatBox
+
+from ChatSystem.location_sequence import LocationSequence
+from ChatSystem.ChatBox import ChatBox
 
 
 class TOOL: 
