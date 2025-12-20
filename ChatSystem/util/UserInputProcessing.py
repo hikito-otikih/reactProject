@@ -108,8 +108,8 @@ def _format_llm_response(extracted_data: Dict) -> Dict:
                     all_extracted_slots[key] = value
     
     # Handle clarification needed - but KEEP the extracted slots
-    # Special case: if the primary function is itinerary_planning and categories/limit are provided,
-    # don't force ask_clarify even if followup=true (destination is optional for itinerary)
+    # Special case: Check if we have enough info to proceed with the intended function
+    # even if followup=true (some fields might be optional)
     if extracted_data.get('followup') and extracted_data.get('clarify_question'):
         # Check if we have enough info to proceed with the intended function
         can_proceed = False
@@ -119,8 +119,27 @@ def _format_llm_response(extracted_data: Dict) -> Dict:
             if all_extracted_slots.get('limit') or all_extracted_slots.get('categories'):
                 can_proceed = True
         
+        elif primary_function == 'suggest_attractions':
+            # For suggest_attractions, need categories
+            if all_extracted_slots.get('categories') or all_extracted_slots.get('category'):
+                can_proceed = True
+        
+        elif primary_function == 'search_by_name':
+            # For search_by_name, need destination/place name
+            if all_extracted_slots.get('destination') or all_extracted_slots.get('place_name') or all_extracted_slots.get('attraction_name'):
+                can_proceed = True
+        
+        elif primary_function == 'suggest_categories':
+            # For suggest_categories, no params needed - always proceed
+            can_proceed = True
+        
+        elif primary_function == 'ask_clarify':
+            # Already asking for clarification, no need to check
+            can_proceed = False
+        
         if can_proceed:
             # Proceed with the intended function, ignore clarification
+            print(f"✅ Sufficient info for {primary_function}, proceeding without clarification")
             return {
                 'function': primary_function,
                 'params': primary_slots,
@@ -129,6 +148,7 @@ def _format_llm_response(extracted_data: Dict) -> Dict:
             }
         else:
             # Need clarification
+            print(f"⚠️ Insufficient info for {primary_function}, asking for clarification")
             return {
                 'function': 'ask_clarify',
                 'text': extracted_data.get('clarify_question'),
