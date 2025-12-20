@@ -108,15 +108,35 @@ def _format_llm_response(extracted_data: Dict) -> Dict:
                     all_extracted_slots[key] = value
     
     # Handle clarification needed - but KEEP the extracted slots
+    # Special case: if the primary function is itinerary_planning and categories/limit are provided,
+    # don't force ask_clarify even if followup=true (destination is optional for itinerary)
     if extracted_data.get('followup') and extracted_data.get('clarify_question'):
-        return {
-            'function': 'ask_clarify',
-            'text': extracted_data.get('clarify_question'),
-            'params': primary_slots,  # Include primary slots
-            'all_slots': all_extracted_slots,  # Include all extracted slots
-            'missing_info': intents[0].get('missing_info', []) if intents else [],
-            'suggested_function': primary_function  # Keep the intended function
-        }
+        # Check if we have enough info to proceed with the intended function
+        can_proceed = False
+        
+        if primary_function == 'itinerary_planning':
+            # For itinerary_planning, destination is optional - only need limit or categories
+            if all_extracted_slots.get('limit') or all_extracted_slots.get('categories'):
+                can_proceed = True
+        
+        if can_proceed:
+            # Proceed with the intended function, ignore clarification
+            return {
+                'function': primary_function,
+                'params': primary_slots,
+                'all_slots': all_extracted_slots,
+                'missing_info': intents[0].get('missing_info', []) if intents else []
+            }
+        else:
+            # Need clarification
+            return {
+                'function': 'ask_clarify',
+                'text': extracted_data.get('clarify_question'),
+                'params': primary_slots,  # Include primary slots
+                'all_slots': all_extracted_slots,  # Include all extracted slots
+                'missing_info': intents[0].get('missing_info', []) if intents else [],
+                'suggested_function': primary_function  # Keep the intended function
+            }
     
     # Handle empty/invalid response
     if not intents:
