@@ -32,7 +32,7 @@ class ChatBox :
         self.collected_information = {
             'destination': None,
             'categories': None,
-            'limit': 3
+            'limit': 5
         }
         self.conversation_started = False
         
@@ -141,7 +141,7 @@ class ChatBox :
             categories = params.get('categories') or self.collected_information.get('categories')
             if (not categories) or (isinstance(categories, list) and len(categories) == 0):
                 categories = None  # Make it explicit None if empty
-            limit = params.get('limit') or self.collected_information.get('limit', 3)
+            limit = params.get('limit') or self.collected_information.get('limit', 5)
             
             # Categories are now optional - Bot_create_itinerary will handle None/empty categories
             return Bot_create_itinerary(
@@ -182,7 +182,7 @@ class ChatBox :
             self.collected_information = {
                 'destination': None,
                 'categories': None,
-                'limit': 3
+                'limit': 5
             }
         elif context_action == 'replace':
             print("🔄 Replacing specific fields in collected_information")
@@ -192,7 +192,7 @@ class ChatBox :
             if params.get('categories') or params.get('category'):
                 self.collected_information['categories'] = None  # Clear before updating
             if params.get('limit') or params.get('limit_attractions') or params.get('number_of_places'):
-                self.collected_information['limit'] = 3  # Reset to default before updating
+                self.collected_information['limit'] = 5  # Reset to default before updating
         # else: merge (default behavior - no clearing)
         
         # Update destination (single string value) - kept for Bot_display_attraction_details

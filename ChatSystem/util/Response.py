@@ -126,7 +126,16 @@ class BotResponse(Response) :
                 if place_name:
                     # find if place_name is in at least one of the existing suggestions
                     if (not any(place_name in s for s in self.suggestions)):
-                        next_suggestion = f"{place_name} is near my destination, tell me about it"
+                        # Multiple paraphrased versions for variety
+                        suggestion_templates = [
+                            f"I noticed {place_name} is really close to where I'm going. What's it like?",
+                            f"I'm heading to a spot right near {place_name}. Any info you can share about it?",
+                            f"Since I'll be in the area near {place_name}, can you tell me a bit about it?",
+                            f"{place_name} is near my destination, tell me about it",
+                            f"I'll be near {place_name}. What can you tell me about this place?",
+                            f"Looks like {place_name} is on my route. What's worth knowing about it?"
+                        ]
+                        next_suggestion = random.choice(suggestion_templates)
                         alternatives.append(next_suggestion)
      
         # Combine base suggestions with alternatives, limiting total to avoid overwhelming user
@@ -278,7 +287,7 @@ class Bot_search_by_name(BotResponse) :
     # attributes: id of place in database
     
     def __init__(self, attraction_name, location_sequence=None, collected_information=None) : 
-        response = f"Here are the details for {attraction_name}"
+        response = f"Here are the matching records {attraction_name}"
         # Frontend can format better 
         # @Huynh Chi Ton
         super().__init__(location_sequence, response, collected_information=collected_information)
