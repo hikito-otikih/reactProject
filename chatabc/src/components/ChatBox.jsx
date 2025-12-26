@@ -7,12 +7,25 @@ import { Compass, Map, Coffee, Music } from 'lucide-react';
 
 // --- COMPONENT MÀN HÌNH CHỜ (RELAXING SCREEN) ---
 const EmptyState = ({ setPrompt }) => {
-  const suggestions = [
-    { icon: <Map size={20} />, text: "Lên lịch trình đi Đà Lạt 3 ngày 2 đêm", label: "Trip Planning" },
-    { icon: <Coffee size={20} />, text: "Tìm quán cafe yên tĩnh ở Quận 1", label: "Relaxing" },
-    { icon: <Compass size={20} />, text: "Gợi ý địa điểm du lịch gần Sài Gòn", label: "Explore" },
-    { icon: <Music size={20} />, text: "Địa điểm nghe nhạc Acoustic tối nay", label: "Entertainment" },
+  // Full list of all available suggestions
+  const allSuggestions = [
+    { icon: <Map size={20} />, text: "Plan me a trip around the city with 5 locations", label: "Trip Planning" },
+    { icon: <Compass size={20} />, text: "Show me 7 several tourist attraction", label: "Tourist" },
+    { icon: <Coffee size={20} />, text: "List of 10 best restaurants in the area", label: "Restaurants" },
+    { icon: <Coffee size={20} />, text: "Top 10 cafe to check-in", label: "Cafes" },
+    { icon: <Map size={20} />, text: "List of shopping-mall in town", label: "Shopping" },
+    { icon: <Music size={20} />, text: "Best bars to check-out", label: "Nightlife" },
+    { icon: <Compass size={20} />, text: "Show me 5 nearby supermarkets", label: "Supermarkets" },
+    { icon: <Coffee size={20} />, text: "Visit \"Quán phở Cô Tư\"", label: "Restaurant" },
+    { icon: <Coffee size={20} />, text: "Let's go to \"Bánh mì chay Saigon\"", label: "Food" },
+    { icon: <Compass size={20} />, text: "Let's go to the zoo.", label: "Entertainment" },
   ];
+
+  // Randomly select 4 suggestions (memoized to prevent re-shuffling on every render)
+  const suggestions = React.useMemo(() => {
+    const shuffled = [...allSuggestions].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 4);
+  }, []);
 
   return (
     <div className="h-full flex flex-col items-center justify-center animate-fadeIn p-4">
@@ -41,18 +54,18 @@ const EmptyState = ({ setPrompt }) => {
             key={index}
             onClick={() => setPrompt(item.text)}
             className="
-              flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300
+              flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all duration-300
               bg-gray-50 border border-gray-100 
               hover:bg-blue-50 hover:border-blue-200 hover:shadow-md hover:-translate-y-1
               dark:bg-[#2d2d2d] dark:border-gray-700 dark:hover:bg-[#3d3d3d] dark:hover:border-gray-600
             "
           >
-            <div className="p-2bg-white dark:bg-gray-800 rounded-lg text-blue-500 dark:text-blue-400 shadow-sm">
+            <div className="p-2 bg-white dark:bg-gray-800 rounded-lg text-blue-500 dark:text-blue-400 shadow-sm flex-shrink-0 mt-0.5">
               {item.icon}
             </div>
-            <div className="flex flex-col items-start overflow-hidden">
-               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">{item.label}</span>
-               <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate w-full text-left">{item.text}</span>
+            <div className="flex flex-col items-start flex-1 min-w-0">
+               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">{item.label}</span>
+               <span className="text-sm font-medium text-gray-700 dark:text-gray-200 w-full text-left leading-relaxed">{item.text}</span>
             </div>
           </div>
         ))}

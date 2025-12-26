@@ -55,7 +55,11 @@ const App = () => {
                     <button
                       onClick={() => setIsScheduleOpen(prev => !prev)}
                       title={isScheduleOpen ? 'Close Schedule' : 'Open Schedule'}
-                      className="absolute top-3 left-[370px] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white text-black dark:bg-[#2d2d2d] dark:text-white rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 z-50 hover:opacity-90 transition-opacity"
+                      className={`absolute top-3 left-[370px] w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg shadow-sm border z-50 hover:opacity-90 transition-all ${
+                        isScheduleOpen 
+                          ? 'bg-blue-600 text-white border-blue-500' 
+                          : 'bg-white text-black dark:bg-[#2d2d2d] dark:text-white border-gray-200 dark:border-gray-700'
+                      }`}
                       style={{ transition: 'left 0.5s ease-in-out' }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
